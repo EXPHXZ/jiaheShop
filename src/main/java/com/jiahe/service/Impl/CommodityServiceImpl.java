@@ -18,7 +18,6 @@ public class CommodityServiceImpl implements CommodityService {
     @Autowired
     private CommodityDao commodityDao;
 
-
     @Override
     public IPage<Commodity> SelectAll(int current, int pageSize) {
         IPage<Commodity> page = new Page<>(current,pageSize);
@@ -36,12 +35,10 @@ public class CommodityServiceImpl implements CommodityService {
         return commodityDao.deleteById(id) > 0;
     }
 
-
     @Override
     public Commodity searchCommodity(Integer id) {
         return commodityDao.selectById(id);
     }
-
 
     @Override
     public Boolean updateCommodity(Commodity commodity) {

@@ -68,4 +68,4 @@ gen
 # 为了每位成员可以正常使用自己的数据库,选择不上传这个配置文件即忽略提交。
 #然后自己在自己的工作空间复制application.yml，用自己的数据库
 
-/jiaheShop/src/main/resources/application.yml
+/src/main/resources/application.yml
