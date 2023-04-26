@@ -1,0 +1,74 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>嘉禾商城 - 登陆/注册</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<div class="header">
+    <img src="images/logo.png" alt="嘉禾商城 Logo">
+    <h1>欢迎来到嘉禾商城管理系统</h1>
+</div>
+
+<div id= "app" class="form-container">
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'login')">登陆界面</button>
+    </div>
+
+    <!-- 登录表单 -->
+    <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="用户名：">
+            <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码：">
+            <el-input v-model="form.password"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="warning" @click="login">登录</el-button>
+            <el-button @click="reset">重置</el-button>
+        </el-form-item>
+    </el-form>
+
+</div>
+
+<script src="js/login.js"></script>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+<script>
+    new Vue({
+        el:"#app",
+        methods:{
+            login() {
+                axios.post("/user/login",this.form).then((res) => {
+                        if (res.data.code == 20051){
+                            this.$message.success(res.data.msg);
+                            window.location.href = "/commodity.html"
+                        }else {
+                            this.$message.error(res.data.msg);
+                        }
+
+                    }
+                )
+            },
+            reset(){
+                this.form = {};
+            }
+        },
+
+        data() {
+            return {
+                form: {
+                    username:"",
+                    password:""
+                }
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
+

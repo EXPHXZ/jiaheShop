@@ -13,5 +13,8 @@ public class Code {
     public static final Integer UPDATE_SUCCESS = 20041;
     public static final Integer UPDATE_FAIL = 20042;
 
+    public static final Integer LOGIN_SUCCESS = 20051;
+    public static final Integer LOGIN_FAIL = 20051;
+
 
 }
