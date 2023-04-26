@@ -1,8 +1,11 @@
 package com.jiahe.utils;
 
 public class Result {
+    //携带的数据
     private Object data;
+    //返回的码
     private Integer code;
+    //放回的提示信息
     private String msg;
 
     public Result(Object data, Integer code, String msg) {

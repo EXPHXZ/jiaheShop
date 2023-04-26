@@ -242,6 +242,7 @@
 <script>
     new Vue({
         el:"#content",
+
         methods: {
             //复选框选中之后执行的办法
             handleSelectionChange(val) {
@@ -303,6 +304,7 @@
                 )
             },
 
+            //批量删除数据
             deleteCommodities(){
                 axios.post("/commodity/delete",this.multipleSelection).then((res) => {
                     this.$message.success(res.data.msg);
@@ -334,12 +336,14 @@
                 this.dialogVisible1 = false;
             },
 
+            //分页换页
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
                 this.pagination.current = val;
                 this.selectAll();
             },
 
+            //将数据库存的status装换为对应的状态
             formatState(row,column,cellValue){
                 if (cellValue == "0"){
                     return "上架";
@@ -349,15 +353,18 @@
             }
         },
 
+        //钩子函数，进去页面就会执行查询所有
         created(){
             this.selectAll()
         },
+
 
         data() {
             return {
                 //添加弹窗默认为不可见
                 dialogVisible: false,
 
+                //修改弹窗默认不可见
                 dialogVisible1: false,
 
                 //添加表单
@@ -374,9 +381,11 @@
 
                 //表格数据
                 tableData: [],
+
                 //复选框选中的数据集合
                 multipleSelection:[],
 
+                //分页所需数据
                 pagination: {
                     current: "1",
                     pageSize: "5",

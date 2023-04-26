@@ -1,8 +1,13 @@
 package com.jiahe.pojo;
 
+
 import lombok.Data;
 
 import java.math.BigDecimal;
+
+/**
+ * 商品实体类
+ */
 
 @Data
 public class Commodity {
@@ -16,5 +21,4 @@ public class Commodity {
     private Integer status;
     private Integer remnant;
     private int isDeleted;
-
 }
