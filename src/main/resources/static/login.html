@@ -16,11 +16,11 @@
     </div>
 
     <!-- 登录表单 -->
-    <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="用户名：">
+    <el-form ref="form" :model="form" label-width="80px" :rules="rules">
+        <el-form-item label="用户名：" prop = "username">
             <el-input v-model="form.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码：">
+        <el-form-item label="密码：" prop = "password">
             <el-input v-model="form.password"></el-input>
         </el-form-item>
         <el-form-item>
@@ -46,6 +46,8 @@
                         if (res.data.code == 20051){
                             this.$message.success(res.data.msg);
                             window.location.href = "/commodity.html"
+                        }else if (res.data.code == 20052) {
+                            this.$message.error(res.data.msg);
                         }else {
                             this.$message.error(res.data.msg);
                         }
@@ -63,9 +65,43 @@
                 form: {
                     username:"",
                     password:""
+                },
+                rules: {
+                    username: [
+                        {
+                            required : true,
+                            message : "请输入账号名",
+                            trigger : "blur"
+                        },
+                        {
+                            type : "string",
+                            pattern : /^[a-zA-Z0-9]+$/,
+                            min:3,
+                            max:12,
+                            message: "账号由字母和数字组成且长度在3-12位之间",
+                            trigger: 'blur'
+                        },
+                    ],
+
+                    password: [
+                        {
+                            required : true,
+                            message : "请输入密码",
+                            trigger : "blur"
+                        },
+                        {
+                            type : "string",
+                            pattern : /^[a-zA-Z0-9]+$/,
+                            min:6,
+                            max:12,
+                            message: "密码由字母和数字组成且长度在6-12位之间",
+                            trigger: 'blur'
+                        },
+                    ]
+
                 }
-            }
         }
+    }
     })
 </script>
 </body>

@@ -63,4 +63,15 @@ public class CommodityServiceImpl implements CommodityService {
         }
         return commodityDao.deleteBatchIds(ids) > 0;
     }
+
+
+//    判断添加的商品的名字和规格都相同的商品是否已经存在于数据库中
+    @Override
+    public Boolean checkAdd(Commodity commodity) {
+        LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Commodity::getCommodityName,commodity.getCommodityName());
+        wrapper.eq(Commodity::getSize,commodity.getSize());
+        Commodity commodity1 = commodityDao.selectOne(wrapper);
+        return commodity1 != null;
+    }
 }

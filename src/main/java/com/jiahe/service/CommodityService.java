@@ -57,4 +57,6 @@ public interface CommodityService {
      * @return
      */
     public Boolean deleteCommodities(List<Commodity> commodities);
+
+    public Boolean checkAdd(Commodity commodity);
 }

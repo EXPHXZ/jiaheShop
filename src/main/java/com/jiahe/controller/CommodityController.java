@@ -9,6 +9,7 @@ import com.jiahe.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,8 +28,6 @@ public class CommodityController {
     @GetMapping("/{current}/{pageSize}")
     public Result selectAll(@PathVariable int current, @PathVariable int pageSize){
         IPage<Commodity> page = commodityService.SelectAll(current,pageSize);
-        System.out.println(page);
-
         //当删除到页数发生变化的时候
         if (current > page.getPages()){
             page = commodityService.SelectAll((int)page.getPages(),pageSize);
@@ -42,10 +41,18 @@ public class CommodityController {
      * @return
      */
     @PostMapping
-    public Result addCommodity(@RequestBody Commodity commodity){
-        System.out.println(commodity);
+    public Result addCommodity(@RequestBody Commodity commodity) throws Exception {
+        Boolean addFlag = commodityService.checkAdd(commodity);
+        if (addFlag == true){
+            return new Result(null,Code.ADD_FAIL,"相同的商品已经存在于数据库中");
+        }
         Boolean flag = commodityService.addCommodity(commodity);
-        return new Result(null,flag == true? Code.ADD_SUCCESS:Code.ADD_FAIL,"添加成功");
+        if(flag){
+            return new Result(null,Code.ADD_SUCCESS,"添加成功");
+        }else {
+            return new Result(null,Code.ADD_FAIL,"添加失败");
+        }
+
     }
 
     /**
@@ -55,11 +62,9 @@ public class CommodityController {
      */
     @DeleteMapping("/{id}")
     public Result deleteCommodity(@PathVariable Integer id){
-        System.out.println(id);
         Boolean flag = commodityService.deleteCommodity(id);
-        return new Result(null,flag == true? Code.DELETE_SUCCESS:Code.DELETE_FAIL,"删除成功");
+        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"删除成功":"删除失败");
     }
-
 
     /**
      * 根据id查询商品数据来回显数据
@@ -80,7 +85,7 @@ public class CommodityController {
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
         Boolean flag = commodityService.updateCommodity(commodity);
-        return new Result(null,Code.UPDATE_SUCCESS,"修改成功");
+        return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
 
     /**
@@ -102,6 +107,6 @@ public class CommodityController {
     @PostMapping("/delete")
     public Result deleteCommodities(@RequestBody List<Commodity> commodities){
         Boolean flag = commodityService.deleteCommodities(commodities);
-        return new Result(null,Code.DELETE_SUCCESS,"批量删除成功");
+        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
     }
 }
