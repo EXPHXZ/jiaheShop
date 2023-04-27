@@ -382,7 +382,12 @@
 
         //钩子函数，进去页面就会执行查询所有
         created(){
-
+            //如果数据操作中需要用到用户信息，那需要获取登录之后存储在本地的用户信息
+            const userInfo = window.localStorage.getItem("userInfo")
+            if (userInfo){
+                this.user = JSON.parse(userInfo);
+            }
+            console.log(this.user)
             this.selectAll()
         },
 
@@ -418,6 +423,14 @@
                     current: "1",
                     pageSize: "5",
                     total: ""
+                },
+
+                //如果需要用到用户信息，创建一个user来进行用户绑定
+                user: {
+                    id:"",
+                    username:"",
+                    password:"",
+                    identity:""
                 }
             }
         }

@@ -21,14 +21,7 @@ public class UserController {
     @PostMapping("/login")
     public Result login(@RequestBody User user){
         User user1 = userService.login(user);
-        String msg = null;
-        if (user1 != null){
-            msg = "登录成功";
-        }else if (user1 == null){
-            msg = "登录失败，用户名或者密码错误";
-        }
-
-        return new Result(user1,user1 != null?Code.LOGIN_SUCCESS:Code.LOGIN_FAIL,msg);
+        return new Result(user1,user1 != null?Code.LOGIN_SUCCESS:Code.LOGIN_FAIL,user1 != null?"登录成功":"登录失败，请检查用户名和密码");
     }
 
 }
