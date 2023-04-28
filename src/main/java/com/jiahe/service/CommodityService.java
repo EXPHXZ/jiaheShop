@@ -15,6 +15,7 @@ public interface CommodityService {
      */
     public IPage<Commodity> SelectAll(int current, int pageSize);
 
+
     /**
      * 添加商品数据
      * @param commodity
