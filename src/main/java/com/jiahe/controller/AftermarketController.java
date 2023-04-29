@@ -60,7 +60,7 @@ public class AftermarketController {
      * @param aftermarket
      * @return
      */
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result update(@RequestBody Aftermarket aftermarket){
         boolean b = aftermarketService.updateById(aftermarket);
         if (b){
