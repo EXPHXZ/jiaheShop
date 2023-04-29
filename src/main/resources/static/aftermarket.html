@@ -50,16 +50,16 @@
             :visible.sync="dialogVisible1"
             width="50%">
         <el-form>
-        <el-form-item label="订单id">
-            <el-input v-model="aftermarket.orderId"></el-input>
-        </el-form-item>
-        <el-form-item label="原因">
-            <el-input v-model="aftermarket.cause"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="update">确定修改</el-button>
-            <el-button @click="dialogVisible1 = false">取消</el-button>
-        </el-form-item>
+            <el-form-item label="订单id">
+                <el-input v-model="aftermarket.orderId"></el-input>
+            </el-form-item>
+            <el-form-item label="原因">
+                <el-input v-model="aftermarket.cause"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="update">确定修改</el-button>
+                <el-button @click="dialogVisible1 = false">取消</el-button>
+            </el-form-item>
         </el-form>
     </el-dialog>
 
@@ -206,11 +206,11 @@
                 dialogVisible1:false,
 
                 aftermarket: {
-                orderId:null,
-                cause:'',
+                    orderId:null,
+                    cause:'',
                 },
 
-               marketList:[],
+                marketList:[],
 
                 //如果需要用到用户信息，创建一个user来进行用户绑定
                 user: {
