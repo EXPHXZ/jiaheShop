@@ -1,6 +1,7 @@
 package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
 
@@ -22,11 +23,17 @@ public interface OrderService {
 //    public Commodity searchOrder(Integer id);
 
     /**
+     * 根据订单id查询订单详情
+     * @param orderId
+     */
+    public OrderDto selectOrderDetail(Integer orderId);
+
+    /**
      * 新增多个商品项
      * @param orderCommodities
      * @return
      */
-    public Boolean insertOrderCommodities(OrderCommodity[] orderCommodities);
+    public Boolean insertOrderCommodities(Integer orderId, OrderCommodity[] orderCommodities);
 
     /**
      * 新增订单

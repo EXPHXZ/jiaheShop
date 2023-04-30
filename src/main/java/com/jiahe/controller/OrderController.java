@@ -1,6 +1,7 @@
 package com.jiahe.controller;
 
 
+import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
 import com.jiahe.service.OrderService;
@@ -15,6 +16,17 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    /**
+     * 根据id查询订单详情
+     * @param id
+     */
+    @GetMapping("/selectOrderDetailById")
+    public Result selectOrderDetail(@RequestParam Integer id){
+        OrderDto data = orderService.selectOrderDetail(id);
+        Boolean flag = data != null;
+        return new Result(data,flag? Code.SELECT_SUCCESS:Code.SELECT_FAIL,flag?"查询成功":"查询失败");
+    }
 
     /**
      * 根据id删除订单项
@@ -64,9 +76,10 @@ public class OrderController {
      * @param orderCommodities
      */
     @PostMapping("/insertOrderCommodity")
-    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities){
-        Boolean flag = orderService.insertOrderCommodities(orderCommodities);
-        return new Result(null,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
+    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer orderId){
+        System.out.println("orderId" + orderId);
+        Boolean flag = orderService.insertOrderCommodities(orderId, orderCommodities);
+        return new Result(orderId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
 
     /**
@@ -77,6 +90,6 @@ public class OrderController {
     @PostMapping("/insertOrder")
     public Result insertOrder(@RequestBody Order order){
         Boolean flag = orderService.insertOrder(order);
-        return new Result(null,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
+        return new Result(order.getId(),flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
 }

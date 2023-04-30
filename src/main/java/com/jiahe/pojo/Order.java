@@ -17,6 +17,5 @@ public class Order {
     private Integer sum;
     private String status;
     private Timestamp submitTime;
-    @TableField(exist = false)
-    private List<OrderCommodity> orderCommodities;
+    private Integer isDeleted;
 }
