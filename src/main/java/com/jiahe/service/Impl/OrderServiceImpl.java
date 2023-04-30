@@ -35,14 +35,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto selectOrderDetail(Integer orderId){
+        // 查询订单基本信息
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getId,orderId);
-        //查询对于的订单信息
         Order order = orderDao.selectOne(wrapper);
         OrderDto orderDto = new OrderDto();
-        //复制订单的属性值到dto中
+
+        // 复制订单的属性值到dto中
         BeanUtils.copyProperties(order,orderDto);
-        System.out.println("这一个是orderDto：   " + orderDto);
 
         // 查询用户名
         LambdaQueryWrapper<User> wrapper2 = new LambdaQueryWrapper<>();
@@ -63,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
             LambdaQueryWrapper<Commodity> wrapper3 = new LambdaQueryWrapper<>();
             wrapper3.eq(Commodity::getId,orderCommodity.getCommodityId());
             Commodity commodity = commodityDao.selectOne(wrapper3);
+            orderCommodityDto.setCommodityName(commodity.getCommodityName());
             orderCommodityDtos.add(orderCommodityDto);
         }
         orderDto.setOrderCommodityList(orderCommodityDtos);
