@@ -82,8 +82,8 @@ public class OrderController {
      * @param orderCommodity
      */
     @PostMapping("/updateOrderCommodity")
-    public Result updateOrderCommodity(@RequestBody OrderCommodity orderCommodity){
-        Boolean flag = orderService.updateOrderCommodity(orderCommodity);
+    public Result updateOrderCommodity(@RequestParam Integer orderId, @RequestBody OrderCommodity orderCommodity){
+        Boolean flag = orderService.updateOrderCommodity(orderId, orderCommodity);
         return new Result(null,flag? Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
 

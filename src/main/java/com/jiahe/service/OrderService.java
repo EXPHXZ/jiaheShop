@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface OrderService {
 
@@ -58,7 +59,7 @@ public interface OrderService {
      * @param orderCommodity
      * @return
      */
-    public Boolean updateOrderCommodity(OrderCommodity orderCommodity);
+    public Boolean updateOrderCommodity(@RequestParam Integer orderId, OrderCommodity orderCommodity);
     /**
      * 更新订单
      * @param order

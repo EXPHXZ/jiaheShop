@@ -17,6 +17,7 @@ import com.jiahe.service.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,10 +49,7 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderIPage.getRecords();
         List<OrderDto> orderDtos = new ArrayList<>();
 
-        // 判断是否降序
-        if (desc != 0){
-            Collections.reverse(orders);
-        }
+        Collections.reverse(orders);
 
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
@@ -207,7 +205,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Boolean updateOrderCommodity(OrderCommodity orderCommodity) {
+    public Boolean updateOrderCommodity(@RequestParam Integer orderId, OrderCommodity orderCommodity) {
+
+        // 将orderId对应的订单状态改为1
+        Order order = new Order();
+        order.setId(orderId);
+        order.setStatus(1);
+        orderDao.updateById(order);
+
         return orderCommodityDao.updateById(orderCommodity) > 0;
     }
 

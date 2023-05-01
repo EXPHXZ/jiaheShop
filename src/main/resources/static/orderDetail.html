@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>订单</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/query.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/order.css" />
+</head>
+<body>
+<header>
+    <div class="logo">
+        <h1>嘉禾商城</h1>
+    </div>
+</header>
+<nav>
+    <ul>
+        <li><a href=""><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+        <li><a href=""><i class="fas fa-list-alt"></i>订单管理</a></li>
+        <li><a href=""><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+        <li><a href=""><i class="fas fa-shield-alt"></i>权限管理</a></li>
+        <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
+    </ul>
+</nav>
+
+<div id="content" class="content">
+
+    <div class="order-title">
+        <h1>订单详情</h1>
+    </div>
+
+    <div class="order-table">
+        <el-table
+        :data="orderInfo.orderCommodityList"
+        style="width: 100%"
+        border
+        :default-sort = "{prop: 'date', order: 'descending'}"
+        >
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              type="index">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              prop="commodityName"
+              label="商品名称"
+              sortable
+              min-width="130">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              prop="count"
+              label="购买数量"
+              sortable
+              min-width="100">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              prop="price"
+              label="单价"
+              sortable
+              min-width="100">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              prop="priceSum"
+              label="总价"
+              sortable
+              min-width="100">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              prop="statusText"
+              label="状态"
+              sortable
+              min-width="150">
+            </el-table-column>
+            <el-table-column
+                    align="center"
+                    header-align="center"
+              label="操作"
+              min-width="150">
+              <template slot-scope="scope">
+                    <el-button
+                            type="danger"
+                            round
+                            size="small"
+                            :disabled="scope.row.status !== 0"
+                            @click="returnGoods(scope.row.id)"
+                    >退货</el-button>
+              </template>
+            </el-table-column>
+        </el-table>
+    </div>
+
+    <div class="order-com">
+        <div class="order-com-item">用户名：{{ orderInfo.username }}</div>
+        <div class="order-com-item">创建时间：{{ orderInfo.submitTime}}</div>
+        <div class="order-com-item">购买数量：{{ orderInfo.sum}}</div>
+        <div class="order-com-item">商品种类：{{ orderInfo.count}}</div>
+        <div class="order-com-item">订单总价：{{ orderInfo.price}}</div>
+    </div>
+
+    <div class="order-btn2">
+        <el-button
+                type="primary"
+                round
+                @click="goBack()"
+        >返回</el-button>
+    </div>
+
+</div>
+
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+<script>
+
+    new Vue({
+        el:"#content",
+
+        methods: {
+
+          //查询订单详情
+            selectOrderDetail(id) {
+            axios({
+              url: "/order/selectOrderDetailById",
+              params: {
+                id: id,
+              }
+            }).then((res) => {
+                this.orderInfo = res.data.data
+                this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
+                this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
+                this.orderInfo.sum = this.orderInfo.sum + '份'
+                this.orderInfo.count = this.orderInfo.count + '种'
+                this.orderInfo.orderCommodityList.forEach((item) => {
+                    if (item.status === 0) {
+                        item.statusText = '正常交易'
+                    } else if (item.status === 1) {
+                        item.statusText = '已退货'
+                    }
+                    item.price = item.price.toFixed(2) + '元'
+                    item.priceSum = item.priceSum.toFixed(2) + '元'
+                    item.count = item.count + '份'
+                })
+            })
+          },
+
+            onCreateOrder() {
+                // 跳转到新增订单页面，addOrder.html
+                window.location.href = "addOrder.html"
+            },
+
+            goBack() {
+                window.history.back()
+            },
+
+            returnGoods(id) {
+                // 在发送请求前询问
+                this.$confirm('是否确认退货？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 确认退货
+                    axios({
+                        url: "/order/updateOrderCommodity",
+                        params: {
+                            orderId: this.orderId
+                        },
+                        data: {
+                            id: id,
+                            status: 1
+                        },
+                        method: "post"
+                    }).then((res) => {
+                        console.log(res.data.code)
+                        if (res.data.code !== 20042) {
+                            this.$message({
+                                message: "退货成功",
+                                type: "success"
+                            })
+                            this.selectOrderDetail(this.orderId)
+                        } else {
+                            this.$message({
+                                message: "退货失败",
+                                type: "error"
+                            })
+                        }
+                    })
+                }).catch(() => {
+                    // 取消退货
+                    this.$message({
+                        type: 'info',
+                        message: '已取消退货'
+                    });
+                });
+                // axios({
+                //     url: "/order/updateOrderCommodity",
+                //     params: {
+                //         orderId: this.orderId
+                //     },
+                //     data: {
+                //         id: id,
+                //         status: 1
+                //     },
+                //     method: "post"
+                // }).then((res) => {
+                //     console.log(res.data.code)
+                //     if (res.data.code !== 20042) {
+                //         this.$message({
+                //             message: "退货成功",
+                //             type: "success"
+                //         })
+                //         this.selectOrderDetail(this.orderId)
+                //     } else {
+                //         this.$message({
+                //             message: "退货失败",
+                //             type: "error"
+                //         })
+                //     }
+                // })
+            }
+
+        },
+
+        created(){
+            //如果数据操作中需要用到用户信息，那需要获取登录之后存储在本地的用户信息
+            // const userInfo = window.localStorage.getItem("userInfo")
+            // if (userInfo){
+            //     this.user = JSON.parse(userInfo);
+            // }
+            // console.log(this.user)
+            // 获取上一页传递过来的参数
+            const params = window.location.search
+            const id = params.split("=")[1]
+            this.orderId = id
+            this.selectOrderDetail(id)
+        },
+
+        data() {
+            // this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
+            //     this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
+            //     this.orderInfo.sum = this.orderInfo.sum + '份'
+            //     this.orderInfo.count = this.orderInfo.count + '种'
+            //     this.orderInfo.orderCommodityList.forEach((item) => {
+            //         if (item.status === 0) {
+            //             item.statusText = '正常交易'
+            //         } else if (item.status === 1) {
+            //             item.statusText = '已退货'
+            //         }
+            //         item.price = item.price.toFixed(2) + '元'
+            //         item.priceSum = item.priceSum.toFixed(2) + '元'
+            //         item.count = item.count + '份'
+            //     })
+          return {
+            orderInfo: {
+                submitTime: "2023-01-01 00:00:00",
+                price: 0,
+                sum: 0,
+                count: 0,
+                orderCommodityList: [{
+                    count: 0,
+                    price: 0,
+                    priceSum: 0,
+                    status: 0,
+                    statusText: ""
+                }]
+            },
+              orderId: 0,
+            pagination: {
+              page: "1",
+              size: "5",
+              desc: 1,
+              total: ""
+            },
+          }
+        }
+    })
+</script>
+
+</body>
+</html>
