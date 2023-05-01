@@ -15,8 +15,7 @@ public class Order {
     private BigDecimal price;
     private Integer count;
     private Integer sum;
-    private String status;
+    private Integer status;
     private Timestamp submitTime;
-    @TableField(exist = false)
-    private List<OrderCommodity> orderCommodities;
+    private Integer isDeleted;
 }

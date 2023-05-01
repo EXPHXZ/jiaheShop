@@ -1,32 +1,38 @@
 package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface OrderService {
 
-//    /**
-//     * 根据传入的页码和页数来进行分页查询
-//     * @param current
-//     * @param pageSize
-//     * @return
-//     */
-//    public IPage<Order> SelectAll(int current, int pageSize);
-//
-//    /**
-//     * 根据id来进行查询订单
-//     * @param id
-//     * @return
-//     */
-//    public Commodity searchOrder(Integer id);
+    /**
+     * 查询所有订单
+     * @return
+     */
+    public IPage<OrderDto> selectAllOrder(Integer page, Integer size, Integer desc);
+
+    /**
+     * 根据订单id查询订单详情
+     * @param orderId
+     */
+    public OrderDto selectOrderDetail(Integer orderId);
+
+    /**
+     * 根据用户名查询订单
+     * @param userName
+     * @return
+     */
+    public IPage<OrderDto> selectOrderByUserName(String userName, Integer page, Integer size, Integer desc);
 
     /**
      * 新增多个商品项
      * @param orderCommodities
      * @return
      */
-    public Boolean insertOrderCommodities(OrderCommodity[] orderCommodities);
+    public Boolean insertOrderCommodities(Integer userId, OrderCommodity[] orderCommodities);
 
     /**
      * 新增订单
@@ -53,7 +59,7 @@ public interface OrderService {
      * @param orderCommodity
      * @return
      */
-    public Boolean updateOrderCommodity(OrderCommodity orderCommodity);
+    public Boolean updateOrderCommodity(@RequestParam Integer orderId, OrderCommodity orderCommodity);
     /**
      * 更新订单
      * @param order

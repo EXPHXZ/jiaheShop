@@ -12,4 +12,5 @@ public class OrderCommodity {
     private BigDecimal price;
     private BigDecimal priceSum;
     private Integer status;
+    private Integer isDeleted;
 }
