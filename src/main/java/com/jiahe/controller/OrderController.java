@@ -3,8 +3,10 @@ package com.jiahe.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.dto.OrderDto;
+import com.jiahe.pojo.Aftermarket;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import com.jiahe.service.AftermarketService;
 import com.jiahe.service.OrderService;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
@@ -17,6 +19,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private AftermarketService aftermarketService;
 
     /**
      * 查询所有订单
@@ -84,7 +89,11 @@ public class OrderController {
     @PostMapping("/updateOrderCommodity")
     public Result updateOrderCommodity(@RequestParam Integer orderId, @RequestBody OrderCommodity orderCommodity){
         Boolean flag = orderService.updateOrderCommodity(orderId, orderCommodity);
-        return new Result(null,flag? Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
+        Aftermarket aftermarket = new Aftermarket();
+        aftermarket.setOrderId(orderId);
+        aftermarket.setCause("该订单有货物需要退货");
+        boolean flag1 = aftermarketService.save(aftermarket);
+        return new Result(null,flag&&flag1? Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
 
     /**
