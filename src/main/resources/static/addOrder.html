@@ -1,267 +1,281 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>订单</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/query.css">
+  <head>
+    <title>新增订单</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/query.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/order.css" />
-</head>
-<body>
-<header>
-    <div class="logo">
+  </head>
+  <body>
+    <header>
+      <div class="logo">
         <h1>嘉禾商城</h1>
-    </div>
-</header>
+      </div>
+    </header>
 
-<div id="content" class="order-content">
-
-    <div class="order-title">
+    <div id="content" class="order-content">
+      <div class="order-title">
         <h1>新增订单</h1>
+      </div>
+
+      <el-form
+        :model="addOrderForm"
+        ref="addOrderForm"
+        label-width="100px"
+        class="demo-dynamic"
+        style="padding-left: 220px"
+      >
+        <div class="order-info">
+          <div class="order-info-item">购买商品</div>
+          <div class="order-info-item">购买数量</div>
+          <div class="order-info-item">购买单价</div>
+        </div>
+        <el-form-item v-for="(item, index) in addOrderForm.from" :label="index + 1 + '、'" :key="item.key">
+          <el-select
+            style="width: 20%; margin: 0 20px"
+            v-model="item.commodityId"
+            @change="onChangeCommodity(item)"
+            placeholder="请选择商品 "
+          >
+            <el-option
+              v-for="theItem in commodityList"
+              :key="theItem.value"
+              :label="theItem.label"
+              :value="theItem.value"
+            ></el-option>
+          </el-select>
+          <el-input
+            class="order-input"
+            style="width: 20%; margin: 0 20px"
+            v-model="item.count"
+            min="1"
+            type="number"
+            placeholder="请输入数量"
+            step="1"
+          ></el-input>
+          <el-input
+            class="order-input"
+            style="width: 20%; margin: 0 20px"
+            v-model="item.price"
+            min="0.01"
+            type="number"
+            placeholder="请输入价格"
+            step="0.01"
+          ></el-input>
+          <el-button type="danger" class="order-input" @click.prevent="removeItem(item)">删除</el-button>
+        </el-form-item>
+        <el-form-item style="margin-left: 0; display: flex; justify-content: center; margin-right: 220px">
+          <el-button type="success" @click="submitForm(addOrderForm.from)">提交</el-button>
+          <el-button type="primary" @click="addItem">新增购买</el-button>
+          <el-button @click="resetForm(addOrderForm.from)">重置</el-button>
+          <el-button type="danger" @click="goBack()">取消创建</el-button>
+        </el-form-item>
+      </el-form>
     </div>
 
+    <script src="js/vue.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css" />
 
-    <el-form :model="addOrderForm" ref="addOrderForm" label-width="100px" class="demo-dynamic" style="padding-left: 220px">
-
-    <div class="order-info">
-        <div class="order-info-item">购买商品</div>
-        <div class="order-info-item">购买数量</div>
-        <div class="order-info-item">购买单价</div>
-    </div>
-<el-form-item
-    v-for="(item, index) in addOrderForm.from"
-    :label="index + 1 + '、'"
-    :key="item.key"
-  >
-  <el-select style="width: 20%; margin: 0 20px" v-model="item.commodityId" @change="onChangeCommodity(item)" placeholder="请选择商品 ">
-    <el-option
-      v-for="theItem in commodityList"
-      :key="theItem.value"
-      :label="theItem.label"
-      :value="theItem.value">
-    </el-option>
-  </el-select>
-    <el-input
-            class="order-input"
-            style="width: 20%; margin: 0 20px;"
-        v-model="item.count"
-        min="1"
-        type="number"
-        placeholder="请输入数量"
-        step="1"
-    ></el-input>
-    <el-input
-            class="order-input"
-            style="width: 20%; margin: 0 20px;"
-        v-model="item.price"
-        min="0.01"
-        type="number"
-        placeholder="请输入价格"
-        step="0.01"
-    ></el-input>
-    <el-button type="danger" class="order-input" @click.prevent="removeItem(item)">删除</el-button>
-  </el-form-item>
-  <el-form-item style="margin-left: 0; display: flex; justify-content: center; margin-right: 220px">
-    <el-button type="success" @click="submitForm(addOrderForm.from)">提交</el-button>
-    <el-button type="primary" @click="addItem">新增购买</el-button>
-    <el-button @click="resetForm(addOrderForm.from)">重置</el-button>
-    <el-button type="danger" @click="goBack()">取消创建</el-button>
-  </el-form-item>
-</el-form>
-
-</div>
-
-<script src="js/vue.js"></script>
-<script src="element-ui/lib/index.js"></script>
-<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
-<script src="js/axios-0.18.0.js"></script>
-<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
-
-<script>
-    new Vue({
-        el:"#content",
+    <script>
+      new Vue({
+        el: '#content',
 
         methods: {
           submitForm(formName) {
-              // 判断是否为空
-              if (formName.some((item) => {
-                  return item.commodityId === null || item.count === null || item.price === null
-              })) {
-                  this.$message({
-                      type: 'error',
-                      message: '请填写完整信息'
-                  });
-                  return
-              }
-              // 判断商品是否重复
-                if (formName.some((item) => {
-                    return formName.filter((theItem) => {
-                        return theItem.commodityId === item.commodityId
-                    }).length > 1
-                })) {
-                    this.$message({
-                        type: 'error',
-                        message: '有商品重复，请修改'
-                    });
-                    return
-                }
-              // 询问是否提交
-                this.$confirm('是否提交？', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).then(() => {
-                      const commitOrder = []
-                      // 遍历formName，将其转换为提交的格式
-                        formName.forEach((item) => {
-                            commitOrder.push({
-                                commodityId: +item.commodityId,
-                                count: +item.count,
-                                price: +item.price
-                            })
-                        })
-                        axios({
-                            url: "/order/insertOrderCommodity",
-                            params: {
-                                userId: this.user.id
-                            },
-                            data: commitOrder,
-                        method: "post"
-                        }).then((res) => {
-                            console.log(res)
-                            if (res.data.code === 20011){
-                                this.$message({
-                                    type: 'success',
-                                    message: '提交成功'
-                                });
-                                this.resetForm(formName)
-                                // 返回上一页
-                                window.history.back(-1);
-                            } else {
-                                this.$message({
-                                    type: 'error',
-                                    message: '提交失败'
-                                });
-                            }
-                        })
-                    }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消提交'
-                    });
-                    });
-          },
-            goBack() {
-                // 询问是否取消
-                console.log('取消')
-                this.$confirm('是否取消创建订单？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    // 返回上一页
-                    this.$message({
-                        type: 'success',
-                        message: '取消创建'
-                    });
-                    this.resetForm(this.addOrderForm.from)
-                    window.history.back();
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '继续创建'
-                    });
-                });
-            },
-          resetForm(formName) {
-              formName.forEach((item) => {
-                  item.commodityId = null;
-                  item.count = 1;
-                  item.price = null;
+            // 判断是否有空
+            if (
+              formName.some(item => {
+                return item.commodityId === null || item.count === null || item.price === null
               })
-
-          },
-          removeItem(item) {
-              // 询问是否删除
-              this.$confirm('是否删除？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    var index = this.addOrderForm.from.indexOf(item)
-                    if (index !== -1) {
-                      this.addOrderForm.from.splice(index, 1)
-                    }
+            ) {
+              this.$message({
+                type: 'error',
+                message: '请填写完整信息',
+              })
+              return
+            }
+            // 判断商品是否重复
+            if (
+              formName.some(item => {
+                return (
+                  formName.filter(theItem => {
+                    return theItem.commodityId === item.commodityId
+                  }).length > 1
+                )
+              })
+            ) {
+              this.$message({
+                type: 'error',
+                message: '有商品重复，请修改',
+              })
+              return
+            }
+            // 询问是否提交
+            this.$confirm('是否提交？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            })
+              .then(() => {
+                const commitOrder = []
+                // 遍历formName，将其转换为提交的格式
+                formName.forEach(item => {
+                  commitOrder.push({
+                    commodityId: +item.commodityId,
+                    count: +item.count,
+                    price: +item.price,
+                  })
+                })
+                axios({
+                  url: '/order/insertOrderCommodity',
+                  params: {
+                    userId: this.user.id,
+                  },
+                  data: commitOrder,
+                  method: 'post',
+                }).then(res => {
+                  console.log(res)
+                  if (res.data.code === 20011) {
                     this.$message({
-                    type: 'success',
-                    message: '已删除'
-                  });
-                }).catch(() => {
-                  this.$message({
-                    type: 'info',
-                    message: '已取消删除'
-                  });
-                });
+                      type: 'success',
+                      message: '提交成功',
+                    })
+                    this.resetForm(formName)
+                    window.location.href = 'order.html'
+                  } else {
+                    this.$message({
+                      type: 'error',
+                      message: '提交失败',
+                    })
+                  }
+                })
+              })
+              .catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消提交',
+                })
+              })
           },
+
+          goBack() {
+            // 询问是否取消
+            console.log('取消')
+            this.$confirm('是否取消创建订单？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            })
+              .then(() => {
+                this.$message({
+                  type: 'success',
+                  message: '取消创建',
+                })
+                this.resetForm(this.addOrderForm.from)
+                window.history.back()
+              })
+              .catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '继续创建',
+                })
+              })
+          },
+
+          resetForm(formName) {
+            formName.forEach(item => {
+              item.commodityId = null
+              item.count = 1
+              item.price = null
+            })
+          },
+
+          removeItem(item) {
+            // 询问是否删除
+            this.$confirm('是否删除？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            })
+              .then(() => {
+                var index = this.addOrderForm.from.indexOf(item)
+                if (index !== -1) {
+                  this.addOrderForm.from.splice(index, 1)
+                }
+                this.$message({
+                  type: 'success',
+                  message: '已删除',
+                })
+              })
+              .catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除',
+                })
+              })
+          },
+
           addItem() {
             this.addOrderForm.from.push({
               commodityId: null,
               count: 1,
               price: null,
-              key: Date.now()
-            });
+              key: Date.now(),
+            })
           },
 
-            onChangeCommodity(item){
-              console.log(item)
-                item.price = this.commodityList.find((theItem) => {
-                    return theItem.value === item.commodityId
-                }).price
-            },
+          onChangeCommodity(item) {
+            console.log(item)
+            item.price = this.commodityList.find(theItem => {
+              return theItem.value === item.commodityId
+            }).price
+          },
 
-            selectCommodityList(){
-                axios.get("/commodity/"+1+"/"+300).then((res) => {
-                    this.tableData = res.data.data.records;
-                    this.commodityList = [];
-                    this.tableData.forEach((item) => {
-                        this.commodityList.push({
-                            value: item.id,
-                            label: item.commodityName,
-                            price: item.price
-                        })
-                    })
+          selectCommodityList() {
+            axios.get('/commodity/' + 1 + '/' + 300).then(res => {
+              this.tableData = res.data.data.records
+              this.commodityList = []
+              this.tableData.forEach(item => {
+                this.commodityList.push({
+                  value: item.id,
+                  label: item.commodityName,
+                  price: item.price,
                 })
-            },
+              })
+            })
+          },
         },
 
-        created(){
-            //如果数据操作中需要用到用户信息，那需要获取登录之后存储在本地的用户信息
-            const userInfo = window.localStorage.getItem("userInfo")
-            if (userInfo){
-                this.user = JSON.parse(userInfo);
-            }
-            console.log(this.user)
-            this.selectCommodityList()
+        created() {
+          const userInfo = window.localStorage.getItem('userInfo')
+          if (userInfo) {
+            this.user = JSON.parse(userInfo)
+          }
+          this.selectCommodityList()
         },
 
         data() {
           return {
             addOrderForm: {
-              from: [{
+              from: [
+                {
                   commodityId: null,
                   count: 1,
                   price: null,
-                  key: Date.now()
-              }],
+                  key: Date.now(),
+                },
+              ],
             },
 
             commodityList: [],
-              // commitOrder:[],
           }
-        }
-    })
-</script>
-
-</body>
+        },
+      })
+    </script>
+  </body>
 </html>

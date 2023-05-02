@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
         if (orderIPage == null){
             return null;
         }
+
         // 将订单转换为dto
         Page<OrderDto> orderDtoIPage = new Page<>(page, size);
         List<Order> orders = orderIPage.getRecords();
@@ -53,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
 
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
+
+            // 复制订单的属性值到dto中
             BeanUtils.copyProperties(order,orderDto);
 
             // 查询用户名
@@ -118,30 +121,32 @@ public class OrderServiceImpl implements OrderService {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(User::getUsername,username);
         List<User> users = userDao.selectList(wrapper);
+
         // 判空
         if (users.isEmpty()){
             return null;
         }
+
         // 将用户id放入list中
         List<Integer> userIds = new ArrayList<>();
         for (User user : users) {
             userIds.add(user.getId());
         }
+
         // 根据用户id在order表中查询订单
         IPage<Order> orderIPage = orderDao.selectPage(new Page<>(page, size), new LambdaQueryWrapper<Order>().in(Order::getUserId, userIds));
+
         // 判空
         if (orderIPage == null){
             return null;
         }
+
         // 将订单转换为dto
         Page<OrderDto> orderDtoIPage = new Page<>(page, size);
         List<Order> orders = orderIPage.getRecords();
         List<OrderDto> orderDtos = new ArrayList<>();
 
-        // 判断是否降序
-        if (desc != 0){
-            Collections.reverse(orders);
-        }
+        Collections.reverse(orders);
 
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
@@ -174,6 +179,7 @@ public class OrderServiceImpl implements OrderService {
             orderCommodity.setPriceSum(orderCommodity.getPrice().multiply(new BigDecimal(orderCommodity.getCount())));
             orderCommodityDao.insert(orderCommodity);
         }
+
         // 计算订单项总数、购买数量、总价
         order.setId(orderId);
         order.setCount(orderCommodities.length);
@@ -187,16 +193,6 @@ public class OrderServiceImpl implements OrderService {
         order.setPrice(totalPrice);
         orderDao.updateById(order);
         return true;
-    }
-
-    @Override
-    public Boolean insertOrder(Order order) {
-        return orderDao.insert(order) > 0;
-    }
-
-    @Override
-    public Boolean deleteOrderCommodity(Integer id) {
-        return orderCommodityDao.deleteById(id) > 0;
     }
 
     @Override
@@ -214,11 +210,6 @@ public class OrderServiceImpl implements OrderService {
         orderDao.updateById(order);
 
         return orderCommodityDao.updateById(orderCommodity) > 0;
-    }
-
-    @Override
-    public Boolean updateOrder(Order order) {
-        return orderDao.updateById(order) > 0;
     }
 
 

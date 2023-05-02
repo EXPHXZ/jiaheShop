@@ -1,6 +1,6 @@
 package com.jiahe.service;
 
-import com.jiahe.pojo.Commodity;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.pojo.User;
 
 import javax.servlet.http.HttpSession;
@@ -9,6 +9,8 @@ import java.util.List;
 public interface UserService {
     public User checkUser(User user);
 
+//  分页查询
+    public IPage<User> selectAll(Integer current, Integer size);
 
     public Boolean addUser(User user);
 

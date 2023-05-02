@@ -1,7 +1,11 @@
 package com.jiahe.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiahe.dao.UserDao;
+import com.jiahe.dto.OrderDto;
+import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.User;
 import com.jiahe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +30,16 @@ public class UserServiceImpl implements UserService {
         return user1;
     }
 
+//  分页查询
+    @Override
+    public IPage<User> selectAll(Integer current,Integer size){
+        IPage<User> page = new Page<User>(current,size);
+        return userDao.selectPage(page,null);
+    }
+
+//  新增用户
     @Override
     public Boolean addUser(User user) {
-        if (checkUser(user) == null)
-            return false;
-        else
             return userDao.insert(user) > 0;
     }
 
@@ -52,6 +61,7 @@ public class UserServiceImpl implements UserService {
         return userDao.deleteBatchIds(idList) > 0;
     }
 
+//    修改用户信息
     @Override
     public Boolean updateUser(User user) {
         if (userDao.selectById(user.getId()) == null)

@@ -1,348 +1,391 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>订单</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/query.css">
+  <head>
+    <title>订单管理</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="css/query.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/order.css" />
-</head>
-<body>
-<header>
-    <div class="logo">
+  </head>
+  <body>
+    <header>
+      <div class="logo">
         <h1>嘉禾商城</h1>
+      </div>
+    </header>
+
+    <div id="nav">
+      <nav v-if="user.identity === 0">
+        <ul>
+          <li @click="goToCommodity">
+            <a>
+              <i class="fas fa-shopping-bag"></i>
+              商品管理
+            </a>
+          </li>
+          <li @click="goToOrder">
+            <a>
+              <i class="fas fa-list-alt"></i>
+              订单管理
+            </a>
+          </li>
+          <li @click="goToAftermarket">
+            <a>
+              <i class="fas fa-exchange-alt"></i>
+              售后管理
+            </a>
+          </li>
+          <li @click="goToUserManagement">
+            <a>
+              <i class="fas fa-shield-alt"></i>
+              权限管理
+            </a>
+          </li>
+          <li>
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <nav v-else-if="user.identity === 1">
+        <ul>
+          <li @click="goToOrder">
+            <a>
+              <i class="fas fa-list-alt"></i>
+              订单管理
+            </a>
+          </li>
+          <li>
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <nav v-else-if="user.identity === 2">
+        <ul>
+          <li @click="goToCommodity">
+            <a>
+              <i class="fas fa-shopping-bag"></i>
+              商品管理
+            </a>
+          </li>
+          <li>
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <nav v-else-if="user.identity === 3">
+        <ul>
+          <li @click="goToAftermarket">
+            <a>
+              <i class="fas fa-exchange-alt"></i>
+              售后管理
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-</header>
 
-<div id="nav">
-    <nav v-if="user.identity === 0">
-        <ul>
-            <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
-            <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
-            <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-            <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
-            <li><a><i class="fas fa-user"></i>个人中心</a></li>
-        </ul>
-    </nav>
-    <nav v-else-if="user.identity === 1">
-        <ul>
-            <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
-            <li><a><i class="fas fa-user"></i>个人中心</a></li>
-        </ul>
-    </nav>
-    <nav v-else-if="user.identity === 2">
-        <ul>
-            <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
-            <li><a><i class="fas fa-user"></i>个人中心</a></li>
-        </ul>
-    </nav>
-    <nav v-else-if="user.identity === 3">
-        <ul>
-            <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-            <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
-        </ul>
-    </nav>
-</div>
-
-<div id="content" class="content">
-
-    <div class="order-title">
+    <div id="content" class="content">
+      <div class="order-title">
         <h1>订单管理</h1>
-    </div>
+      </div>
 
-    <div class="order-btn" style="">
+      <div class="order-btn" style="">
         <div>
-            <el-button type="success" @click="onCreateOrder()">新增订单</el-button>
+          <el-button type="success" @click="onCreateOrder()">新增订单</el-button>
         </div>
         <div class="order-search11">
-            <div style="line-height: 45px; margin-right: 10px">用户名：</div>
-            <div>
-                <el-input placeholder="请输入关键词" v-model="keyword" class="input-with-select">
-                </el-input>
-            </div>
-            <div>
-                <el-button type="primary" plain @click="onSearchKeyWord()">搜索</el-button>
-            </div>
+          <div style="line-height: 45px; margin-right: 10px">用户名：</div>
+          <div>
+            <el-input placeholder="请输入关键词" v-model="keyword" class="input-with-select"></el-input>
+          </div>
+          <div>
+            <el-button type="primary" plain @click="onSearchKeyWord()">搜索</el-button>
+          </div>
         </div>
-    </div>
-    <div class="order-table">
-        <el-table
-        :data="orderList"
-        style="width: 100%"
-        border
-        :default-sort = "{prop: 'date', order: 'descending'}"
-        >
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              type="index">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="id"
-              label="订单id"
-              sortable
-              min-width="100">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="username"
-              label="用户名"
-              sortable
-              min-width="130">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="count"
-              label="购买种类"
-              sortable
-              min-width="100">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="sum"
-              label="购买数量"
-              sortable
-              min-width="100">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="price"
-              label="订单总价"
-              sortable
-              min-width="100">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="statusText"
-              label="订单状态"
-              sortable
-              min-width="150">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              prop="submitTime"
-              label="创建时间"
-              sortable
-              min-width="180">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    header-align="center"
-              label="操作"
-              min-width="150">
-              <template slot-scope="scope">
-                <el-button type="primary" round @click="handleClick(scope.row)" size="small">查看</el-button>
-                <el-button type="danger" round @click="deleteOrder(scope.row)" size="small">删除</el-button>
-              </template>
-            </el-table-column>
+      </div>
+
+      <div class="order-table">
+        <el-table :data="orderList" style="width: 100%" border :default-sort="{prop: 'date', order: 'descending'}">
+          <el-table-column align="center" header-align="center" type="index"></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="id"
+            label="订单id"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="username"
+            label="用户名"
+            sortable
+            min-width="130"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="count"
+            label="购买种类"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="sum"
+            label="购买数量"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="price"
+            label="订单总价"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="statusText"
+            label="订单状态"
+            sortable
+            min-width="150"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="submitTime"
+            label="创建时间"
+            sortable
+            min-width="180"
+          ></el-table-column>
+          <el-table-column align="center" header-align="center" label="操作" min-width="150">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                round
+                @click="handleClick(scope.row)"
+                size="small"
+              >查看</el-button>
+              <el-button
+                type="danger"
+                round @click="deleteOrder(scope.row)"
+                size="small"
+              >删除</el-button>
+            </template>
+          </el-table-column>
         </el-table>
+      </div>
+
+      <div class="block" style="display: flex; justify-content: center; margin-top: 15px">
+        <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page.sync="pagination.page"
+          :page-size="pagination.size"
+          layout="total, prev, pager, next"
+          :total="pagination.total"
+        ></el-pagination>
+      </div>
     </div>
 
-<div class="block" style="display: flex; justify-content: center; margin-top: 15px">
-    <el-pagination
-      @current-change="handleCurrentChange"
-      :current-page.sync="pagination.page"
-      :page-size="pagination.size"
-      layout="total, prev, pager, next"
-      :total="pagination.total">
-    </el-pagination>
-  </div>
-</div>
+    <script src="js/vue.js"></script>
+    <script src="element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css" />
 
-<script src="js/vue.js"></script>
-<script src="element-ui/lib/index.js"></script>
-<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
-<script src="js/axios-0.18.0.js"></script>
-<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
-
-<script>
-    new Vue({
-        el:"#content",
+    <script>
+      new Vue({
+        el: '#content',
 
         methods: {
-
-            onSearchKeyWord() {
-                this.isSearch = true
-                axios({
-                  url: "/order/selectOrderByUserName",
-                  params: {
-                    userName: this.keyword,
-                    page: +this.pagination.page,
-                    size: +this.pagination.size,
-                    desc: +this.pagination.desc,
-                  }
-                }).then((res) => {
-                    res.data.data.records.forEach((item) => {
-                        item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
-                        if (item.status === 0) {
-                            item.statusText = '正常交易'
-                        } else if (item.status === 1) {
-                            item.statusText = '退货中'
-                        } else if (item.status === 2) {
-                            item.statusText = '有商品已退货'
-                        }
-                        item.price = item.price.toFixed(2) + '元'
-                        item.sum = item.sum + '份'
-                        item.count = item.count + '种'
-                    })
-                  this.orderList = res.data.data.records
-                  this.pagination.total = res.data.data.total
-                })
-                if (this.keyword === '') {
-                  this.isSearch = false
-                  this.selectAll()
-                }
-            },
-
-      handleCurrentChange(val) {
-        this.pagination.page = val
-          if (this.isSearch) {
-              this.onSearchKeyWord()
-          } else {
-              this.selectAll()
-          }
-      },
-          //查询订单列表
-            selectAll() {
+          onSearchKeyWord() {
+            this.isSearch = true
             axios({
-              url: "/order/selectAllOrder",
+              url: '/order/selectOrderByUserName',
+              params: {
+                userName: this.keyword,
+                page: +this.pagination.page,
+                size: +this.pagination.size,
+                desc: +this.pagination.desc,
+              },
+            }).then(res => {
+              res.data.data.records.forEach(item => {
+                item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
+                if (item.status === 0) {
+                  item.statusText = '正常交易'
+                } else if (item.status === 1) {
+                  item.statusText = '退货中'
+                } else if (item.status === 2) {
+                  item.statusText = '有商品已退货'
+                }
+                item.price = item.price.toFixed(2) + '元'
+                item.sum = item.sum + '份'
+                item.count = item.count + '种'
+              })
+              this.orderList = res.data.data.records
+              this.pagination.total = res.data.data.total
+            })
+            if (this.keyword === '') {
+              this.isSearch = false
+              this.pagination.page = 1
+              this.selectAllOrder()
+            }
+          },
+
+          handleCurrentChange(val) {
+            this.pagination.page = val
+            if (this.isSearch) {
+              this.onSearchKeyWord()
+            } else {
+              this.selectAllOrder()
+            }
+          },
+
+          selectAllOrder() {
+            axios({
+              url: '/order/selectAllOrder',
               params: {
                 page: +this.pagination.page,
                 size: +this.pagination.size,
                 desc: +this.pagination.desc,
-              }
-            }).then((res) => {
-                res.data.data.records.forEach((item) => {
-                    item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
-                    if (item.status === 0) {
-                        item.statusText = '正常交易'
-                    } else if (item.status === 1) {
-                        item.statusText = '有商品退货中'
-                    } else if (item.status === 2) {
-                        item.statusText = '有商品已退货'
-                    }
-                    item.price = item.price.toFixed(2) + '元'
-                    item.sum = item.sum + '份'
-                    item.count = item.count + '种'
-                })
+              },
+            }).then(res => {
+              res.data.data.records.forEach(item => {
+                item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
+                if (item.status === 0) {
+                  item.statusText = '正常交易'
+                } else if (item.status === 1) {
+                  item.statusText = '有商品退货中'
+                } else if (item.status === 2) {
+                  item.statusText = '有商品已退货'
+                }
+                item.price = item.price.toFixed(2) + '元'
+                item.sum = item.sum + '份'
+                item.count = item.count + '种'
+              })
               this.orderList = res.data.data.records
               this.pagination.total = res.data.data.total
             })
           },
 
-            onCreateOrder() {
-                // 跳转到新增订单页面，addOrder.html
-                window.location.href = "addOrder.html"
-            },
+          onCreateOrder() {
+            window.location.href = 'addOrder.html'
+          },
 
           handleClick(row) {
-            console.log(row.id);
-            // 跳转到订单详情页面，orderDetail.html
-            window.location.href = "orderDetail.html?id=" + row.id
+            window.location.href = 'orderDetail.html?id=' + row.id
           },
+
           deleteOrder(row) {
             // 询问是否删除
             this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
-              type: 'warning'
-            }).then(() => {
-              // 删除订单
-              axios({
-                url: "/order/deleteOrder",
-                params: {
-                  id: +row.id
-                },
-                method: 'post'
-              }).then((res) => {
-                if (res.data.code === 20021) {
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                  });
-                  // 刷新页面
-                  this.selectAll()
-                } else {
-                  this.$message({
-                    type: 'error',
-                    message: '删除失败!'
-                  });
-                }
+              type: 'warning',
+            })
+              .then(() => {
+                // 删除订单
+                axios({
+                  url: '/order/deleteOrder',
+                  params: {
+                    id: +row.id,
+                  },
+                  method: 'post',
+                }).then(res => {
+                  if (res.data.code === 20021) {
+                    this.$message({
+                      type: 'success',
+                      message: '删除成功!',
+                    })
+                    // 刷新页面
+                    this.selectAllOrder()
+                  } else {
+                    this.$message({
+                      type: 'error',
+                      message: '删除失败!',
+                    })
+                  }
+                })
               })
-            }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: '已取消删除'
-              });
-            });
-          }
-
+              .catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除',
+                })
+              })
+          },
         },
 
-        created(){
-            this.selectAll()
+        created() {
+          this.selectAllOrder()
         },
 
         data() {
           return {
-            currentPage1: 5,
-            currentPage2: 5,
-            currentPage3: 5,
-            currentPage4: 4,
             orderList: [],
             pagination: {
               page: 1,
               size: 5,
               desc: 1,
-              total: 0
+              total: 0,
             },
             keyword: '',
             isSearch: false,
           }
-        }
-    })
+        },
+      })
 
-    new Vue({
-        el:"#nav",
+      new Vue({
+        el: '#nav',
         data() {
-            return {
-                user: {
-                }
-            }
+          return {
+            user: {},
+          }
         },
         created() {
-            const userInfo = window.localStorage.getItem("userInfo")
-            if (userInfo){
-                this.user = JSON.parse(userInfo);
-            }
-            console.log(this.user)
+          const userInfo = window.localStorage.getItem('userInfo')
+          if (userInfo) {
+            this.user = JSON.parse(userInfo)
+          }
+          console.log(this.user)
         },
 
         methods: {
-            goToCommodity(){
-                window.location.href = "commodity.html"
-            },
-            goToAftermarket(){
-                window.location.href = "aftermarket.html"
-            },
-            goToOrder(){
-                window.location.href = "order.html"
-            },
-            goToUserManagement(){
-                window.location.href = "userManagement.html"
-            }
-        }
-    })
-</script>
-
-</body>
+          goToCommodity() {
+            window.location.href = 'commodity.html'
+          },
+          goToAftermarket() {
+            window.location.href = 'aftermarket.html'
+          },
+          goToOrder() {
+            window.location.href = 'order.html'
+          },
+          goToUserManagement() {
+            window.location.href = 'userManagement.html'
+          },
+        },
+      })
+    </script>
+  </body>
 </html>
