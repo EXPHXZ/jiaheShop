@@ -28,25 +28,12 @@ public interface OrderService {
     public IPage<OrderDto> selectOrderByUserName(String userName, Integer page, Integer size, Integer desc);
 
     /**
-     * 新增多个商品项
+     * 新增订单
      * @param orderCommodities
      * @return
      */
     public Boolean insertOrderCommodities(Integer userId, OrderCommodity[] orderCommodities);
 
-    /**
-     * 新增订单
-     * @param order
-     * @return
-     */
-    public Boolean insertOrder(Order order);
-
-    /**
-     * 删除商品项
-     * @param id
-     * @return
-     */
-    public Boolean deleteOrderCommodity(Integer id);
     /**
      * 删除订单
      * @param id
@@ -55,17 +42,11 @@ public interface OrderService {
     public Boolean deleteOrder(Integer id);
 
     /**
-     * 更新商品项
+     * 进行退货操作
      * @param orderCommodity
      * @return
      */
     public Boolean updateOrderCommodity(@RequestParam Integer orderId, OrderCommodity orderCommodity);
-    /**
-     * 更新订单
-     * @param order
-     * @return
-     */
-    public Boolean updateOrder(Order order);
 
 
     public Order searchOrder(Integer orderId);
