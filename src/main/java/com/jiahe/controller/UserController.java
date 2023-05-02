@@ -56,8 +56,8 @@ public class UserController {
     }
 
 //    批量删除数据
-    @PostMapping("/delete")
-    public Result deleteCommodities(@RequestBody List<User> users){
+    @DeleteMapping ("/delete")
+    public Result deleteUsers(@RequestBody List<User> users){
         Boolean flag = userService.deleteUsers(users);
         return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
     }
