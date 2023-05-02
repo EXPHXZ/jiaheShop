@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/jiahe?serverTimezone=UTC
     username: root
-    password: 1234
+    password: windsand123
     type: com.alibaba.druid.pool.DruidDataSource
   main:
     banner-mode: off
@@ -19,4 +19,4 @@ mybatis-plus:
       logic-not-delete-value: 0
       id-type: auto
 server:
-  port: 8081
+  port: 8080
