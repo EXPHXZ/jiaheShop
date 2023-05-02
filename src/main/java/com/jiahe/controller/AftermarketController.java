@@ -3,7 +3,9 @@ package com.jiahe.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jiahe.pojo.Aftermarket;
+import com.jiahe.pojo.Order;
 import com.jiahe.service.AftermarketService;
+import com.jiahe.service.OrderService;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class AftermarketController {
     @Autowired
     AftermarketService aftermarketService;
 
+    @Autowired
+    OrderService orderService;
+
     /**
      * 获取所有的售后信息
      * @return
@@ -36,6 +41,14 @@ public class AftermarketController {
         //获取没有删除的订单列表
         List<Aftermarket> list = aftermarketService.list(
                 new LambdaQueryWrapper<Aftermarket>().eq(Aftermarket::getIsDeleted,0));
+
+        for(Aftermarket aftermarket:list){
+            Integer orderId = aftermarket.getOrderId();
+            Order order = orderService.searchOrder(orderId);
+            aftermarket.setStatus(order.getStatus());
+        }
+
+
         return new Result(Code.SELECT_SUCCESS,list);
     }
 
@@ -69,15 +82,17 @@ public class AftermarketController {
         return new Result(null,Code.UPDATE_FAIL,"修改失败");
     }
 
-    /**
-     * 删除售后信息
-     * @param id
-     * @return
-     */
-    @DeleteMapping("/{id}")
-    public Result deleteCommodity(@PathVariable Integer id){
+
+    @PostMapping("/delete")
+    public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket){
+        Integer id = aftermarket.getId();
+        Integer orderId = aftermarket.getOrderId();
+        //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
+        Order order = orderService.searchOrder(orderId);
+        Boolean flag1 = orderService.updateOrderForAftermarket(order);
+        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderId);
         Boolean flag = aftermarketService.removeById(id);
-        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"删除成功":"删除失败");
+        return new Result(null,flag&&flag1&&flag2? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
     }
 
 }

@@ -147,7 +147,7 @@
             <el-input v-model="searchCommodity.category" placeholder="类别"></el-input>
         </el-form-item>
         <el-form-item label="商品状态">
-            <el-select v-model="searchCommodity.status" placeholder="商品状态">
+            <el-select v-model="searchCommodity.status" placeholder="商品状态" :formatter="status">
                 <el-option label="上架" value="0"></el-option>
                 <el-option label="下架" value="1"></el-option>
             </el-select>
@@ -212,11 +212,10 @@
                     width="100">
             </el-table-column>
             <el-table-column
-                    prop="status"
+                    prop="statusText"
                     label="状态"
                     align="center"
                     width="100"
-                    :formatter="formatState"
             >
             </el-table-column>
             <el-table-column
@@ -283,6 +282,13 @@
             //查询所有数据
             selectAll(){
                 axios.get("/commodity/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
+                    res.data.data.records.forEach((item) => {
+                        if (item.status === 0){
+                            item.statusText = "上架"
+                        }else if (item.status === 1){
+                            item.statusText = "下架"
+                        }
+                    })
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
                     this.pagination.pageSize = res.data.data.size;
@@ -391,14 +397,6 @@
                 this.selectAll();
             },
 
-            //将数据库存的status装换为对应的状态
-            formatState(row,column,cellValue){
-                if (cellValue == "0"){
-                    return "上架";
-                }else if (cellValue == "1"){
-                    return "下架";
-                }
-            }
         },
 
         //钩子函数，进去页面就会执行查询所有
