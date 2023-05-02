@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/userManagement")
 public class UserController {
 
     @Autowired
@@ -49,7 +49,8 @@ public class UserController {
         return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
     }
 
-    @PutMapping
+//  根据用户id查询对应用户信息
+    @PutMapping("/{id}")
     public Result updateUser(@RequestBody User user) throws Exception{
         if (userService.updateUser(user))
             return new Result(null,Code.ADD_SUCCESS,"修改成功");
