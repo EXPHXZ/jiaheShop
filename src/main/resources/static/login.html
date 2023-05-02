@@ -42,7 +42,7 @@
         el:"#app",
         methods:{
             login() {
-                axios.post("/user/login",this.form).then((res) => {
+                axios.post("/userManagement/login",this.form).then((res) => {
                         if (res.data.code == 20051){ //登录成功
                             this.$message.success(res.data.msg);
                             //需要把登录成功的用户信息存储到本地中，类似于存储在session中

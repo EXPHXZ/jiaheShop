@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Result checkUser(@RequestBody User user){
+    public Result checkUser(@RequestBody User user, HttpServletRequest request){
         User user1 = userService.checkUser(user);
+        if (user1 != null){
+            HttpSession session = request.getSession();
+            session.setAttribute("user",user);
+        }
         return new Result(user1,user1 != null?Code.LOGIN_SUCCESS:Code.LOGIN_FAIL,user1 != null?"登录成功":"登录失败，请检查用户名和密码");
     }
 

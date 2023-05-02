@@ -379,19 +379,37 @@
                     pageSize: "8",
                     total: ""
                 },
-
-                goToCommodity(){
-                    window.location.href = "commodity.html"
-                },
-                goToAftermarket(){
-                    window.location.href = "aftermarket.html"
-                },
-                goToOrder(){
-                    window.location.href = "order.html"
-                },
-                goToUserManagement(){
-                    window.location.href = "userManagement.html"
+            }
+        }
+    })
+    new Vue({
+        el:"#nav",
+        data() {
+            return {
+                user: {
                 }
+            }
+        },
+        created() {
+            const userInfo = window.localStorage.getItem("userInfo")
+            if (userInfo){
+                this.user = JSON.parse(userInfo);
+            }
+            console.log(this.user)
+        },
+
+        methods: {
+            goToCommodity(){
+                window.location.href = "commodity.html"
+            },
+            goToAftermarket(){
+                window.location.href = "aftermarket.html"
+            },
+            goToOrder(){
+                window.location.href = "order.html"
+            },
+            goToUserManagement(){
+                window.location.href = "userManagement.html"
             }
         }
     })
