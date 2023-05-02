@@ -51,8 +51,20 @@
         <h1>订单管理</h1>
     </div>
 
-    <div class="order-btn">
-        <el-button type="success" @click="onCreateOrder()">新增订单</el-button>
+    <div class="order-btn" style="">
+        <div>
+            <el-button type="success" @click="onCreateOrder()">新增订单</el-button>
+        </div>
+        <div class="order-search11">
+            <div style="line-height: 45px; margin-right: 10px">用户名：</div>
+            <div>
+                <el-input placeholder="请输入关键词" v-model="keyword" class="input-with-select">
+                </el-input>
+            </div>
+            <div>
+                <el-button type="primary" plain @click="onSearchKeyWord()">搜索</el-button>
+            </div>
+        </div>
     </div>
     <div class="order-table">
         <el-table
@@ -78,7 +90,7 @@
                     align="center"
                     header-align="center"
               prop="username"
-              label="用户"
+              label="用户名"
               sortable
               min-width="130">
             </el-table-column>
@@ -86,7 +98,7 @@
                     align="center"
                     header-align="center"
               prop="count"
-              label="商品种类"
+              label="购买种类"
               sortable
               min-width="100">
             </el-table-column>
@@ -102,7 +114,7 @@
                     align="center"
                     header-align="center"
               prop="price"
-              label="总价"
+              label="订单总价"
               sortable
               min-width="100">
             </el-table-column>
@@ -110,7 +122,7 @@
                     align="center"
                     header-align="center"
               prop="statusText"
-              label="状态"
+              label="订单状态"
               sortable
               min-width="150">
             </el-table-column>
@@ -135,7 +147,7 @@
         </el-table>
     </div>
 
-<div class="block">
+<div class="block" style="display: flex; justify-content: center; margin-top: 15px">
     <el-pagination
       @current-change="handleCurrentChange"
       :current-page.sync="pagination.page"
@@ -158,9 +170,46 @@
 
         methods: {
 
+            onSearchKeyWord() {
+                this.isSearch = true
+                axios({
+                  url: "/order/selectOrderByUserName",
+                  params: {
+                    userName: this.keyword,
+                    page: +this.pagination.page,
+                    size: +this.pagination.size,
+                    desc: +this.pagination.desc,
+                  }
+                }).then((res) => {
+                    res.data.data.records.forEach((item) => {
+                        item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
+                        if (item.status === 0) {
+                            item.statusText = '正常交易'
+                        } else if (item.status === 1) {
+                            item.statusText = '退货中'
+                        } else if (item.status === 2) {
+                            item.statusText = '有商品已退货'
+                        }
+                        item.price = item.price.toFixed(2) + '元'
+                        item.sum = item.sum + '份'
+                        item.count = item.count + '种'
+                    })
+                  this.orderList = res.data.data.records
+                  this.pagination.total = res.data.data.total
+                })
+                if (this.keyword === '') {
+                  this.isSearch = false
+                  this.selectAll()
+                }
+            },
+
       handleCurrentChange(val) {
         this.pagination.page = val
-        this.selectAll()
+          if (this.isSearch) {
+              this.onSearchKeyWord()
+          } else {
+              this.selectAll()
+          }
       },
           //查询订单列表
             selectAll() {
@@ -243,10 +292,10 @@
 
         data() {
           return {
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
+            currentPage1: 5,
+            currentPage2: 5,
+            currentPage3: 5,
+            currentPage4: 4,
             orderList: [],
             pagination: {
               page: 1,
@@ -254,15 +303,8 @@
               desc: 1,
               total: 0
             },
-            tableData: [{
-                id: 1,
-                username: '',
-                price: 0,
-                count: 0,
-                sum: 0,
-                status: '',
-                submitTime: '',
-            }],
+            keyword: '',
+            isSearch: false,
           }
         }
     })
