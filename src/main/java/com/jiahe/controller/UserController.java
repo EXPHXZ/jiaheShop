@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -31,12 +33,20 @@ public class UserController {
             return new Result(null,Code.ADD_FAIL,"添加失败,相同的角色已经存在于数据库中");
     }
 
-    @DeleteMapping("/{user}")
-    public Result deleteUser(@RequestBody User user) throws Exception{
-        if (userService.deleteUser(user))
+//    根据用户id单条删除数据
+    @DeleteMapping("/{id}")
+    public Result deleteUser(@RequestBody Integer id) throws Exception{
+        if (userService.deleteUser(id))
             return new Result(null,Code.ADD_SUCCESS,"删除成功");
         else
             return new Result(null,Code.ADD_FAIL,"删除失败,删除的角色不存在于数据库中");
+    }
+
+//    批量删除数据
+    @PostMapping("/delete")
+    public Result deleteCommodities(@RequestBody List<User> users){
+        Boolean flag = userService.deleteUsers(users);
+        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
     }
 
     @PutMapping

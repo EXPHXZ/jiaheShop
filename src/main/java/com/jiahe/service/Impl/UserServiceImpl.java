@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -32,12 +34,22 @@ public class UserServiceImpl implements UserService {
             return userDao.insert(user) > 0;
     }
 
+//  根据用户id单条删除数据
     @Override
-    public Boolean deleteUser(User user) {
-        if (userDao.selectById(user.getId()) == null)
+    public Boolean deleteUser(Integer id) {
+        if (userDao.selectById(id) == null)
             return false;
         else
-            return userDao.deleteById(user.getId()) > 0;
+            return userDao.deleteById(id) > 0;
+    }
+
+//  批量删除数据
+    @Override
+    public Boolean deleteUsers(List<User> users){
+        List<Integer> idList = new ArrayList<Integer>();
+        for (User user : users)
+            idList.add(user.getId());
+        return userDao.deleteBatchIds(idList) > 0;
     }
 
     @Override

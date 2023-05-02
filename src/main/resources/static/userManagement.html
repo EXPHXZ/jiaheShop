@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>商品页面</title>
+    <title>用户管理页面</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/query.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/userManagement.css">
 </head>
 <body>
 <header>
@@ -19,7 +20,7 @@
             <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
             <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
             <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-            <li><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
+            <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
             <li><a><i class="fas fa-user"></i>个人中心</a></li>
         </ul>
     </nav>
@@ -99,24 +100,31 @@
 
 <!--    搜索表单-->
     <el-form :inline="true" :model="searchUser" class="demo-form-inline">
-        <el-form-item label="用户id">
-            <el-input v-model="searchUser.id" placeholder="用户id"></el-input>
-        </el-form-item>
         <el-form-item label="用户名">
             <el-input v-model="searchUser.userName" placeholder="用户名"></el-input>
         </el-form-item>
+        <el-form-item label="用户id">
+            <el-input v-model="searchUser.id" placeholder="用户id"></el-input>
+        </el-form-item>
         <el-form-item label="权限">
-            <el-input v-model="searchUser.identity" placeholder="权限">
+            <el-select v-model="searchUser.identity" placeholder="权限">
                 <el-option label="总管理员" value="0"></el-option>
                 <el-option label="订单管理员" value="1"></el-option>
                 <el-option label="商品管理员" value="2"></el-option>
                 <el-option label="售后管理员" value="3"></el-option>
-            </el-input>
+            </el-select>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="search">查询</el-button>
         </el-form-item>
     </el-form>
+
+<!--    功能菜单-->
+    <el-row class="">
+        <el-button type="primary" @click="handleAdd">新增用户</el-button>
+        <el-button type="danger" @click="deleteBatchUser">批量删除</el-button>
+        <el-button type="primary" @click="resetAddForm">刷新</el-button>
+    </el-row>
 
 <!--    表格-->
     <template>
@@ -153,7 +161,7 @@
                     label="用户权限"
                     align="center"
                     width="190"
-                    :formatter="formatIdentify">
+                    :formatter="formatIdentity">
             </el-table-column>
             <el-table-column
                     label="操作"
@@ -161,15 +169,12 @@
                     width="200">
                 <template slot-scope="scope">
                     <el-row>
-                        <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
+                        <el-button type="primary" @click="searchUpdate(scope.row)" round>编辑</el-button>
                         <el-button type="danger" @click="deleteUser(scope.row)">删除</el-button>
                     </el-row>
                 </template>
             </el-table-column>
         </el-table>
-        <el-row>
-            <el-button type="primary" @click="handleAdd">添加</el-button>
-        </el-row>
     </template>
 
 </div>
@@ -201,7 +206,7 @@
 
             //查询所有数据
             selectAll(){
-                axios.get("/userMangement/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
+                axios.get("/userManagement/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
                     this.pagination.pageSize = res.data.data.size;
@@ -258,10 +263,27 @@
                 )
             },
 
+            //批量删除数据
+            deleteBatchUser(){
+                axios.post("/userManagement/delete",this.multipleSelection).then((res) => {
+                    if(res.data.code == 20021){//成功
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20022){//失败
+                        this.$message.error(res.data.msg)
+                    }else {//未知异常
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+            },
+
             //回显数据修改
             searchUpdate(row){
                 let id = row.id;
-                axios.get("/UserManagement /"+id).then((res) => {
+                axios.get("/UserManagement/"+id).then((res) => {
                     this.updateUser = res.data.data;
                 })
                 this.dialogVisible1=true;
@@ -352,12 +374,17 @@
                     total: ""
                 },
 
-                //如果需要用到用户信息，创建一个user来进行用户绑定
-                user: {
-                    id:"",
-                    username:"",
-                    password:"",
-                    identity:""
+                goToCommodity(){
+                    window.location.href = "commodity.html"
+                },
+                goToAftermarket(){
+                    window.location.href = "aftermarket.html"
+                },
+                goToOrder(){
+                    window.location.href = "order.html"
+                },
+                goToUserManagement(){
+                    window.location.href = "userManagement.html"
                 }
             }
         }
