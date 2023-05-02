@@ -13,15 +13,35 @@
         <h1>嘉禾商城</h1>
     </div>
 </header>
-<nav>
-    <ul>
-        <li><a href="commodity.html"><i class="fas fa-shopping-bag"></i>商品管理</a></li>
-        <li><a href=""><i class="fas fa-list-alt"></i>订单管理</a></li>
-        <li><a href="aftermarket.html"><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-        <li><a href="UserManagement .html"><i class="fas fa-shield-alt"></i>权限管理</a></li>
-        <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
-    </ul>
-</nav>
+<div id="nav">
+    <nav v-if="user.identity === 0">
+        <ul>
+            <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+            <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
+            <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+            <li><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
+            <li><a><i class="fas fa-user"></i>个人中心</a></li>
+        </ul>
+    </nav>
+    <nav v-else-if="user.identity === 1">
+        <ul>
+            <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
+            <li><a><i class="fas fa-user"></i>个人中心</a></li>
+        </ul>
+    </nav>
+    <nav v-else-if="user.identity === 2">
+        <ul>
+            <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+            <li><a><i class="fas fa-user"></i>个人中心</a></li>
+        </ul>
+    </nav>
+    <nav v-else-if="user.identity === 3">
+        <ul>
+            <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+            <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
+        </ul>
+    </nav>
+</div>
 
 <div id="content" class="content">
 
@@ -86,7 +106,12 @@
             <el-input v-model="searchUser.userName" placeholder="用户名"></el-input>
         </el-form-item>
         <el-form-item label="权限">
-            <el-input v-model="searchUser.identity" placeholder="权限"></el-input>
+            <el-input v-model="searchUser.identity" placeholder="权限">
+                <el-option label="总管理员" value="0"></el-option>
+                <el-option label="订单管理员" value="1"></el-option>
+                <el-option label="商品管理员" value="2"></el-option>
+                <el-option label="售后管理员" value="3"></el-option>
+            </el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="search">查询</el-button>
@@ -127,7 +152,8 @@
                     prop="identity"
                     label="用户权限"
                     align="center"
-                    width="190">
+                    width="190"
+                    :formatter="formatIdentify">
             </el-table-column>
             <el-table-column
                     label="操作"
@@ -142,18 +168,7 @@
             </el-table-column>
         </el-table>
         <el-row>
-            <el-button type="danger" @click="deleteCommodities">批量删除</el-button>
             <el-button type="primary" @click="handleAdd">添加</el-button>
-            <div class="block">
-                <span class="demonstration">显示总数</span>
-                <el-pagination
-                        @current-change="handleCurrentChange"
-                        :current-page.sync= "pagination.current"
-                        :page-size="pagination.pageSize"
-                        layout="total, prev, pager, next"
-                        :total="pagination.total">
-                </el-pagination>
-            </div>
         </el-row>
     </template>
 
@@ -177,8 +192,8 @@
 
             //搜索表单点击查询之后执行的办法
             search() {
-                console.log(this.searchCommodity);
-                axios.post("/commodity/search",this.searchCommodity).then((res) => {
+                console.log(this.searchUser);
+                axios.post("/userManagement/search",this.searchUser).then((res) => {
                     this.tableData = res.data.data;
                     this.$message.success(res.data.msg)
                 })
@@ -186,7 +201,7 @@
 
             //查询所有数据
             selectAll(){
-                axios.get("/commodity/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
+                axios.get("/userMangement/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
                     this.pagination.pageSize = res.data.data.size;
@@ -202,12 +217,12 @@
 
             //重置添加表单
             resetAddForm(){
-                this.addCommodity = {}
+                this.addUser = {}
             },
 
             //添加表单确定添加后执行的办法
             add() {
-                axios.post("/commodity",this.addCommodity).then((res) => {
+                axios.post("/userManagement",this.addUser).then((res) => {
                     if(res.data.code == 20011){//添加成功的情况
                         this.dialogVisible = false;
                         this.$message.success(res.data.msg)
@@ -218,7 +233,6 @@
                         this.$message.error(res.data.msg)
                         this.resetAddForm();
                     }
-
                 }).finally(
                     ()=>{
                         this.selectAll();
@@ -227,29 +241,12 @@
             },
 
             //删除单条数据
-            deleteCommodity(row) {
+            deleteUser(row) {
                 let id = row.id;
-                axios.delete("/commodity/"+id).then((res) => {
-                    if(res.data.code == 20021){//成功
+                axios.delete("/userManagement/"+id).then((res) => {
+                    if(res.data.code === 20021){//成功
                         this.$message.success(res.data.msg)
-                    }else if (res.data.code == 20022){//失败
-                        this.$message.error(res.data.msg)
-                    }else {//未知异常
-                        this.$message.error(res.data.msg)
-                    }
-                }).finally(
-                    ()=>{
-                        this.selectAll();
-                    }
-                )
-            },
-
-            //批量删除数据
-            deleteCommodities(){
-                axios.post("/commodity/delete",this.multipleSelection).then((res) => {
-                    if(res.data.code == 20021){//成功
-                        this.$message.success(res.data.msg)
-                    }else if (res.data.code == 20022){//失败
+                    }else if (res.data.code === 20022){//失败
                         this.$message.error(res.data.msg)
                     }else {//未知异常
                         this.$message.error(res.data.msg)
@@ -272,7 +269,7 @@
 
             //更新数据
             update(){
-                axios.put("/commodity",this.updateCommodity).then((res) => {
+                axios.put("/userManagement",this.updateUser).then((res) => {
                     if(res.data.code == 20041){
                         this.$message.success(res.data.msg)
                     }else if (res.data.code == 20042){
@@ -295,13 +292,18 @@
                 this.selectAll();
             },
 
-            //将数据库存的status装换为对应的状态
-            formatState(row,column,cellValue){
+            //将数据库存User表存的identify装换为对应的状态
+            formatIdentify(row,column,cellValue){
                 if (cellValue == "0"){
-                    return "上架";
+                    return "总管理员";
                 }else if (cellValue == "1"){
-                    return "下架";
+                    return "订单管理员";
+                }else if (cellValue == "2"){
+                    return "商品管理员";
+                }else if (cellValue == "3"){
+                    return "售后管理员";
                 }
+
             }
         },
 
@@ -346,7 +348,7 @@
                 //分页所需数据
                 pagination: {
                     current: "1",
-                    pageSize: "5",
+                    pageSize: "8",
                     total: ""
                 },
 
