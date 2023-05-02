@@ -226,7 +226,9 @@
                     if (item.status === 0) {
                         item.statusText = '正常交易'
                     } else if (item.status === 1) {
-                        item.statusText = '有商品退货'
+                        item.statusText = '有商品退货中'
+                    } else if (item.status === 2) {
+                        item.statusText = '有商品已退货'
                     }
                     item.price = item.price.toFixed(2) + '元'
                     item.sum = item.sum + '份'
