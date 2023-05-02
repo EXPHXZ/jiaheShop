@@ -4,7 +4,6 @@ package com.jiahe.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Aftermarket;
-import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
 import com.jiahe.service.AftermarketService;
 import com.jiahe.service.OrderService;
@@ -62,16 +61,6 @@ public class OrderController {
     }
 
     /**
-     * 根据id删除订单项
-     * @param id
-     */
-    @PostMapping("/deleteOrderCommodity")
-    public Result deleteOrderCommodity(@RequestParam Integer id){
-        Boolean flag = orderService.deleteOrderCommodity(id);
-        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"删除成功":"删除失败");
-    }
-
-    /**
      * 根据id删除订单
      * @param id
      */
@@ -82,7 +71,7 @@ public class OrderController {
     }
 
     /**
-     * 根据id修改订单项
+     * 进行退货操作
      * 使用Json的方式传递参数
      * @param orderCommodity
      */
@@ -97,18 +86,7 @@ public class OrderController {
     }
 
     /**
-     * 根据id修改订单
-     * 使用Json的方式传递参数
-     * @param order
-     */
-    @PostMapping("/updateOrder")
-    public Result updateOrder(@RequestBody Order order){
-        Boolean flag = orderService.updateOrder(order);
-        return new Result(null,flag? Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
-    }
-
-    /**
-     * 新增多条订单项
+     * 新增订单
      * 使用Json的方式传递参数，订单项对象数组
      * @param orderCommodities
      */
@@ -116,16 +94,5 @@ public class OrderController {
     public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId){
         Boolean flag = orderService.insertOrderCommodities(userId, orderCommodities);
         return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
-    }
-
-    /**
-     * 新增订单
-     * 使用Json的方式传递参数
-     * @param order
-     */
-    @PostMapping("/insertOrder")
-    public Result insertOrder(@RequestBody Order order){
-        Boolean flag = orderService.insertOrder(order);
-        return new Result(order.getId(),flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
 }
