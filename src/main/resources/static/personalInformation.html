@@ -15,8 +15,7 @@
             </div>
         </header>
 
-        <div id = "nav">
-            <nav v-if="user.identity === 0">
+        <nav>
                 <ul>
                     <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
                     <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
@@ -25,72 +24,105 @@
                     <li @click="goToPersonalInformation"><a><i class="fas fa-user"></i>个人中心</a></li>
                 </ul>
             </nav>
-            <nav v-else-if="user.identity === 1">
-                <ul>
-                    <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
-                    <li><a><i class="fas fa-user"></i>个人中心</a></li>
-                </ul>
-            </nav>
-            <nav v-else-if="user.identity === 2">
-                <ul>
-                    <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
-                    <li><a><i class="fas fa-user"></i>个人中心</a></li>
-                </ul>
-            </nav>
-            <nav v-else-if="user.identity === 3">
-                <ul>
-                    <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-                    <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
-                </ul>
-            </nav>
-        </div>
 
         <div id="content" class="content">
-        <!--    添加表单-->
-            <el-dialog
-                    title="添加商品"
-                    :visible.sync="dialogVisible"
-                    width="50%"
+
+
+
+            <!--    表格-->
+            <template>
+                <el-table
+                        :data="tableData"
+                        border
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange">
+                    <el-table-column
+                            type="selection"
+                            width="45">
+                    </el-table-column>
+                    <el-table-column
+                            prop="id"
+                            label="商品id"
+                            align="center"
+                            width="50"
                     >
-                <el-form ref="form" :model="addCommodity" label-width="80px">
-                    <el-form-item label="商品名">
-                        <el-input v-model="addCommodity.commodityName"></el-input>
-                    </el-form-item>
-                    <el-form-item label="简单描述">
-                        <el-input type="textarea" v-model="addCommodity.simpleDescription"></el-input>
-                    </el-form-item>
-                    <el-form-item label="详细描述">
-                        <el-input type="textarea" v-model="addCommodity.detailedDescription"></el-input>
-                    </el-form-item>
-                    <el-form-item label="规格">
-                        <el-select v-model="addCommodity.size" placeholder="请选择规格">
-                            <el-option label="小" value="小"></el-option>
-                            <el-option label="中" value="中"></el-option>
-                            <el-option label="大" value="大"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="分类">
-                        <el-input v-model="addCommodity.category"></el-input>
-                    </el-form-item>
-                    <el-form-item label="价格">
-                        <el-input v-model="addCommodity.price"></el-input>
-                    </el-form-item>
-                    <el-form-item label="商品状态">
-                        <el-select v-model="addCommodity.status" placeholder="请选择商品状态">
-                            <el-option label="上架" value="0"></el-option>
-                            <el-option label="下架" value="1"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="余量">
-                        <el-input v-model="addCommodity.remnant"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="add">确定添加</el-button>
-                        <el-button @click="dialogVisible = false">取消</el-button>
-                    </el-form-item>
-                </el-form>
-          </span>
-            </el-dialog>
+                    </el-table-column>
+                    <el-table-column
+                            prop="commodityName"
+                            label="商品名"
+                            align="center"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            prop="simpleDescription"
+                            label="商品简述"
+                            align="center"
+                            width="190">
+                    </el-table-column>
+                    <el-table-column
+                            prop="detailedDescription"
+                            label="详细描述"
+                            align="center"
+                            width="190">
+                    </el-table-column>
+                    <el-table-column
+                            prop="size"
+                            label="规格"
+                            align="center"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            prop="category"
+                            label="类别"
+                            align="center"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            prop="price"
+                            label="价格"
+                            align="center"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            prop="statusText"
+                            label="状态"
+                            align="center"
+                            width="100"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            prop="remnant"
+                            label="余量"
+                            align="center"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            label="操作"
+                            align="center"
+                            width="200">
+                        <template slot-scope="scope">
+                            <el-row>
+                                <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
+                                <el-button type="danger" @click="deleteCommodity(scope.row)">删除</el-button>
+                            </el-row>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-row>
+                    <el-button type="danger" @click="deleteCommodities">批量删除</el-button>
+                    <el-button type="primary" @click="handleAdd">添加</el-button>
+                    <div class="block">
+                        <span class="demonstration">显示总数</span>
+                        <el-pagination
+                                @current-change="handleCurrentChange"
+                                :current-page.sync= "pagination.current"
+                                :page-size="pagination.pageSize"
+                                layout="total, prev, pager, next"
+                                :total="pagination.total">
+                        </el-pagination>
+                    </div>
+                </el-row>
+            </template>
         </div>
 
         <script src="js/vue.js"></script>
@@ -102,6 +134,183 @@
             new Vue({
                 el:"#content",
 
+                methods: {
+                    //复选框选中之后执行的办法
+                    handleSelectionChange(val) {
+                        this.multipleSelection = val;
+                        console.log(this.multipleSelection)
+                    },
+
+                    //搜索表单点击查询之后执行的办法
+                    search() {
+                        console.log(this.searchCommodity);
+                        axios.post("/commodity/search",this.searchCommodity).then((res) => {
+                            this.tableData = res.data.data;
+                            this.$message.success(res.data.msg)
+                        })
+                    },
+
+                    //查询所有数据
+                    selectAll(){
+                        axios.get("/commodity/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
+                            res.data.data.records.forEach((item) => {
+                                if (item.status === 0){
+                                    item.statusText = "上架"
+                                }else if (item.status === 1){
+                                    item.statusText = "下架"
+                                }
+                            })
+                            this.tableData = res.data.data.records;
+                            this.pagination.total = res.data.data.total;
+                            this.pagination.pageSize = res.data.data.size;
+                            this.pagination.current = res.data.data.current;
+                        })
+                    },
+
+                    //点击添加按钮然后弹出添加框
+                    handleAdd(){
+                        this.dialogVisible = true
+                        this.resetAddForm()
+                    },
+
+                    //重置添加表单
+                    resetAddForm(){
+                        this.addCommodity = {}
+                    },
+
+                    //添加表单确定添加后执行的办法
+                    add() {
+                        axios.post("/commodity",this.addCommodity).then((res) => {
+                            if(res.data.code == 20011){//添加成功的情况
+                                this.dialogVisible = false;
+                                this.$message.success(res.data.msg)
+                            }else if (res.data.code == 20012){//添加失败的情况
+                                this.$message.error(res.data.msg)
+                                this.resetAddForm();
+                            }else {//出现位置异常时
+                                this.$message.error(res.data.msg)
+                                this.resetAddForm();
+                            }
+
+                        }).finally(
+                            ()=>{
+                                this.selectAll();
+                            }
+                        )
+                    },
+
+                    //删除单条数据
+                    deleteCommodity(row) {
+                        let id = row.id;
+                        axios.delete("/commodity/"+id).then((res) => {
+                            if(res.data.code == 20021){//成功
+                                this.$message.success(res.data.msg)
+                            }else if (res.data.code == 20022){//失败
+                                this.$message.error(res.data.msg)
+                            }else {//未知异常
+                                this.$message.error(res.data.msg)
+                            }
+                        }).finally(
+                            ()=>{
+                                this.selectAll();
+                            }
+                        )
+                    },
+
+                    //批量删除数据
+                    deleteCommodities(){
+                        axios.post("/commodity/delete",this.multipleSelection).then((res) => {
+                            if(res.data.code == 20021){//成功
+                                this.$message.success(res.data.msg)
+                            }else if (res.data.code == 20022){//失败
+                                this.$message.error(res.data.msg)
+                            }else {//未知异常
+                                this.$message.error(res.data.msg)
+                            }
+                        }).finally(
+                            ()=>{
+                                this.selectAll();
+                            }
+                        )
+                    },
+
+                    //回显数据修改
+                    searchUpdate(row){
+                        let id = row.id;
+                        axios.get("/commodity/"+id).then((res) => {
+                            this.updateCommodity = res.data.data;
+                        })
+                        this.dialogVisible1=true;
+                    },
+
+                    //更新数据
+                    update(){
+                        axios.put("/commodity",this.updateCommodity).then((res) => {
+                            if(res.data.code == 20041){
+                                this.$message.success(res.data.msg)
+                            }else if (res.data.code == 20042){
+                                this.$message.error(res.data.msg)
+                            }else {
+                                this.$message.error(res.data.msg)
+                            }
+                        }).finally(
+                            ()=>{
+                                this.selectAll();
+                            }
+                        )
+                        this.dialogVisible1 = false;
+                    },
+
+                    //分页换页
+                    handleCurrentChange(val) {
+                        console.log(`当前页: ${val}`);
+                        this.pagination.current = val;
+                        this.selectAll();
+                    },
+
+                },
+
+                //钩子函数，进去页面就会执行查询所有
+                created(){
+                    this.selectAll()
+                },
+
+
+                data() {
+                    return {
+                        //添加弹窗默认为不可见
+                        dialogVisible: false,
+
+                        //修改弹窗默认不可见
+                        dialogVisible1: false,
+
+                        //添加表单
+                        addCommodity: {
+                        },
+
+                        //修改表单
+                        updateCommodity: {
+                        },
+
+                        //搜索表单数据
+                        searchCommodity: {
+                        },
+
+                        //表格数据
+                        tableData: [],
+
+                        //复选框选中的数据集合
+                        multipleSelection:[],
+
+                        //分页所需数据
+                        pagination: {
+                            current: "1",
+                            pageSize: "5",
+                            total: ""
+                        },
+
+                    }
+                }
             })
 
             new Vue({
@@ -112,10 +321,9 @@
                         }
                     }
                 },
-
                 created() {
                     const userInfo = window.localStorage.getItem("userInfo")
-                    if (userInfo) {
+                    if (userInfo){
                         this.user = JSON.parse(userInfo);
                     }
                     console.log(this.user)
