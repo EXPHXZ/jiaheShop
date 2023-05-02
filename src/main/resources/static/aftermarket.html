@@ -19,8 +19,8 @@
             <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
             <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
             <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-            <li><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
-            <li @click="goToPersonalInformation"><a><i class="fas fa-user"></i>个人中心</a></li>
+            <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
+            <li><a><i class="fas fa-user"></i>个人中心</a></li>
         </ul>
     </nav>
     <nav v-else-if="user.identity === 1">
@@ -45,7 +45,7 @@
 
 <div id="content" class="content">
 
-    <!--    添加表单-->
+    <!--&lt;!&ndash;    添加表单&ndash;&gt;
     <el-dialog
             title="填写售后信息"
             :visible.sync="dialogVisible"
@@ -62,17 +62,14 @@
                 <el-button @click="dialogVisible = false">取消</el-button>
             </el-form-item>
         </el-form>
-    </el-dialog>
+    </el-dialog>-->
 
-    <!--    添加表单-->
+    <!--   修改表单-->
     <el-dialog
             title="修改售后信息"
             :visible.sync="dialogVisible1"
             width="50%">
         <el-form>
-            <el-form-item label="订单id">
-                <el-input v-model="aftermarket.orderId"></el-input>
-            </el-form-item>
             <el-form-item label="原因">
                 <el-input v-model="aftermarket.cause"></el-input>
             </el-form-item>
@@ -107,19 +104,21 @@
                     align="center">
             </el-table-column>
             <el-table-column
+                    prop="statusText"
+                    label="状态"
+                    align="center">
+            </el-table-column>
+            <el-table-column
                     label="操作"
                     align="center">
                 <template slot-scope="scope">
                     <el-row>
                         <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
-                        <el-button type="danger" @click="deleteAftermarket(scope.row)">删除</el-button>
+                        <el-button type="danger" @click="handleReturn(scope.row)">处理退货</el-button>
                     </el-row>
                 </template>
             </el-table-column>
         </el-table>
-        <el-row>
-            <el-button type="primary" @click="handleAdd">添加</el-button>
-        </el-row>
     </template>
 
 </div>
@@ -137,19 +136,28 @@
             //查询所有数据
             selectAll(){
                 axios.get("/aftermarket/getAll").then((res) => {
+                    res.data.data.forEach((item => {
+                            if (item.status === 1){
+                                item.statusText = "退货中"
+                            }else if (item.status === 2){
+                                item.statusText ="已处理"
+                            }
+                        }
+                    ))
                     this.marketList = res.data.data;
+
                 })
             },
-            //点击添加按钮然后弹出添加框
+            /*//点击添加按钮然后弹出添加框
             handleAdd(){
                 this.dialogVisible = true
                 this.resetAddForm()
-            },
-            //重置添加表单
+            },*/
+            /*//重置添加表单
             resetAddForm(){
                 this.aftermarket = {}
-            },
-            //添加表单确定添加后执行的办法
+            },*/
+            /*//添加表单确定添加后执行的办法
             add() {
                 axios.post("/aftermarket/add",this.aftermarket).then((res) => {
                     if(res.data.code == 20011){//添加成功的情况
@@ -167,12 +175,12 @@
                         this.selectAll();
                     }
                 )
-            },
+            },*/
 
             //删除单条数据
-            deleteAftermarket(row) {
-                let id = row.id;
-                axios.delete("/aftermarket/"+id).then((res) => {
+            handleReturn(row) {
+                this.returnList = row
+                axios.post("/aftermarket/delete",this.returnList).then((res) => {
                     if(res.data.code == 20021){//成功
                         this.$message.success(res.data.msg)
                     }else if (res.data.code == 20022){//失败
@@ -220,8 +228,8 @@
 
         data() {
             return {
-                //添加弹窗默认为不可见
-                dialogVisible: false,
+                /*//添加弹窗默认为不可见
+                dialogVisible: false,*/
 
                 dialogVisible1:false,
 
@@ -232,13 +240,7 @@
 
                 marketList:[],
 
-                //如果需要用到用户信息，创建一个user来进行用户绑定
-                user: {
-                    id:"",
-                    username:"",
-                    password:"",
-                    identity:""
-                }
+                returnList:{}
             }
         }
     })
@@ -269,8 +271,8 @@
             goToOrder(){
                 window.location.href = "order.html"
             },
-            goToPersonalInformation() {
-                window.location.href = "personalInformation.html"
+            goToUserManagement(){
+                window.location.href = "userManagement.html"
             }
         }
     })

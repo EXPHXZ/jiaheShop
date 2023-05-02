@@ -113,10 +113,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public IPage<OrderDto> selectOrderByUserName(String userName, Integer page, Integer size, Integer desc) {
+    public IPage<OrderDto> selectOrderByUserName(String username, Integer page, Integer size, Integer desc) {
         // 根据userName在user表中模糊查询，查询对应的所有用户
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(User::getUsername,userName);
+        wrapper.like(User::getUsername,username);
         List<User> users = userDao.selectList(wrapper);
         // 判空
         if (users.isEmpty()){
@@ -220,6 +220,39 @@ public class OrderServiceImpl implements OrderService {
     public Boolean updateOrder(Order order) {
         return orderDao.updateById(order) > 0;
     }
+
+
+    //售后模块用的order相关办法
+    //查询售后orderId所对应的订单信息
+    @Override
+    public Order searchOrder(Integer orderId) {
+        Order order = orderDao.selectById(orderId);
+        return order;
+    }
+
+    //处理售后订单对应的状态，将订单状态为1(退货中)的订单改为0(正常)
+    @Override
+    public Boolean updateOrderForAftermarket(Order order) {
+        order.setStatus(0);
+        return orderDao.updateById(order) > 0;
+    }
+
+    //将订单对应的订单项的状态也处理一下，改为2
+    @Override
+    public Boolean updateOrderDetailForAftermarket(Integer orderId) {
+        LambdaQueryWrapper<OrderCommodity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(OrderCommodity::getOrderId,orderId);
+        wrapper.eq(OrderCommodity::getStatus,1);
+        List<OrderCommodity> orderCommodities = orderCommodityDao.selectList(wrapper);
+
+        for(OrderCommodity orderCommodity:orderCommodities){
+            orderCommodity.setStatus(2);
+            orderCommodityDao.updateById(orderCommodity);
+        }
+
+        return true;
+    }
+
 
 
 }

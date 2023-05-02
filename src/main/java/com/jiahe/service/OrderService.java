@@ -66,4 +66,12 @@ public interface OrderService {
      * @return
      */
     public Boolean updateOrder(Order order);
+
+
+    public Order searchOrder(Integer orderId);
+
+    public Boolean updateOrderForAftermarket(Order order);
+
+    public Boolean updateOrderDetailForAftermarket(Integer orderId);
+
 }

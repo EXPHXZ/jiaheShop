@@ -45,12 +45,13 @@ public class CommodityServiceImpl implements CommodityService {
         return commodityDao.updateById(commodity) > 0;
     }
 
+
     @Override
     public List<Commodity> searchCommodity(Commodity commodity) {
         LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(commodity.getCommodityName() != null,Commodity::getCommodityName,commodity.getCommodityName());
-        wrapper.eq(commodity.getCategory() != null,Commodity::getCategory,commodity.getCategory());
-        wrapper.eq(commodity.getStatus() != null,Commodity::getStatus,commodity.getStatus());
+        wrapper.like(commodity.getCommodityName() != null,Commodity::getCommodityName,commodity.getCommodityName());
+        wrapper.like(commodity.getCategory() != null,Commodity::getCategory,commodity.getCategory());
+        wrapper.like(commodity.getStatus() != null,Commodity::getStatus,commodity.getStatus());
         List<Commodity> commodities = commodityDao.selectList(wrapper);
         return commodities;
     }
