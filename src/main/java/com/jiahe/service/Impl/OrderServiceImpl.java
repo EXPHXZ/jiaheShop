@@ -113,10 +113,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public IPage<OrderDto> selectOrderByUserName(String userName, Integer page, Integer size, Integer desc) {
+    public IPage<OrderDto> selectOrderByUserName(String username, Integer page, Integer size, Integer desc) {
         // 根据userName在user表中模糊查询，查询对应的所有用户
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(User::getUsername,userName);
+        wrapper.like(User::getUsername,username);
         List<User> users = userDao.selectList(wrapper);
         // 判空
         if (users.isEmpty()){

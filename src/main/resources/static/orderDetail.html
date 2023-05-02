@@ -129,11 +129,7 @@
     </div>
 
     <div class="order-btn2">
-        <el-button
-                type="primary"
-                round
-                @click="goBack()"
-        >返回</el-button>
+        <el-button type="primary" round @click="goBack()">返回</el-button>
     </div>
 
 </div>
@@ -168,7 +164,9 @@
                     if (item.status === 0) {
                         item.statusText = '正常交易'
                     } else if (item.status === 1) {
-                        item.statusText = '已退货'
+                        item.statusText = '正在退货'
+                    } else if (item.status === 2) {
+                        item.statusText = '退货成功'
                     }
                     item.price = item.price.toFixed(2) + '元'
                     item.priceSum = item.priceSum.toFixed(2) + '元'
@@ -226,43 +224,11 @@
                         message: '已取消退货'
                     });
                 });
-                // axios({
-                //     url: "/order/updateOrderCommodity",
-                //     params: {
-                //         orderId: this.orderId
-                //     },
-                //     data: {
-                //         id: id,
-                //         status: 1
-                //     },
-                //     method: "post"
-                // }).then((res) => {
-                //     console.log(res.data.code)
-                //     if (res.data.code !== 20042) {
-                //         this.$message({
-                //             message: "退货成功",
-                //             type: "success"
-                //         })
-                //         this.selectOrderDetail(this.orderId)
-                //     } else {
-                //         this.$message({
-                //             message: "退货失败",
-                //             type: "error"
-                //         })
-                //     }
-                // })
             }
 
         },
 
         created(){
-            //如果数据操作中需要用到用户信息，那需要获取登录之后存储在本地的用户信息
-            // const userInfo = window.localStorage.getItem("userInfo")
-            // if (userInfo){
-            //     this.user = JSON.parse(userInfo);
-            // }
-            // console.log(this.user)
-            // 获取上一页传递过来的参数
             const params = window.location.search
             const id = params.split("=")[1]
             this.orderId = id
@@ -270,20 +236,6 @@
         },
 
         data() {
-            // this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
-            //     this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
-            //     this.orderInfo.sum = this.orderInfo.sum + '份'
-            //     this.orderInfo.count = this.orderInfo.count + '种'
-            //     this.orderInfo.orderCommodityList.forEach((item) => {
-            //         if (item.status === 0) {
-            //             item.statusText = '正常交易'
-            //         } else if (item.status === 1) {
-            //             item.statusText = '已退货'
-            //         }
-            //         item.price = item.price.toFixed(2) + '元'
-            //         item.priceSum = item.priceSum.toFixed(2) + '元'
-            //         item.count = item.count + '份'
-            //     })
           return {
             orderInfo: {
                 submitTime: "2023-01-01 00:00:00",

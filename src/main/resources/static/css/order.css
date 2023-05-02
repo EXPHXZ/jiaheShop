@@ -11,8 +11,9 @@
 }
 .order-btn {
     display: flex;
-    justify-content: end;
-    padding-right: 130px;
+    justify-content: space-between;
+    padding-right: 100px;
+    padding-left: 100px;
     margin-bottom: 10px;
 }
 .order-btn2 {
@@ -43,4 +44,28 @@
 .order-input {
     margin-left: 20px;
     margin-right: 20px;
+}
+
+/*.el-select .el-input {*/
+/*width: 130px;*/
+/*}*/
+.input-with-select .el-input-group__prepend {
+background-color: #fff;
+}
+.order-search11 {
+    display: flex;
+    justify-content: start;
+}
+.order-info {
+    display: flex;
+    justify-content: start;
+    padding-left: 16%;
+    align-items: center;
+    width: 100%;
+    margin: 10px 0;
+}
+.order-info-item {
+    width: 25%;
+    font-size: 16px;
+    font-weight: bold;
 }
