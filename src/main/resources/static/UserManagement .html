@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>商品页面</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/query.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <div class="logo">
+        <h1>嘉禾商城</h1>
+    </div>
+</header>
+<nav>
+    <ul>
+        <li><a href="commodity.html"><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+        <li><a href=""><i class="fas fa-list-alt"></i>订单管理</a></li>
+        <li><a href="aftermarket.html"><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+        <li><a href="UserManagement .html"><i class="fas fa-shield-alt"></i>权限管理</a></li>
+        <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
+    </ul>
+</nav>
+
+<div id="content" class="content">
+
+<!--    添加表单-->
+    <el-dialog
+            title="添加用户"
+            :visible.sync="dialogVisible"
+            width="50%"
+            >
+        <el-form ref="form" :model="addUser" label-width="80px">
+            <el-form-item label="用户名">
+                <el-input v-model="addUser.userName"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="addUser.password"></el-input>
+            </el-form-item>
+            <el-form-item label="权限">
+                <el-select v-model="addUser.identity" placeholder="请选择权限">
+                    <!--0-总管理；1-订单管理员；2-商品管理员；3-售后管理员-->
+                    <el-option label="总管理员" value="0"></el-option>
+                    <el-option label="订单管理员" value="1"></el-option>
+                    <el-option label="商品管理员" value="2"></el-option>
+                    <el-option label="售后管理员" value="3"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+  </span>
+    </el-dialog>
+
+<!--    修改表单-->
+    <el-dialog
+            title="修改用户"
+            :visible.sync="dialogVisible1"
+            width="50%"
+    >
+        <el-form ref="form" :model="updateUser" label-width="80px">
+            <el-form-item label="用户名">
+                <el-input v-model="updateUser.userName"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+                <el-input v-model="updateUser.password"></el-input>
+            </el-form-item>
+            <el-form-item label="权限">
+                <el-select v-model="updateUser.identity" placeholder="请选择权限">
+                    <!--0-总管理；1-订单管理员；2-商品管理员；3-售后管理员-->
+                    <el-option label="总管理员" value="0"></el-option>
+                    <el-option label="订单管理员" value="1"></el-option>
+                    <el-option label="商品管理员" value="2"></el-option>
+                    <el-option label="售后管理员" value="3"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        </span>
+    </el-dialog>
+
+<!--    搜索表单-->
+    <el-form :inline="true" :model="searchUser" class="demo-form-inline">
+        <el-form-item label="用户id">
+            <el-input v-model="searchUser.id" placeholder="用户id"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名">
+            <el-input v-model="searchUser.userName" placeholder="用户名"></el-input>
+        </el-form-item>
+        <el-form-item label="权限">
+            <el-input v-model="searchUser.identity" placeholder="权限"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="search">查询</el-button>
+        </el-form-item>
+    </el-form>
+
+<!--    表格-->
+    <template>
+        <el-table
+                :data="tableData"
+                border
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+            <el-table-column
+                    type="selection"
+                    align="center"
+                    width="45">
+            </el-table-column>
+            <el-table-column
+                    prop="id"
+                    label="用户id"
+                    align="center"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    prop="userName"
+                    label="用户名"
+                    align="center"
+                    width="100">
+            </el-table-column>
+            <el-table-column
+                    prop="password"
+                    label="用户密码"
+                    align="center"
+                    width="190">
+            </el-table-column>
+            <el-table-column
+                    prop="identity"
+                    label="用户权限"
+                    align="center"
+                    width="190">
+            </el-table-column>
+            <el-table-column
+                    label="操作"
+                    align="center"
+                    width="200">
+                <template slot-scope="scope">
+                    <el-row>
+                        <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
+                        <el-button type="danger" @click="deleteUser(scope.row)">删除</el-button>
+                    </el-row>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-row>
+            <el-button type="danger" @click="deleteCommodities">批量删除</el-button>
+            <el-button type="primary" @click="handleAdd">添加</el-button>
+            <div class="block">
+                <span class="demonstration">显示总数</span>
+                <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page.sync= "pagination.current"
+                        :page-size="pagination.pageSize"
+                        layout="total, prev, pager, next"
+                        :total="pagination.total">
+                </el-pagination>
+            </div>
+        </el-row>
+    </template>
+
+</div>
+
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+
+<script>
+    new Vue({
+        el:"#content",
+
+        methods: {
+            //复选框选中之后执行的办法
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+                console.log(this.multipleSelection)
+            },
+
+            //搜索表单点击查询之后执行的办法
+            search() {
+                console.log(this.searchCommodity);
+                axios.post("/commodity/search",this.searchCommodity).then((res) => {
+                    this.tableData = res.data.data;
+                    this.$message.success(res.data.msg)
+                })
+            },
+
+            //查询所有数据
+            selectAll(){
+                axios.get("/commodity/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
+                    this.tableData = res.data.data.records;
+                    this.pagination.total = res.data.data.total;
+                    this.pagination.pageSize = res.data.data.size;
+                    this.pagination.current = res.data.data.current;
+                })
+            },
+
+            //点击添加按钮然后弹出添加框
+            handleAdd(){
+                this.dialogVisible = true
+                this.resetAddForm()
+            },
+
+            //重置添加表单
+            resetAddForm(){
+                this.addCommodity = {}
+            },
+
+            //添加表单确定添加后执行的办法
+            add() {
+                axios.post("/commodity",this.addCommodity).then((res) => {
+                    if(res.data.code == 20011){//添加成功的情况
+                        this.dialogVisible = false;
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20012){//添加失败的情况
+                        this.$message.error(res.data.msg)
+                        this.resetAddForm();
+                    }else {//出现位置异常时
+                        this.$message.error(res.data.msg)
+                        this.resetAddForm();
+                    }
+
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+            },
+
+            //删除单条数据
+            deleteCommodity(row) {
+                let id = row.id;
+                axios.delete("/commodity/"+id).then((res) => {
+                    if(res.data.code == 20021){//成功
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20022){//失败
+                        this.$message.error(res.data.msg)
+                    }else {//未知异常
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+            },
+
+            //批量删除数据
+            deleteCommodities(){
+                axios.post("/commodity/delete",this.multipleSelection).then((res) => {
+                    if(res.data.code == 20021){//成功
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20022){//失败
+                        this.$message.error(res.data.msg)
+                    }else {//未知异常
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+            },
+
+            //回显数据修改
+            searchUpdate(row){
+                let id = row.id;
+                axios.get("/UserManagement /"+id).then((res) => {
+                    this.updateUser = res.data.data;
+                })
+                this.dialogVisible1=true;
+            },
+
+            //更新数据
+            update(){
+                axios.put("/commodity",this.updateCommodity).then((res) => {
+                    if(res.data.code == 20041){
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20042){
+                        this.$message.error(res.data.msg)
+                    }else {
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+                this.dialogVisible1 = false;
+            },
+
+            //分页换页
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+                this.pagination.current = val;
+                this.selectAll();
+            },
+
+            //将数据库存的status装换为对应的状态
+            formatState(row,column,cellValue){
+                if (cellValue == "0"){
+                    return "上架";
+                }else if (cellValue == "1"){
+                    return "下架";
+                }
+            }
+        },
+
+        //钩子函数，进去页面就会执行查询所有
+        created(){
+            //如果数据操作中需要用到用户信息，那需要获取登录之后存储在本地的用户信息
+            const userInfo = window.localStorage.getItem("userInfo")
+            if (userInfo){
+                this.user = JSON.parse(userInfo);
+            }
+            console.log(this.user)
+            this.selectAll()
+        },
+
+
+        data() {
+            return {
+                //添加弹窗默认为不可见
+                dialogVisible: false,
+
+                //修改弹窗默认不可见
+                dialogVisible1: false,
+
+                //添加表单
+                addUser: {
+                },
+
+                //修改表单
+                updateUser: {
+                },
+
+                //搜索表单数据
+                searchUser: {
+                },
+
+                //表格数据
+                tableData: [],
+
+                //复选框选中的数据集合
+                multipleSelection:[],
+
+                //分页所需数据
+                pagination: {
+                    current: "1",
+                    pageSize: "5",
+                    total: ""
+                },
+
+                //如果需要用到用户信息，创建一个user来进行用户绑定
+                user: {
+                    id:"",
+                    username:"",
+                    password:"",
+                    identity:""
+                }
+            }
+        }
+    })
+</script>
+
+</body>
+</html>
