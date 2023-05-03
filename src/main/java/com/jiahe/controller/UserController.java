@@ -34,17 +34,25 @@ public class UserController {
 
 //  查询全部
     @GetMapping("/{current}/{size}")
-    public Result selectAll(@RequestParam Integer current, @RequestParam Integer size){
+    public Result selectAll(@PathVariable Integer current, @PathVariable Integer size){
         IPage<User> page = userService.selectAll(current,size);
         return new Result(Code.SELECT_SUCCESS,page);
     }
+
 //  新增用户
-    @PostMapping
+    @PostMapping("/add")
     public Result addUser(@RequestBody User user) throws Exception {
         if (userService.addUser(user))
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
             return new Result(null,Code.ADD_FAIL,"添加失败,相同的角色已经存在于数据库中");
+    }
+
+//  批量删除数据
+    @DeleteMapping("/delete")
+    public Result deleteUsers(@RequestBody List<User> users){
+        Boolean flag = userService.deleteUsers(users);
+        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
     }
 
 //    根据用户id单条删除数据
@@ -56,16 +64,9 @@ public class UserController {
             return new Result(null,Code.ADD_FAIL,"删除失败,删除的角色不存在于数据库中");
     }
 
-//    批量删除数据
-    @DeleteMapping ("/delete")
-    public Result deleteUsers(@RequestParam List<User> users){
-        Boolean flag = userService.deleteUsers(users);
-        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
-    }
-
 //  修改用户信息
-    @PutMapping("update")
-    public Result updateUser(@RequestParam User user) throws Exception{
+    @PutMapping("/update")
+    public Result updateUser(@RequestBody User user) throws Exception{
         if (userService.updateUser(user))
             return new Result(null,Code.ADD_SUCCESS,"修改成功");
         else
@@ -74,7 +75,7 @@ public class UserController {
 
 //   搜索表单点击查询之后执行的办法
     @GetMapping("/search")
-    public Result searchUser(@RequestParam User user) throws Exception {
+    public Result searchUser(@RequestBody User user) throws Exception {
         List<User> users = userService.searchUser(user);
         return new Result(users,Code.SELECT_SUCCESS,"查询到"+users.size()+"条数据");
     }

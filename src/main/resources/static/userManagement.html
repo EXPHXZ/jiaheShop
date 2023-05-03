@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="css/query.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/userManagement.css">
 </head>
 <body>
 <header>
@@ -146,7 +145,7 @@
                     min-width="15%">
             </el-table-column>
             <el-table-column
-                    prop="userName"
+                    prop="username"
                     label="用户名"
                     align="center"
                     sortable
@@ -214,22 +213,12 @@
             //查询所有数据
             selectAll() {
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
+
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
                     this.pagination.pageSize = res.data.data.size;
                     this.pagination.current = res.data.data.current;
                 })
-            },
-
-            handleCurrentChange(val) {
-                this.pagination.page = val
-                this.selectAll()
-            },
-
-            //复选框选中之后执行的办法
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-                console.log(this.multipleSelection)
             },
 
             //搜索表单点击查询之后执行的办法
@@ -238,6 +227,16 @@
                     this.tableData = res.data.data;
                     this.$message.success(res.data.msg)
                 })
+            },
+            //分页换页
+            handleCurrentChange(val) {
+                this.pagination.page = val
+                this.selectAll()
+            },
+
+            //复选框选中之后执行的办法
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
             },
 
             //点击添加按钮然后弹出添加框
@@ -253,7 +252,7 @@
 
             //添加表单确定添加后执行的办法
             add() {
-                axios.post("/userManagement",this.addUser).then((res) => {
+                axios.post("/userManagement/add",this.addUser).then((res) => {
                     if (res.data.code == 20011) {//添加成功的情况
                         this.dialogVisible = false;
                         this.$message.success(res.data.msg)
@@ -291,19 +290,25 @@
 
             //批量删除数据
             deleteBatchUser() {
-                axios.delete("/userManagement/delete", this.multipleSelection).then((res) => {
-                    if (res.data.code == 20021) {//成功
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20022) {//失败
-                        this.$message.error(res.data.msg)
-                    } else {//未知异常
-                        this.$message.error(res.data.msg)
-                    }
-                }).finally(
-                    () => {
-                        this.selectAll();
-                    }
-                )
+                this.$confirm('此操作将批量删除用户, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete("/userManagement/delete", this.multipleSelection).then((res) => {
+                        if (res.data.code == 20021) {//成功
+                            this.$message.success(res.data.msg)
+                        } else if (res.data.code == 20022) {//失败
+                            this.$message.error(res.data.msg)
+                        } else {//未知异常
+                            this.$message.error(res.data.msg)
+                        }
+                    }).finally(
+                        () => {
+                            this.selectAll();
+                        }
+                    )
+                })
             },
 
             //根据用户id查找要修改的用户信息并回显到修改表上
@@ -333,28 +338,17 @@
                 this.dialogVisible1 = false;
             },
 
-            //分页换页
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
-                this.pagination.current = val;
-                this.selectAll();
-            },
-
             //将数据库存User表存的identify装换为对应的状态
             formatIdentify(row, column, cellValue) {
-                if (cellValue == "0") {
+                if (cellValue == 0) {
                     return "总管理员";
-                } else if (cellValue == "1") {
+                } else if (cellValue == 1) {
                     return "订单管理员";
-                } else if (cellValue == "2") {
+                } else if (cellValue == 2) {
                     return "商品管理员";
-                } else if (cellValue == "3") {
+                } else if (cellValue == 3) {
                     return "售后管理员";
                 }
-            },
-
-            sortChange(column,prop,order){
-
             },
 
             //钩子函数，进去页面就会执行查询所有
