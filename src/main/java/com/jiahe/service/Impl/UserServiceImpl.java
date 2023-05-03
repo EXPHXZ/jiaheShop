@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
         wrapper.eq(User::getUsername, user.getUsername());
         wrapper.eq(User::getPassword, user.getPassword());
-        wrapper.eq(User::getIdentity, user.getIdentity());
         return userDao.selectOne(wrapper);
     }
 
