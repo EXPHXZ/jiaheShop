@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> searchUser(User user){
         LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<User>();
-        lqw.like(user.getId() != null,User::getId,user.getId());
+        lqw.eq(user.getId() != null,User::getId,user.getId());
         lqw.like(user.getUsername() != null,User::getUsername,user.getUsername());
         lqw.like(user.getIdentity() != null,User::getIdentity, user.getIdentity());
         return userDao.selectList(lqw);
