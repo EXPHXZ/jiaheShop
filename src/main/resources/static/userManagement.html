@@ -184,11 +184,14 @@
             <el-button type="danger" @click="deleteBatchUser">批量删除</el-button>
             <el-button type="primary" @click="resetAddForm">刷新</el-button>
             <el-pagination
-                    @current-change="handleCurrentChange"
-                    :current-page.sync="pagination.page"
+                    style="text-align: center"
+                    :background="true"
+                    :current-page="pagination.page"
                     :page-size="pagination.size"
-                    layout="total, prev, pager, next"
-                    :total="pagination.total">
+                    :total="pagination.total"
+                    layout="total, prev, pager, next,jumper"
+                    @current-change="handleCurrentChange"
+                    @size-change="handleSizeChange">
             </el-pagination>
         </el-row>
     </template>
@@ -210,10 +213,19 @@
 
         methods: {
 
+            handleCurrentChange(val) {
+                this.pagination.page = val;
+                this.selectAll();
+            },
+
+            handleSizeChange(val){
+                this.pageSize = val;
+                this.selectAll();
+            },
+
             //查询所有数据
             selectAll() {
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
-
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
                     this.pagination.pageSize = res.data.data.size;
@@ -227,11 +239,6 @@
                     this.tableData = res.data.data;
                     this.$message.success(res.data.msg)
                 })
-            },
-            //分页换页
-            handleCurrentChange(val) {
-                this.pagination.page = val
-                this.selectAll()
             },
 
             //复选框选中之后执行的办法
@@ -386,9 +393,10 @@
 
                 //分页所需数据
                 pagination: {
-                    current: "1",
-                    pageSize: "8",
-                    total: ""
+                    current: 1,
+                    pageSize: 8,
+                    total: 0,
+                    jumper: 0
                 },
             }
         }
