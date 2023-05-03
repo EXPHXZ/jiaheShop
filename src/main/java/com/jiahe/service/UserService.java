@@ -11,7 +11,7 @@ public interface UserService {
     public User checkUser(User user);
 
 //  分页查询
-    public IPage<User> selectAll(Integer current, Integer size);
+    public IPage<User> selectByPage(Integer current, Integer size);
 
     public Boolean addUser(User user);
 

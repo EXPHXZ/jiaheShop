@@ -183,17 +183,18 @@
             <el-button type="primary" @click="handleAdd">新增用户</el-button>
             <el-button type="danger" @click="deleteBatchUser">批量删除</el-button>
             <el-button type="primary" @click="resetAddForm">刷新</el-button>
-            <el-pagination
-                    style="text-align: center"
-                    :background="true"
-                    :current-page="pagination.page"
-                    :page-size="pagination.size"
-                    :total="pagination.total"
-                    layout="total, prev, pager, next,jumper"
-                    @current-change="handleCurrentChange"
-                    @size-change="handleSizeChange">
-            </el-pagination>
         </el-row>
+
+        <el-pagination
+                style="text-align: center"
+                :background="true"
+                :current-page="pagination.page"
+                :page-size="pagination.size"
+                :total="pagination.total"
+                layout="total,prev,pager,next"
+                @current-change="handleCurrentChange"
+                @size-change="handleSizeChange">
+        </el-pagination>
     </template>
 
 <!--    功能菜单-->
@@ -223,8 +224,8 @@
                 this.selectAll();
             },
 
-            //查询所有数据
-            selectAll() {
+            //分页查询
+            selectByPage() {
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
@@ -395,8 +396,7 @@
                 pagination: {
                     current: 1,
                     pageSize: 8,
-                    total: 0,
-                    jumper: 0
+                    total: 0
                 },
             }
         }

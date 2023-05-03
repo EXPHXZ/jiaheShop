@@ -32,10 +32,10 @@ public class UserController {
         return new Result(user1,user1 != null?Code.LOGIN_SUCCESS:Code.LOGIN_FAIL,user1 != null?"登录成功":"登录失败，请检查用户名和密码");
     }
 
-//  查询全部
+//  分页查询
     @GetMapping("/{current}/{size}")
-    public Result selectAll(@PathVariable Integer current, @PathVariable Integer size){
-        IPage<User> page = userService.selectAll(current,size);
+    public Result selectByPage(@PathVariable Integer current, @PathVariable Integer size){
+        IPage<User> page = userService.selectByPage(current,size);
         return new Result(Code.SELECT_SUCCESS,page);
     }
 

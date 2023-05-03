@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
 //  分页查询
     @Override
-    public IPage<User> selectAll(Integer current,Integer size){
+    public IPage<User> selectByPage(Integer current,Integer size){
         IPage<User> page = new Page<User>(current,size);
         return userDao.selectPage(page,null);
     }
