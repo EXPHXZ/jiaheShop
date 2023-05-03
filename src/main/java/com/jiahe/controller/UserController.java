@@ -49,7 +49,7 @@ public class UserController {
     }
 
 //  批量删除数据
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public Result deleteUsers(@RequestBody List<User> users){
         Boolean flag = userService.deleteUsers(users);
         return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
@@ -75,10 +75,10 @@ public class UserController {
     }
 
 //   搜索表单点击查询之后执行的办法
-    @GetMapping("/search")
+    @PostMapping("/search")
     public Result searchUser(@RequestBody User user) throws Exception {
         List<User> users = userService.searchUser(user);
-        return new Result(users,Code.SELECT_SUCCESS,"查询到"+users.size()+"条数据");
+        return new Result(Code.SELECT_SUCCESS,users);
     }
 
 //  根据用户id查找要修改的用户信息并回显到修改表上

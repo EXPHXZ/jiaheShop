@@ -123,6 +123,8 @@
         </el-form-item>
     </el-form>
 
+
+
     <!--    表格-->
     <template>
         <el-table
@@ -179,25 +181,23 @@
             </el-table-column>
         </el-table>
 
+        <!--功能菜单-->
         <el-row class="block">
             <el-button type="primary" @click="handleAdd">新增用户</el-button>
             <el-button type="danger" @click="deleteBatchUser">批量删除</el-button>
-            <el-button type="primary" @click="resetAddForm">刷新</el-button>
+            <el-button type="primary" @click="reload">刷新</el-button>
+            <el-pagination
+                    @current-change="handleCurrentChange"
+                    @size-change="handleSizeChange"
+                    :current-page="pagination.page"
+                    :page-size="pagination.size"
+                    :background="true"
+                    layout="total,prev,pager,next"
+                    :total="pagination.total"
+            ></el-pagination>
         </el-row>
 
-        <el-pagination
-                style="text-align: center"
-                :background="true"
-                :current-page="pagination.page"
-                :page-size="pagination.size"
-                :total="pagination.total"
-                layout="total,prev,pager,next"
-                @current-change="handleCurrentChange"
-                @size-change="handleSizeChange">
-        </el-pagination>
     </template>
-
-<!--    功能菜单-->
 
 
 
@@ -209,18 +209,20 @@
 <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
 
 <script>
+
     new Vue({
         el:"#content",
 
         methods: {
 
+
             handleCurrentChange(val) {
-                this.pagination.page = val;
+                this.pagination.current = val;
                 this.selectAll()
             },
 
             handleSizeChange(val){
-                this.pageSize = val;
+                this.pagination.pageSize = val;
                 this.selectAll()
             },
 
@@ -235,13 +237,6 @@
                 })
             },
 
-            //搜索表单点击查询之后执行的办法
-            search() {
-                axios.get("/userManagement/search", this.searchUser).then((res) => {
-                    this.tableData = res.data.data;
-                    this.$message.success(res.data.msg)
-                })
-            },
 
             //复选框选中之后执行的办法
             handleSelectionChange(val) {
@@ -250,8 +245,13 @@
 
             //点击添加按钮然后弹出添加框
             handleAdd() {
-                this.dialogVisible = true
+                this.dialogVisible = true;
                 this.resetAddForm()
+            },
+
+            //重置页面
+            reload() {
+                window.location.reload(true)
             },
 
             //重置添加表单
@@ -304,7 +304,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    axios.delete("/userManagement/delete", this.multipleSelection).then((res) => {
+                    axios.post("/userManagement/delete", this.multipleSelection).then((res) => {
                         if (res.data.code == 20021) {//成功
                             this.$message.success(res.data.msg)
                         } else if (res.data.code == 20022) {//失败
@@ -317,6 +317,14 @@
                             this.selectAll()
                         }
                     )
+                })
+            },
+
+            //搜索表单点击查询之后执行的办法
+            search() {
+                axios.post("/userManagement/search", this.searchUser).then((res) => {
+                    this.tableData = res.data.data;
+                    this.$message.success(res.data.msg)
                 })
             },
 
@@ -396,7 +404,7 @@
                 pagination: {
                     current: 1,
                     pageSize: 8,
-                    total: 0
+                    total: 0,
                 },
             }
         }
