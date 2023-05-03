@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/userManagement/**",
                 "/css/*",
                 "/js/*",
-                "/element-ui/*",
+                "/element-ui/**",
                 "/images/*",
                 "/favicon.ico"
         );

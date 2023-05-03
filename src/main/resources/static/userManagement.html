@@ -14,7 +14,7 @@
     </div>
 </header>
 <div id="nav">
-    <nav v-if="user.identity === 0" >
+    <nav v-if="user.identity === 0">
         <ul>
             <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
             <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
@@ -216,16 +216,17 @@
 
             handleCurrentChange(val) {
                 this.pagination.page = val;
-                this.selectAll();
+                this.selectAll()
             },
 
             handleSizeChange(val){
                 this.pageSize = val;
-                this.selectAll();
+                this.selectAll()
             },
 
             //分页查询
-            selectByPage() {
+            selectAll() {
+                console.log("selectByPage....")
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
@@ -273,7 +274,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll();
+                        this.selectAll()
                     }
                 )
             },
@@ -291,7 +292,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll();
+                        this.selectAll()
                     }
                 )
             },
@@ -313,14 +314,14 @@
                         }
                     }).finally(
                         () => {
-                            this.selectAll();
+                            this.selectAll()
                         }
                     )
                 })
             },
 
             //根据用户id查找要修改的用户信息并回显到修改表上
-            searchUpdate(row) {
+            searchUpdateUser(row) {
                 let id = row.id;
                 axios.get("/userManagement/search/" + id).then((res) => {
                     this.updateUser = res.data.data;
@@ -357,14 +358,13 @@
                 } else if (cellValue == 3) {
                     return "售后管理员";
                 }
-            },
-
-            //钩子函数，进去页面就会执行查询所有
-            created() {
-                this.selectByPage();
             }
-        },
 
+        },
+        //钩子函数，进去页面就会执行查询所有
+        created() {
+            this.selectAll()
+        },
 
         data() {
             return {
