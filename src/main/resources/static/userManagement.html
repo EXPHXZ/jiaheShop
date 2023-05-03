@@ -189,10 +189,10 @@
             <el-pagination
                     @current-change="handleCurrentChange"
                     @size-change="handleSizeChange"
-                    :current-page="pagination.page"
-                    :page-size="pagination.size"
+                    :current-page="pagination.current"
+                    :page-size="pagination.pageSize"
                     :background="true"
-                    layout="total,prev,pager,next"
+                    layout="total,prev,pager,next,jumper"
                     :total="pagination.total"
             ></el-pagination>
         </el-row>
@@ -218,22 +218,20 @@
 
             handleCurrentChange(val) {
                 this.pagination.current = val;
-                this.selectAll()
+                this.selectByPage()
             },
 
             handleSizeChange(val){
                 this.pagination.pageSize = val;
-                this.selectAll()
+                this.selectByPage()
             },
 
             //分页查询
-            selectAll() {
+            selectByPage() {
                 console.log("selectByPage....")
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
-                    this.pagination.pageSize = res.data.data.size;
-                    this.pagination.current = res.data.data.current;
                 })
             },
 
@@ -274,7 +272,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll()
+                        this.selectByPage()
                     }
                 )
             },
@@ -292,7 +290,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll()
+                        this.selectByPage()
                     }
                 )
             },
@@ -314,7 +312,7 @@
                         }
                     }).finally(
                         () => {
-                            this.selectAll()
+                            this.selectByPage()
                         }
                     )
                 })
@@ -349,7 +347,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll();
+                        this.selectByPage();
                     }
                 )
                 this.dialogVisible1 = false;
@@ -371,7 +369,7 @@
         },
         //钩子函数，进去页面就会执行查询所有
         created() {
-            this.selectAll()
+            this.selectByPage()
         },
 
         data() {
@@ -403,7 +401,7 @@
                 //分页所需数据
                 pagination: {
                     current: 1,
-                    pageSize: 8,
+                    pageSize: 15,
                     total: 0,
                 },
             }
@@ -417,6 +415,7 @@
                 }
             }
         },
+
         created() {
             const userInfo = window.localStorage.getItem("userInfo")
             if (userInfo){
