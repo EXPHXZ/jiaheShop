@@ -6,9 +6,9 @@ public interface PersonalService {
 
     public Boolean addPersonalInfo(Personal personal);
 
-    public Boolean deletePersonalInfoById(Integer id);
+    public Boolean deletePersonalInfoByUid(Integer uid);
 
-    public Personal searchPersonalInfoById(Integer id);
+    public Personal searchPersonalInfoByUid(Integer uid);
 
     public Boolean updatePersonalInfo(Personal personal);
 

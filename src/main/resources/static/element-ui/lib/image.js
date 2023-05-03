@@ -82,7 +82,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 64);
+/******/ 	return __webpack_require__(__webpack_require__.s = 67);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -189,17 +189,24 @@ function normalizeComponent (
 
 /***/ }),
 
+/***/ 13:
+/***/ (function(module, exports) {
+
+module.exports = require("element-ui/lib/utils/popup");
+
+/***/ }),
+
+/***/ 17:
+/***/ (function(module, exports) {
+
+module.exports = require("element-ui/lib/utils/types");
+
+/***/ }),
+
 /***/ 2:
 /***/ (function(module, exports) {
 
 module.exports = require("element-ui/lib/utils/dom");
-
-/***/ }),
-
-/***/ 20:
-/***/ (function(module, exports) {
-
-module.exports = require("element-ui/lib/utils/types");
 
 /***/ }),
 
@@ -224,7 +231,7 @@ module.exports = require("element-ui/lib/mixins/locale");
 
 /***/ }),
 
-/***/ 64:
+/***/ 67:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -272,22 +279,16 @@ var render = function() {
           ),
       _vm.preview
         ? [
-            _c("image-viewer", {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.showViewer,
-                  expression: "showViewer"
-                }
-              ],
-              attrs: {
-                "z-index": _vm.zIndex,
-                "initial-index": _vm.imageIndex,
-                "on-close": _vm.closeViewer,
-                "url-list": _vm.previewSrcList
-              }
-            })
+            _vm.showViewer
+              ? _c("image-viewer", {
+                  attrs: {
+                    "z-index": _vm.zIndex,
+                    "initial-index": _vm.imageIndex,
+                    "on-close": _vm.closeViewer,
+                    "url-list": _vm.previewSrcList
+                  }
+                })
+              : _vm._e()
           ]
         : _vm._e()
     ],
@@ -311,18 +312,28 @@ var image_viewervue_type_template_id_5e73b307_render = function() {
       {
         ref: "el-image-viewer__wrapper",
         staticClass: "el-image-viewer__wrapper",
-        style: { "z-index": _vm.zIndex },
+        style: { "z-index": _vm.viewerZIndex },
         attrs: { tabindex: "-1" }
       },
       [
-        _c("div", { staticClass: "el-image-viewer__mask" }),
+        _c("div", {
+          staticClass: "el-image-viewer__mask",
+          on: {
+            click: function($event) {
+              if ($event.target !== $event.currentTarget) {
+                return null
+              }
+              return _vm.handleMaskClick($event)
+            }
+          }
+        }),
         _c(
           "span",
           {
             staticClass: "el-image-viewer__btn el-image-viewer__close",
             on: { click: _vm.hide }
           },
-          [_c("i", { staticClass: "el-icon-circle-close" })]
+          [_c("i", { staticClass: "el-icon-close" })]
         ),
         !_vm.isSingle
           ? [
@@ -400,7 +411,7 @@ var image_viewervue_type_template_id_5e73b307_render = function() {
                   refInFor: true,
                   staticClass: "el-image-viewer__img",
                   style: _vm.imgStyle,
-                  attrs: { src: _vm.currentImg },
+                  attrs: { src: _vm.currentImg, referrerpolicy: "no-referrer" },
                   on: {
                     load: _vm.handleImgLoad,
                     error: _vm.handleImgError,
@@ -427,6 +438,9 @@ var dom_ = __webpack_require__(2);
 
 // EXTERNAL MODULE: external "element-ui/lib/utils/util"
 var util_ = __webpack_require__(3);
+
+// EXTERNAL MODULE: external "element-ui/lib/utils/popup"
+var popup_ = __webpack_require__(13);
 
 // CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib??vue-loader-options!./packages/image/src/image-viewer.vue?vue&type=script&lang=js&
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -484,6 +498,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+
 
 
 
@@ -526,6 +542,14 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
     initialIndex: {
       type: Number,
       default: 0
+    },
+    appendToBody: {
+      type: Boolean,
+      default: true
+    },
+    maskClosable: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -577,6 +601,10 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
         style.maxWidth = style.maxHeight = '100%';
       }
       return style;
+    },
+    viewerZIndex: function viewerZIndex() {
+      var nextZIndex = popup_["PopupManager"].nextZIndex();
+      return this.zIndex > nextZIndex ? this.zIndex : nextZIndex;
     }
   },
   watch: {
@@ -605,7 +633,8 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
     deviceSupportInstall: function deviceSupportInstall() {
       var _this2 = this;
 
-      this._keyDownHandler = Object(util_["rafThrottle"])(function (e) {
+      this._keyDownHandler = function (e) {
+        e.stopPropagation();
         var keyCode = e.keyCode;
         switch (keyCode) {
           // ESC
@@ -633,7 +662,7 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
             _this2.handleActions('zoomOut');
             break;
         }
-      });
+      };
       this._mouseWheelHandler = Object(util_["rafThrottle"])(function (e) {
         var delta = e.wheelDelta ? e.wheelDelta : -e.detail;
         if (delta > 0) {
@@ -685,6 +714,11 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
       });
 
       e.preventDefault();
+    },
+    handleMaskClick: function handleMaskClick() {
+      if (this.maskClosable) {
+        this.hide();
+      }
     },
     reset: function reset() {
       this.transform = {
@@ -752,9 +786,18 @@ var mousewheelEventName = Object(util_["isFirefox"])() ? 'DOMMouseScroll' : 'mou
   },
   mounted: function mounted() {
     this.deviceSupportInstall();
+    if (this.appendToBody) {
+      document.body.appendChild(this.$el);
+    }
     // add tabindex then wrapper can be focusable via Javascript
     // focus wrapper so arrow key can't cause inner scroll behavior underneath
     this.$refs['el-image-viewer__wrapper'].focus();
+  },
+  destroyed: function destroyed() {
+    // if appendToBody is true, remove DOM node after destroy
+    if (this.appendToBody && this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el);
+    }
   }
 });
 // CONCATENATED MODULE: ./packages/image/src/image-viewer.vue?vue&type=script&lang=js&
@@ -790,7 +833,7 @@ var locale_ = __webpack_require__(6);
 var locale_default = /*#__PURE__*/__webpack_require__.n(locale_);
 
 // EXTERNAL MODULE: external "element-ui/lib/utils/types"
-var types_ = __webpack_require__(20);
+var types_ = __webpack_require__(17);
 
 // EXTERNAL MODULE: external "throttle-debounce/throttle"
 var throttle_ = __webpack_require__(25);
@@ -865,7 +908,8 @@ var prevOverflow = '';
     zIndex: {
       type: Number,
       default: 2000
-    }
+    },
+    initialIndex: Number
   },
 
   data: function data() {
@@ -898,7 +942,18 @@ var prevOverflow = '';
       return Array.isArray(previewSrcList) && previewSrcList.length > 0;
     },
     imageIndex: function imageIndex() {
-      return this.previewSrcList.indexOf(this.src);
+      var previewIndex = 0;
+      var initialIndex = this.initialIndex;
+      if (initialIndex >= 0) {
+        previewIndex = initialIndex;
+        return previewIndex;
+      }
+      var srcIndex = this.previewSrcList.indexOf(this.src);
+      if (srcIndex >= 0) {
+        previewIndex = srcIndex;
+        return previewIndex;
+      }
+      return previewIndex;
     }
   },
 
@@ -951,6 +1006,7 @@ var prevOverflow = '';
       this.imageWidth = img.width;
       this.imageHeight = img.height;
       this.loading = false;
+      this.error = false;
     },
     handleError: function handleError(e) {
       this.loading = false;
@@ -1010,7 +1066,8 @@ var prevOverflow = '';
 
       if (!imageWidth || !imageHeight || !containerWidth || !containerHeight) return {};
 
-      var vertical = imageWidth / imageHeight < 1;
+      var imageAspectRatio = imageWidth / imageHeight;
+      var containerAspectRatio = containerWidth / containerHeight;
 
       if (fit === ObjectFit.SCALE_DOWN) {
         var isSmaller = imageWidth < containerWidth && imageHeight < containerHeight;
@@ -1021,14 +1078,18 @@ var prevOverflow = '';
         case ObjectFit.NONE:
           return { width: 'auto', height: 'auto' };
         case ObjectFit.CONTAIN:
-          return vertical ? { width: 'auto' } : { height: 'auto' };
+          return imageAspectRatio < containerAspectRatio ? { width: 'auto' } : { height: 'auto' };
         case ObjectFit.COVER:
-          return vertical ? { height: 'auto' } : { width: 'auto' };
+          return imageAspectRatio < containerAspectRatio ? { height: 'auto' } : { width: 'auto' };
         default:
           return {};
       }
     },
     clickHandler: function clickHandler() {
+      // don't show viewer when preview is false
+      if (!this.preview) {
+        return;
+      }
       // prevent body scroll
       prevOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
