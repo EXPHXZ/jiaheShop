@@ -1,6 +1,7 @@
 package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.User;
 
 import javax.servlet.http.HttpSession;
@@ -21,4 +22,9 @@ public interface UserService {
     public Boolean deleteUsers(List<User> users);
 
     public Boolean updateUser(User user);
+
+    public List<User> searchUser(User user);
+
+//  根据用户id查找要修改的用户信息并回显到修改表上
+    public User searchUpdateUser(Integer id);
 }

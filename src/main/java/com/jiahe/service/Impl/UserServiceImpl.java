@@ -23,11 +23,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User checkUser(User user) {
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
         wrapper.eq(User::getUsername, user.getUsername());
         wrapper.eq(User::getPassword, user.getPassword());
-        User user1 = userDao.selectOne(wrapper);
-        return user1;
+        return userDao.selectOne(wrapper);
     }
 
 //  分页查询
@@ -67,6 +66,22 @@ public class UserServiceImpl implements UserService {
         if (userDao.selectById(user.getId()) == null)
             return false;
         else
-            return userDao.updateById(user) > 0;
+            return userDao.update(user,null) > 0;
+    }
+
+//  查询用户
+    @Override
+    public List<User> searchUser(User user){
+        LambdaQueryWrapper<User> lqw = new LambdaQueryWrapper<User>();
+        lqw.like(user.getId() != null,User::getId,user.getId());
+        lqw.like(user.getUsername() != null,User::getUsername,user.getUsername());
+        lqw.like(user.getIdentity() != null,User::getIdentity, user.getIdentity());
+        return userDao.selectList(lqw);
+    }
+
+//  根据用户id查找要修改的用户信息并回显到修改表上
+    @Override
+    public User searchUpdateUser(Integer id){
+        return userDao.selectById(id);
     }
 }

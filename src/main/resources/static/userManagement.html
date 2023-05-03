@@ -52,7 +52,7 @@
             width="50%">
         <el-form ref="form" :model="addUser" label-width="80px">
             <el-form-item label="用户名">
-                <el-input v-model="addUser.userName"></el-input>
+                <el-input v-model="addUser.username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
                 <el-input v-model="addUser.password"></el-input>
@@ -81,7 +81,7 @@
             width="50%">
         <el-form ref="form" :model="updateUser" label-width="80px">
             <el-form-item label="用户名">
-                <el-input v-model="updateUser.userName"></el-input>
+                <el-input v-model="updateUser.username"></el-input>
             </el-form-item>
             <el-form-item label="密码">
                 <el-input v-model="updateUser.password"></el-input>
@@ -105,11 +105,11 @@
 
 <!--    搜索表单-->
     <el-form :inline="true" :model="searchUser" class="demo-form-inline">
-        <el-form-item label="用户名">
-            <el-input v-model="searchUser.userName" placeholder="用户名"></el-input>
-        </el-form-item>
         <el-form-item label="用户id">
             <el-input v-model="searchUser.id" placeholder="用户id"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名">
+            <el-input v-model="searchUser.username" placeholder="用户名"></el-input>
         </el-form-item>
         <el-form-item label="权限">
             <el-select v-model="searchUser.identity" placeholder="权限">
@@ -173,7 +173,7 @@
                     min-width="30%">
                 <template slot-scope="scope">
                     <el-row>
-                        <el-button type="primary" @click="searchUpdate(scope.row)" round>编辑</el-button>
+                        <el-button type="primary" @click="searchUpdateUser(scope.row)" round>编辑</el-button>
                         <el-button type="danger" @click="deleteUser(scope.row)">删除</el-button>
                     </el-row>
                 </template>
@@ -234,8 +234,7 @@
 
             //搜索表单点击查询之后执行的办法
             search() {
-                console.log(this.searchUser);
-                axios.post("/userManagement/search", this.searchUser).then((res) => {
+                axios.get("/userManagement/search", this.searchUser).then((res) => {
                     this.tableData = res.data.data;
                     this.$message.success(res.data.msg)
                 })
@@ -254,7 +253,7 @@
 
             //添加表单确定添加后执行的办法
             add() {
-                axios.post("/userManagement", this.addUser).then((res) => {
+                axios.post("/userManagement",this.addUser).then((res) => {
                     if (res.data.code == 20011) {//添加成功的情况
                         this.dialogVisible = false;
                         this.$message.success(res.data.msg)
@@ -275,7 +274,7 @@
             //根据所选用户id删除单条数据
             deleteUser(row) {
                 let id = row.id;
-                axios.delete("/userManagement/" + id).then((res) => {
+                axios.delete("/userManagement/delete/" + id).then((res) => {
                     if (res.data.code === 20021) {//成功
                         this.$message.success(res.data.msg)
                     } else if (res.data.code === 20022) {//失败
@@ -307,10 +306,10 @@
                 )
             },
 
-            //回显数据修改
+            //根据用户id查找要修改的用户信息并回显到修改表上
             searchUpdate(row) {
                 let id = row.id;
-                axios.get("/userManagement/" + id).then((res) => {
+                axios.get("/userManagement/search/" + id).then((res) => {
                     this.updateUser = res.data.data;
                 })
                 this.dialogVisible1 = true;
@@ -318,7 +317,7 @@
 
             //更新数据
             update() {
-                axios.put("/userManagement", this.updateUser).then((res) => {
+                axios.put("/userManagement/update", this.updateUser).then((res) => {
                     if (res.data.code == 20041) {
                         this.$message.success(res.data.msg)
                     } else if (res.data.code == 20042) {
