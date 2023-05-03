@@ -1,5 +1,7 @@
 package com.jiahe.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jiahe.dao.PersonalDao;
 import com.jiahe.pojo.Personal;
 import com.jiahe.service.PersonalService;
@@ -18,13 +20,17 @@ public class PersonalServiceImpl implements PersonalService {
     }
 
     @Override
-    public Boolean deletePersonalInfoById(Integer id) {
-        return personalDao.deleteById(id) > 0;
+    public Boolean deletePersonalInfoByUid(Integer uid) {
+        LambdaQueryWrapper<Personal> lqw = new LambdaQueryWrapper<Personal>();
+        lqw.eq(Personal::getUserId, uid);
+        return personalDao.delete(lqw) > 0;
     }
 
     @Override
-    public Personal searchPersonalInfoById(Integer id) {
-        return personalDao.selectById(id);
+    public Personal searchPersonalInfoByUid(Integer uid) {
+        LambdaQueryWrapper<Personal> lqw = new LambdaQueryWrapper<Personal>();
+        lqw.eq(Personal::getUserId, uid);
+        return personalDao.selectOne(lqw);
     }
 
     @Override
