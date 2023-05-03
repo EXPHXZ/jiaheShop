@@ -349,6 +349,15 @@
                 let id = row.id;
                 axios.get("/userManagement/search/" + id).then((res) => {
                     this.updateUser = res.data.data;
+                    //转换回显下拉框默认值格式
+                    if(res.data.data.identity === 0)
+                        this.updateUser.identity = "0";
+                    if(res.data.data.identity === 1)
+                        this.updateUser.identity = "1";
+                    if(res.data.data.identity === 2)
+                        this.updateUser.identity = "2";
+                    if(res.data.data.identity === 3)
+                        this.updateUser.identity = "3";
                 })
                 this.dialogVisible1 = true;
             },
