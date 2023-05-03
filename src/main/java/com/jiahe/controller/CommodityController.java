@@ -84,6 +84,10 @@ public class CommodityController {
      */
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
+        Boolean checkFlag = commodityService.checkAdd(commodity);
+        if(checkFlag == true){
+            return new Result(null,Code.UPDATE_FAIL,"修改失败，相同的商品已经存在");
+        }
         Boolean flag = commodityService.updateCommodity(commodity);
         return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
