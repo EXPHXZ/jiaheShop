@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
         wrapper.eq(User::getUsername, user.getUsername());
         wrapper.eq(User::getPassword, user.getPassword());
+        wrapper.eq(User::getIdentity, user.getIdentity());
         return userDao.selectOne(wrapper);
     }
 
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
         if (userDao.selectById(user.getId()) == null)
             return false;
         else
-            return userDao.update(user,null) > 0;
+            return userDao.updateById(user) > 0;
     }
 
 //  查询用户

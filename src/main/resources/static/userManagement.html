@@ -14,7 +14,7 @@
     </div>
 </header>
 <div id="nav">
-    <nav v-if="user.identity === 0">
+    <nav v-if="user.identity === 0" >
         <ul>
             <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
             <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
@@ -361,7 +361,7 @@
 
             //钩子函数，进去页面就会执行查询所有
             created() {
-                this.selectAll()
+                this.selectByPage();
             }
         },
 

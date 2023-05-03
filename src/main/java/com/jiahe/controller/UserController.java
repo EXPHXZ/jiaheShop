@@ -68,9 +68,10 @@ public class UserController {
     @PutMapping("/update")
     public Result updateUser(@RequestBody User user) throws Exception{
         if (userService.updateUser(user))
-            return new Result(null,Code.ADD_SUCCESS,"修改成功");
+            return new Result(null,Code.ADD_FAIL,"修改成功");
         else
             return new Result(null,Code.ADD_FAIL,"修改失败,修改的角色不存在于数据库中");
+
     }
 
 //   搜索表单点击查询之后执行的办法
