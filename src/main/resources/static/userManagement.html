@@ -209,6 +209,8 @@
 <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
 
 <script>
+    let usernameFormat = /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){3,12}$/;
+    let passwordFormat = /^[a-zA-Z0-9]{6,12}$/;
 
     new Vue({
         el:"#content",
@@ -259,22 +261,38 @@
 
             //添加表单确定添加后执行的办法
             add() {
-                axios.post("/userManagement/add",this.addUser).then((res) => {
-                    if (res.data.code == 20011) {//添加成功的情况
-                        this.dialogVisible = false;
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20012) {//添加失败的情况
-                        this.$message.error(res.data.msg)
-                        this.resetAddForm();
-                    } else {//出现位置异常时
-                        this.$message.error(res.data.msg)
-                        this.resetAddForm();
-                    }
-                }).finally(
-                    () => {
-                        this.selectByPage()
-                    }
-                )
+                if (!usernameFormat.test(this.addUser.username)){
+                    this.$message({
+                        type: 'error',
+                        message: "账号由字母、数字和中文组成且长度在3-12位之间"
+                    });
+                    this.resetAddForm();
+                }
+                else if(!passwordFormat.test(this.addUser.password)){
+                    this.$message({
+                        type: 'error',
+                        message: "密码由字母和数字组成且长度在6-12位之间"
+                    });
+                    this.resetAddForm();
+                }
+                else{
+                    axios.post("/userManagement/add",this.addUser).then((res) => {
+                        if (res.data.code === 20011) {//添加成功的情况
+                            this.dialogVisible = false;
+                            this.$message.success((res.data.msg))
+                        } else if (res.data.code === 20012) {//添加失败的情况
+                            this.$message.error(res.data.msg);
+                            this.resetAddForm()
+                        } else {//出现位置异常时
+                            this.$message.error(res.data.msg);
+                            this.resetAddForm()
+                        }
+                    }).finally(
+                        () => {
+                            this.selectByPage()
+                        }
+                    )
+                }
             },
 
             //根据所选用户id删除单条数据
@@ -303,9 +321,9 @@
                     type: 'warning'
                 }).then(() => {
                     axios.post("/userManagement/delete", this.multipleSelection).then((res) => {
-                        if (res.data.code == 20021) {//成功
+                        if (res.data.code === 20021) {//成功
                             this.$message.success(res.data.msg)
-                        } else if (res.data.code == 20022) {//失败
+                        } else if (res.data.code === 20022) {//失败
                             this.$message.error(res.data.msg)
                         } else {//未知异常
                             this.$message.error(res.data.msg)
@@ -320,10 +338,10 @@
 
             //搜索表单点击查询之后执行的办法
             search() {
-                axios.post("/userManagement/search", this.searchUser).then((res) => {
-                    this.tableData = res.data.data;
-                    this.$message.success(res.data.msg)
-                })
+                    axios.post("/userManagement/search", this.searchUser).then((res) => {
+                        this.tableData = res.data.data;
+                        this.$message.success(res.data.msg)
+                    })
             },
 
             //根据用户id查找要修改的用户信息并回显到修改表上
@@ -337,23 +355,37 @@
 
             //更新数据
             update() {
-                axios.put("/userManagement/update", this.updateUser).then((res) => {
-                    if (res.data.code == 20041) {
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20042) {
-                        this.$message.error(res.data.msg)
-                    } else {
-                        this.$message.error(res.data.msg)
-                    }
-                }).finally(
-                    () => {
-                        this.selectByPage();
-                    }
-                )
-                this.dialogVisible1 = false;
+                if (!usernameFormat.test(this.updateUser.username)){
+                    this.$message({
+                        type: 'error',
+                        message: "账号由字母、数字和中文组成且长度在3-12位之间"
+                    });
+                }
+                else if(!passwordFormat.test(this.updateUser.password)){
+                    this.$message({
+                        type: 'error',
+                        message: "密码由字母和数字组成且长度在6-12位之间"
+                    });
+                }
+                else{
+                    axios.put("/userManagement/update", this.updateUser).then((res) => {
+                        if (res.data.code === 20041) {
+                            this.dialogVisible1 = false;
+                            this.$message.success(res.data.msg)
+                        } else if (res.data.code === 20042) {
+                            this.$message.error(res.data.msg)
+                        } else {
+                            this.$message.error(res.data.msg)
+                        }
+                    }).finally(
+                        () => {
+                            this.selectByPage();
+                        }
+                    )
+                }
             },
 
-            //将数据库存User表存的identify装换为对应的状态
+            //将数据库存User表存的identity装换为对应的状态
             formatIdentity(row, column, cellValue) {
                 if (cellValue === 0) {
                     return "总管理员";

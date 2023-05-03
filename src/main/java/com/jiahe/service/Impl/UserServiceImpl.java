@@ -8,6 +8,7 @@ import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.User;
 import com.jiahe.service.UserService;
+import com.jiahe.utils.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,9 @@ public class UserServiceImpl implements UserService {
 //  新增用户
     @Override
     public Boolean addUser(User user) {
+        if(checkUser(user) != null)
+            return false;
+        else
             return userDao.insert(user) > 0;
     }
 
@@ -63,7 +67,7 @@ public class UserServiceImpl implements UserService {
 //    修改用户信息
     @Override
     public Boolean updateUser(User user) {
-        if (userDao.selectById(user.getId()) == null)
+        if (checkUser(user) != null)
             return false;
         else
             return userDao.updateById(user) > 0;
