@@ -78,6 +78,7 @@ public class OrderController {
     @PostMapping("/updateOrderCommodity")
     public Result updateOrderCommodity(@RequestParam Integer orderId, @RequestBody OrderCommodity orderCommodity){
         Boolean flag = orderService.updateOrderCommodity(orderId, orderCommodity);
+        //往售后表添加一条信息
         Aftermarket aftermarket = new Aftermarket();
         aftermarket.setOrderId(orderId);
         aftermarket.setCause("该订单有货物需要退货");

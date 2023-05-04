@@ -48,17 +48,12 @@ public class AftermarketController {
             aftermarket.setStatus(order.getStatus());
         }
 
-
         return new Result(Code.SELECT_SUCCESS,list);
     }
 
 
-    /**
-     * 添加售后信息
-     * @param aftermarket
-     * @return
-     */
-    @PostMapping("/add")
+
+    /*@PostMapping("/add")
     public Result add(@RequestBody Aftermarket aftermarket){
         aftermarket.setIsDeleted(0);
         boolean save = aftermarketService.save(aftermarket);
@@ -66,7 +61,7 @@ public class AftermarketController {
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         }
         return new Result(null,Code.ADD_FAIL,"添加失败");
-    }
+    }*/
 
     /**
      * 修改售后信息
@@ -89,8 +84,11 @@ public class AftermarketController {
         Integer orderId = aftermarket.getOrderId();
         //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
         Order order = orderService.searchOrder(orderId);
-        Boolean flag1 = orderService.updateOrderForAftermarket(order);
+        //把订单下面需要退货的订单的状态改成2已退货
         Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderId);
+        //把订单状态改成0-正常订单
+        Boolean flag1 = orderService.updateOrderForAftermarket(order);
+        //删除订单
         Boolean flag = aftermarketService.removeById(id);
         return new Result(null,flag&&flag1&&flag2? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
     }
