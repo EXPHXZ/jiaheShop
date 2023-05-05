@@ -21,6 +21,10 @@
                 <el-button type = "primary" plain @click = "addVisible = true">添加个人信息</el-button>
             </el-empty>
 
+            <el-avatar v-if = "!infoIsEmpty" shape = "square" size = "large" src = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <h2 v-if = "!infoIsEmpty">{{greeting}}</h2>
+            <h4 v-if = "!infoIsEmpty">当前时间：{{dateTime}}</h4>
+
             <template v-if = "!infoIsEmpty">
                 <el-descriptions class = "margin-top" title = "个人信息" :column = "3" :size = "size" border>
                     <template slot = "extra">
@@ -116,7 +120,8 @@
 
                 methods: {
                     showInfo() {
-                        this.personal.userId = JSON.parse(window.localStorage.getItem("userInfo")).id;
+                        this.personal.userId = JSON.parse(window.localStorage.getItem("userInfo")).id
+                        this.identity = JSON.parse(window.localStorage.getItem("userInfo")).identity
                         this.searchInfo()
                     },
 
@@ -127,17 +132,34 @@
                                 this.sexShow = resp.data.data.sex
                                 this.phoneNumberShow = resp.data.data.phoneNumber
                                 this.emailShow = resp.data.data.email
-                                if (this.personal.userId === 0)
+                                if (this.identity === 0)
                                     this.identityShow = "总管理员"
-                                else if (this.personal.userId === 1)
+                                else if (this.identity === 1)
                                     this.identityShow = "订单管理员"
-                                else if (this.personal.userId === 2)
+                                else if (this.identity === 2)
                                     this.identityShow = "商品管理员"
-                                else if (this.personal.userId === 3)
+                                else if (this.identity === 3)
                                     this.identityShow = "售后管理员"
+                                this.getDateTime()
                                 this.infoIsEmpty = false
                             }
                         })
+                    },
+
+                    getDateTime () {
+                        let today = new Date()
+                        this.dateTime = today.toLocaleString()
+                        if (today.getHours() < 9)
+                            this.greeting = "早安！" + this.nameShow + "！"
+                        else if (today.getHours() < 11)
+                            this.greeting = "上午好！" + this.nameShow + "！"
+                        else if (today.getHours() < 13)
+                            this.greeting = "午安！" + this.nameShow + "！"
+                        else if (today.getHours() < 17)
+                            this.greeting = "下午好！" + this.nameShow + "！"
+                        else
+                            this.greeting = "晚上好！" + this.nameShow + "！"
+                        this.handleTime = setTimeout(this.getDateTime, 1000)
                     },
 
                     addInfo() {
@@ -213,6 +235,7 @@
                         axios.delete("/personal/" + this.personal.userId).then((resp) => {
                             if (resp.data.code === 20021) {
                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                clearTimeout(this.handleTime)
                                 this.infoIsEmpty = true
                             }
                             else if (resp.data.code === 20022)
@@ -234,6 +257,11 @@
                             phoneNumber: "",
                             email: ""
                         },
+                        identity: "",
+
+                        dateTime: "",
+                        greeting: "",
+                        handleTime: "",
 
                         nameShow: "",
                         sexShow: "",
