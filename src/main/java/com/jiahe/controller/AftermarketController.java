@@ -42,8 +42,10 @@ public class AftermarketController {
         List<Aftermarket> list = aftermarketService.list(
                 new LambdaQueryWrapper<Aftermarket>().eq(Aftermarket::getIsDeleted,0));
 
+        //遍历售后信息根据订单id获取到的对应的订单状态
         for(Aftermarket aftermarket:list){
             Integer orderId = aftermarket.getOrderId();
+            //调用orderService写好的查询订单功能查询到对于的订单信息，拿到订单状态
             Order order = orderService.searchOrder(orderId);
             aftermarket.setStatus(order.getStatus());
         }
