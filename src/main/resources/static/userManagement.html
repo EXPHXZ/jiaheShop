@@ -19,7 +19,7 @@
             <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
             <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
             <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
-            <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>权限管理</a></li>
+            <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>用户账号管理</a></li>
             <li @click="goToPersonalInformation"><a><i class="fas fa-user"></i>个人中心</a></li>
         </ul>
     </nav>
@@ -189,10 +189,10 @@
             <el-pagination
                     @current-change="handleCurrentChange"
                     @size-change="handleSizeChange"
-                    :current-page="pagination.page"
-                    :page-size="pagination.size"
+                    :current-page="pagination.current"
+                    :page-size="pagination.pageSize"
                     :background="true"
-                    layout="total,prev,pager,next"
+                    layout="total,prev,pager,next,jumper"
                     :total="pagination.total"
             ></el-pagination>
         </el-row>
@@ -209,6 +209,8 @@
 <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
 
 <script>
+    let usernameFormat = /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){3,12}$/;
+    let passwordFormat = /^[a-zA-Z0-9]{6,12}$/;
 
     new Vue({
         el:"#content",
@@ -218,22 +220,20 @@
 
             handleCurrentChange(val) {
                 this.pagination.current = val;
-                this.selectAll()
+                this.selectByPage()
             },
 
             handleSizeChange(val){
                 this.pagination.pageSize = val;
-                this.selectAll()
+                this.selectByPage()
             },
 
             //分页查询
-            selectAll() {
+            selectByPage() {
                 console.log("selectByPage....")
                 axios.get("/userManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
                     this.tableData = res.data.data.records;
                     this.pagination.total = res.data.data.total;
-                    this.pagination.pageSize = res.data.data.size;
-                    this.pagination.current = res.data.data.current;
                 })
             },
 
@@ -261,22 +261,38 @@
 
             //添加表单确定添加后执行的办法
             add() {
-                axios.post("/userManagement/add",this.addUser).then((res) => {
-                    if (res.data.code == 20011) {//添加成功的情况
-                        this.dialogVisible = false;
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20012) {//添加失败的情况
-                        this.$message.error(res.data.msg)
-                        this.resetAddForm();
-                    } else {//出现位置异常时
-                        this.$message.error(res.data.msg)
-                        this.resetAddForm();
-                    }
-                }).finally(
-                    () => {
-                        this.selectAll()
-                    }
-                )
+                if (!usernameFormat.test(this.addUser.username)){
+                    this.$message({
+                        type: 'error',
+                        message: "账号由字母、数字和中文组成且长度在3-12位之间"
+                    });
+                    this.resetAddForm();
+                }
+                else if(!passwordFormat.test(this.addUser.password)){
+                    this.$message({
+                        type: 'error',
+                        message: "密码由字母和数字组成且长度在6-12位之间"
+                    });
+                    this.resetAddForm();
+                }
+                else{
+                    axios.post("/userManagement/add",this.addUser).then((res) => {
+                        if (res.data.code === 20011) {//添加成功的情况
+                            this.dialogVisible = false;
+                            this.$message.success((res.data.msg))
+                        } else if (res.data.code === 20012) {//添加失败的情况
+                            this.$message.error(res.data.msg);
+                            this.resetAddForm()
+                        } else {//出现位置异常时
+                            this.$message.error(res.data.msg);
+                            this.resetAddForm()
+                        }
+                    }).finally(
+                        () => {
+                            this.selectByPage()
+                        }
+                    )
+                }
             },
 
             //根据所选用户id删除单条数据
@@ -292,7 +308,7 @@
                     }
                 }).finally(
                     () => {
-                        this.selectAll()
+                        this.selectByPage()
                     }
                 )
             },
@@ -305,16 +321,16 @@
                     type: 'warning'
                 }).then(() => {
                     axios.post("/userManagement/delete", this.multipleSelection).then((res) => {
-                        if (res.data.code == 20021) {//成功
+                        if (res.data.code === 20021) {//成功
                             this.$message.success(res.data.msg)
-                        } else if (res.data.code == 20022) {//失败
+                        } else if (res.data.code === 20022) {//失败
                             this.$message.error(res.data.msg)
                         } else {//未知异常
                             this.$message.error(res.data.msg)
                         }
                     }).finally(
                         () => {
-                            this.selectAll()
+                            this.selectByPage()
                         }
                     )
                 })
@@ -322,10 +338,10 @@
 
             //搜索表单点击查询之后执行的办法
             search() {
-                axios.post("/userManagement/search", this.searchUser).then((res) => {
-                    this.tableData = res.data.data;
-                    this.$message.success(res.data.msg)
-                })
+                    axios.post("/userManagement/search", this.searchUser).then((res) => {
+                        this.tableData = res.data.data;
+                        this.$message.success(res.data.msg)
+                    })
             },
 
             //根据用户id查找要修改的用户信息并回显到修改表上
@@ -333,30 +349,53 @@
                 let id = row.id;
                 axios.get("/userManagement/search/" + id).then((res) => {
                     this.updateUser = res.data.data;
+                    //转换回显下拉框默认值格式
+                    if(res.data.data.identity === 0)
+                        this.updateUser.identity = "0";
+                    if(res.data.data.identity === 1)
+                        this.updateUser.identity = "1";
+                    if(res.data.data.identity === 2)
+                        this.updateUser.identity = "2";
+                    if(res.data.data.identity === 3)
+                        this.updateUser.identity = "3";
                 })
                 this.dialogVisible1 = true;
             },
 
             //更新数据
             update() {
-                axios.put("/userManagement/update", this.updateUser).then((res) => {
-                    if (res.data.code == 20041) {
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20042) {
-                        this.$message.error(res.data.msg)
-                    } else {
-                        this.$message.error(res.data.msg)
-                    }
-                }).finally(
-                    () => {
-                        this.selectAll();
-                    }
-                )
-                this.dialogVisible1 = false;
+                if (!usernameFormat.test(this.updateUser.username)){
+                    this.$message({
+                        type: 'error',
+                        message: "账号由字母、数字和中文组成且长度在3-12位之间"
+                    });
+                }
+                else if(!passwordFormat.test(this.updateUser.password)){
+                    this.$message({
+                        type: 'error',
+                        message: "密码由字母和数字组成且长度在6-12位之间"
+                    });
+                }
+                else{
+                    axios.put("/userManagement/update", this.updateUser).then((res) => {
+                        if (res.data.code === 20041) {
+                            this.dialogVisible1 = false;
+                            this.$message.success(res.data.msg)
+                        } else if (res.data.code === 20042) {
+                            this.$message.error(res.data.msg)
+                        } else {
+                            this.$message.error(res.data.msg)
+                        }
+                    }).finally(
+                        () => {
+                            this.selectByPage();
+                        }
+                    )
+                }
             },
 
-            //将数据库存User表存的identify装换为对应的状态
-            formatIdentify(row, column, cellValue) {
+            //将数据库存User表存的identity装换为对应的状态
+            formatIdentity(row, column, cellValue) {
                 if (cellValue === 0) {
                     return "总管理员";
                 } else if (cellValue === 1) {
@@ -371,7 +410,7 @@
         },
         //钩子函数，进去页面就会执行查询所有
         created() {
-            this.selectAll()
+            this.selectByPage()
         },
 
         data() {
@@ -403,7 +442,7 @@
                 //分页所需数据
                 pagination: {
                     current: 1,
-                    pageSize: 8,
+                    pageSize: 15,
                     total: 0,
                 },
             }
@@ -417,6 +456,7 @@
                 }
             }
         },
+
         created() {
             const userInfo = window.localStorage.getItem("userInfo")
             if (userInfo){

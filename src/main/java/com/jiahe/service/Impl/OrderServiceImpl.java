@@ -214,6 +214,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     //售后模块用的order相关办法
+
     //查询售后orderId所对应的订单信息
     @Override
     public Order searchOrder(Integer orderId) {
@@ -240,7 +241,6 @@ public class OrderServiceImpl implements OrderService {
             orderCommodity.setStatus(2);
             orderCommodityDao.updateById(orderCommodity);
         }
-
         return true;
     }
 

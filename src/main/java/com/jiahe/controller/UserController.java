@@ -45,7 +45,7 @@ public class UserController {
         if (userService.addUser(user))
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
-            return new Result(null,Code.ADD_FAIL,"添加失败,相同的角色已经存在于数据库中");
+            return new Result(null,Code.ADD_FAIL,"添加失败,相同的用户信息已经存在于数据库中");
     }
 
 //  批量删除数据
@@ -59,18 +59,18 @@ public class UserController {
     @DeleteMapping("delete/{id}")
     public Result deleteUser(@PathVariable Integer id) throws Exception{
         if (userService.deleteUser(id))
-            return new Result(null,Code.ADD_SUCCESS,"删除成功");
+            return new Result(null,Code.DELETE_SUCCESS,"删除成功");
         else
-            return new Result(null,Code.ADD_FAIL,"删除失败,删除的角色不存在于数据库中");
+            return new Result(null,Code.DELETE_FAIL,"删除失败,删除的角色不存在于数据库中");
     }
 
 //  修改用户信息
     @PutMapping("/update")
     public Result updateUser(@RequestBody User user) throws Exception{
         if (userService.updateUser(user))
-            return new Result(null,Code.ADD_FAIL,"修改成功");
+            return new Result(null,Code.UPDATE_SUCCESS,"修改成功");
         else
-            return new Result(null,Code.ADD_FAIL,"修改失败,修改的角色不存在于数据库中");
+            return new Result(null,Code.UPDATE_FAIL,"修改失败,相同的用户信息已存在于数据库中");
 
     }
 
