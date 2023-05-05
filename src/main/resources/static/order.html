@@ -42,7 +42,7 @@
               用户账号管理
             </a>
           </li>
-          <li>
+          <li @click = "goToPersonalInformation">
             <a>
               <i class="fas fa-user"></i>
               个人中心
@@ -58,7 +58,7 @@
               订单管理
             </a>
           </li>
-          <li>
+          <li @click = "goToPersonalInformation">
             <a>
               <i class="fas fa-user"></i>
               个人中心
@@ -74,7 +74,7 @@
               商品管理
             </a>
           </li>
-          <li>
+          <li @click = "goToPersonalInformation">
             <a>
               <i class="fas fa-user"></i>
               个人中心
@@ -90,8 +90,8 @@
               售后管理
             </a>
           </li>
-          <li>
-            <a href="">
+          <li @click = "goToPersonalInformation">
+            <a>
               <i class="fas fa-user"></i>
               个人中心
             </a>
@@ -384,7 +384,10 @@
           goToUserManagement() {
             window.location.href = 'userManagement.html'
           },
-        },
+          goToPersonalInformation() {
+            window.location.href = "personalInformation.html"
+          }
+        }
       })
     </script>
   </body>

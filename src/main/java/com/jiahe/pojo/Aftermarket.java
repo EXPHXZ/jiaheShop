@@ -34,5 +34,4 @@ public class Aftermarket implements Serializable {
 
     private Integer isDeleted;
 
-
 }
