@@ -35,7 +35,9 @@ public class PersonalServiceImpl implements PersonalService {
 
     @Override
     public Boolean updatePersonalInfo(Personal personal) {
-        return personalDao.updateById(personal) > 0;
+        LambdaQueryWrapper<Personal> lqw = new LambdaQueryWrapper<Personal>();
+        lqw.eq(Personal::getUserId, personal.getUserId());
+        return personalDao.update(personal, lqw) > 0;
     }
 
 }
