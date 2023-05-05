@@ -15,6 +15,36 @@
             </div>
         </header>
 
+        <div id="nav">
+            <nav v-if="user.identity === 0">
+                <ul>
+                    <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+                    <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
+                    <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+                    <li @click="goToUserManagement"><a><i class="fas fa-shield-alt"></i>用户账号管理</a></li>
+                    <li @click="goToPersonalInformation"><a><i class="fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if="user.identity === 1">
+                <ul>
+                    <li @click="goToOrder"><a><i class="fas fa-list-alt"></i>订单管理</a></li>
+                    <li><a><i class="fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if="user.identity === 2">
+                <ul>
+                    <li @click="goToCommodity"><a><i class="fas fa-shopping-bag"></i>商品管理</a></li>
+                    <li><a><i class="fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if="user.identity === 3">
+                <ul>
+                    <li @click="goToAftermarket"><a><i class="fas fa-exchange-alt"></i>售后管理</a></li>
+                    <li><a href=""><i class="fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+        </div>
+
         <div id = "information">
 
             <el-empty description = "我们还没有您的个人信息哦！" v-if = "infoIsEmpty">
@@ -26,7 +56,7 @@
             <h4 v-if = "!infoIsEmpty">当前时间：{{dateTime}}</h4>
 
             <template v-if = "!infoIsEmpty">
-                <el-descriptions class = "margin-top" title = "个人信息" :column = "3" :size = "size" border>
+                <el-descriptions class = "margin-top" title = "个人信息" :column = "3" size = "medium" border>
                     <template slot = "extra">
                         <el-button type = "primary" icon = "el-icon-edit" circle @click = "showUpdateForm"></el-button>
                         <el-button type = "danger" icon = "el-icon-delete" circle @click = "deleteVisible = true"></el-button>
@@ -359,6 +389,42 @@
                     }
                 }
             });
+
+
+            new Vue({
+                el:"#nav",
+                data() {
+                    return {
+                        user: {
+                        }
+                    }
+                },
+                created() {
+                    const userInfo = window.localStorage.getItem("userInfo")
+                    if (userInfo){
+                        this.user = JSON.parse(userInfo);
+                    }
+                    console.log(this.user)
+                },
+
+                methods: {
+                    goToCommodity(){
+                        window.location.href = "commodity.html"
+                    },
+                    goToAftermarket(){
+                        window.location.href = "aftermarket.html"
+                    },
+                    goToOrder(){
+                        window.location.href = "order.html"
+                    },
+                    goToUserManagement(){
+                        window.location.href = "userManagement.html"
+                    },
+                    goToPersonalInformation() {
+                        window.location.href = "personalInformation.html"
+                    }
+                }
+            })
         </script>
 
     </body>

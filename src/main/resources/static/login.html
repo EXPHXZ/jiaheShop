@@ -48,7 +48,7 @@
                             //需要把登录成功的用户信息存储到本地中，类似于存储在session中
                             window.localStorage.setItem("userInfo",JSON.stringify(res.data.data))
                             //然后跳转页面
-                            window.location.href = "commodity.html"
+                            window.location.href = "personalInformation.html"
                         }else if (res.data.code == 20052) {
                             this.$message.error(res.data.msg);
                         }else {

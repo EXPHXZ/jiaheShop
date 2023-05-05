@@ -43,6 +43,12 @@ nav a {
     color: #333;
 }
 
+.el-descriptions__body {
+    width: 86%;
+    background-color: #FFF;
+    float: left;
+}
+
 .logo {
     float: right;
     margin: 10px;
