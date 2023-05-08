@@ -36,12 +36,12 @@ public class AftermarketController {
      * 获取所有的售后信息
      * @return
      */
+
     @GetMapping("/getAll")
     public Result getAll(){
         //获取没有删除的订单列表
         List<Aftermarket> list = aftermarketService.list(
                 new LambdaQueryWrapper<Aftermarket>().eq(Aftermarket::getIsDeleted,0));
-
         //遍历售后信息根据订单id获取到的对应的订单状态
         for(Aftermarket aftermarket:list){
             Integer orderId = aftermarket.getOrderId();

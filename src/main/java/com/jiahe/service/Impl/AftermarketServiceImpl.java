@@ -7,13 +7,10 @@ import com.jiahe.service.AftermarketService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- *  服务实现类
- * </p>
- *
  * @author  
  * @since 2023-04-29
  */
+
 @Service
 public class AftermarketServiceImpl extends ServiceImpl<AftermarketDao, Aftermarket> implements AftermarketService {
 
