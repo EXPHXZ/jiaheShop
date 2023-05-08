@@ -80,6 +80,10 @@ public class AftermarketController {
     }
 
 
+
+
+
+
     @PostMapping("/delete")
     public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket){
         Integer id = aftermarket.getId();
