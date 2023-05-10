@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>管理员账号管理</title>
+        <meta charset = "UTF-8">
+        <link rel = "stylesheet" href = "css/query.css">
+        <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+        <link rel = "stylesheet" href = "//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+
+    <body>
+        <header>
+            <div class = "logo">
+                <h1>嘉禾商城</h1>
+            </div>
+        </header>
+
+        <div id = "nav">
+            <nav v-if = "admin.identity === 0">
+                <ul>
+                    <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
+                    <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
+                    <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
+                    <li @click = "goToAdminsManagement"><a><i class = "fas fa-shield-alt"></i>管理员账号管理</a></li>
+                    <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if = "admin.identity === 1">
+                <ul>
+                    <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if = "admin.identity === 2">
+                <ul>
+                    <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if = "admin.identity === 3">
+                <ul>
+                    <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if = "admin.identity === 4">
+                <ul>
+                    <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div id = "content" class = "content">
+
+            <el-form :inline = "true" :model = "searchForm" class = "demo-form-inline">
+                <el-form-item label = "管理员ID">
+                    <el-input v-model = "searchForm.id" placeholder = "管理员ID"></el-input>
+                </el-form-item>
+                <el-form-item label = "账号">
+                    <el-input v-model = "searchForm.account" placeholder = "账号"></el-input>
+                </el-form-item>
+                <el-form-item label = "权限">
+                    <el-select v-model = "searchForm.identity" placeholder = "权限">
+                        <el-option label = "总管理员" value = "0"></el-option>
+                        <el-option label = "订单管理员" value = "1"></el-option>
+                        <el-option label = "商品管理员" value= "2"></el-option>
+                        <el-option label = "售后管理员" value = "3"></el-option>
+                        <el-option label = "用户账号管理员" value = "4"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type = "primary" @click = "searchAdmins">查 询</el-button>
+                </el-form-item>
+            </el-form>
+
+            <template>
+                <el-table :data = "tableData" border style = "width: 100%" @selection-change = "handleSelectionChange" :default-sort = "{prop: 'date', order: 'descending'}">
+                    <el-table-column type = "selection" align = "center" sortable min-width = "10%"></el-table-column>
+                    <el-table-column prop = "id" label  = "管理员ID" align = "center" sortable min-width = "15%"></el-table-column>
+                    <el-table-column prop = "account" label = "账号" align = "center" sortable min-width = "15%"></el-table-column>
+                    <el-table-column prop = "password" label = "密码" align = "center" sortable min-width = "15%"></el-table-column>
+                    <el-table-column prop = "identity" label = "权限" align = "center" sortable min-width = "15%" :formatter =  "formatIdentity"></el-table-column>
+                    <el-table-column label = "操作" align = "center" min-width = "30%">
+                        <template slot-scope = "scope">
+                            <el-row>
+                                <el-button type = "primary" @click = "searchUpdateAdmin(scope.row)" round>编 辑</el-button>
+                                <el-button type = "danger" @click = "deleteAdmin(scope.row)">删 除</el-button>
+                            </el-row>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <el-row class = "block">
+                    <el-button type = "primary" @click = "addAdminVisible = true">新增管理员</el-button>
+                    <el-button type = "danger" @click = "deleteBatchAdmins">批量删除</el-button>
+                    <el-button type = "primary" @click = "refresh">刷新</el-button>
+                    <el-pagination
+                            @current-change = "handleCurrentChange"
+                            @size-change = "handleSizeChange"
+                            :current-page = "pagination.current"
+                            :page-size = "pagination.pageSize"
+                            :background = "true"
+                            layout = "total, prev, pager, next, jumper"
+                            :total = "pagination.total">
+                    </el-pagination>
+                </el-row>
+            </template>
+
+            <el-dialog title = "添加管理员" :visible.sync = "addAdminVisible" width = "50%">
+                <el-form ref = "addForm" :model = "addForm" label-width = "80px">
+                    <el-form-item label = "账号">
+                        <el-input v-model  = "addForm.account"></el-input>
+                    </el-form-item>
+                    <el-form-item label = "密码">
+                        <el-input v-model = "addForm.password"></el-input>
+                    </el-form-item>
+                    <el-form-item label = "权限">
+                        <el-select v-model = "addForm.identity" placeholder = "请选择权限">
+                            <el-option label = "总管理员" value = "0"></el-option>
+                            <el-option label = "订单管理员" value = "1"></el-option>
+                            <el-option label = "商品管理员" value= "2"></el-option>
+                            <el-option label = "售后管理员" value = "3"></el-option>
+                            <el-option label = "用户账号管理员" value = "4"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type = "primary" @click = "addAdmin">添 加</el-button>
+                        <el-button @click = "addAdminVisible = false">取 消</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+
+            <el-dialog title = "管理员修改" :visible.sync = "updateAdminVisible" width = "50%">
+                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px">
+                    <el-form-item label = "账号">
+                        <el-input v-model = "updateForm.account"></el-input>
+                    </el-form-item>
+                    <el-form-item label = "密码">
+                        <el-input v-model = "updateForm.password"></el-input>
+                    </el-form-item>
+                    <el-form-item label = "权限">
+                        <el-select v-model = "updateForm.identity" placeholder="请选择权限">
+                            <el-option label = "总管理员" value = "0"></el-option>
+                            <el-option label = "订单管理员" value = "1"></el-option>
+                            <el-option label = "商品管理员" value = "2"></el-option>
+                            <el-option label = "售后管理员" value = "3"></el-option>
+                            <el-option label = "用户账号管理员" value = "4"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type = "primary" @click = "updateAdmin">修 改</el-button>
+                        <el-button @click = "updateAdminVisible = false">取 消</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+
+        </div>
+
+        <script src = "js/vue.js"></script>
+        <script src = "element-ui/lib/index.js"></script>
+        <script src = "js/axios-0.18.0.js"></script>
+        <link rel = "stylesheet" href = "element-ui/lib/theme-chalk/index.css">
+
+        <script>
+            let accountFormat = /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){3,12}$/
+            let passwordFormat = /^[a-zA-Z0-9]{6,12}$/
+
+            new Vue({
+                el: "#content",
+
+                methods: {
+                    refresh() {
+                        window.location.reload(true)
+                    },
+
+                    handleCurrentChange(val) {
+                        this.pagination.current = val
+                        this.selectByPage()
+                    },
+
+                    handleSizeChange(val) {
+                        this.pagination.pageSize = val
+                        this.selectByPage()
+                    },
+
+                    selectByPage() {
+                        axios.get("/adminsManagement/" + this.pagination.current + "/" + this.pagination.pageSize).then((resp) => {
+                            this.tableData = resp.data.data.records
+                            this.pagination.total = resp.data.data.total
+                        })
+                    },
+
+                    handleSelectionChange(val) {
+                        this.multipleSelection = val
+                    },
+
+                    addAdmin() {
+                        if (!accountFormat.test(this.addForm.account))
+                            this.$message({showClose: true, message: "账号由字母、数字和中文组成且长度在3-12位之间", type: "error"})
+                        else if (!passwordFormat.test(this.addForm.password))
+                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "error"})
+                        else {
+                            axios.post("/adminsManagement/addAdmin", this.addForm).then((resp) => {
+                                if (resp.data.code === 20011) {
+                                    this.addAdminVisible = false
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                }
+                                else if (resp.data.code === 20012)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            }).finally(() => {
+                                this.selectByPage()
+                            })
+                        }
+                    },
+
+                    deleteAdmin(row) {
+                        axios.delete("/adminsManagement/delete/" + row.id).then((resp) => {
+                            if (resp.data.code === 20021)
+                                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                            else if (resp.data.code === 20022)
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            else
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                        }).finally(() => {
+                            this.selectByPage()
+                        })
+                    },
+
+                    deleteBatchAdmins() {
+                        this.$confirm("此操作将批量删除管理员, 是否继续?", "提示", {
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning"
+                        }).then(() => {
+                            axios.post("/adminsManagement/delete", this.multipleSelection).then((resp) => {
+                                if (resp.data.code === 20021)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                else if (resp.data.code === 20022)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            }).finally(() => {
+                                this.selectByPage()
+                            })
+                        })
+                    },
+
+                    searchAdmins() {
+                        axios.post("/adminsManagement/search", this.searchForm).then((resp) => {
+                            this.tableData = resp.data.data;
+                            this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                        })
+                    },
+
+                    searchUpdateAdmin(row) {
+                        axios.get("/adminsManagement/search/" + row.id).then((res) => {
+                            this.updateForm = res.data.data;
+                            if (res.data.data.identity === 0)
+                                this.updateForm.identity = "0"
+                            else if (res.data.data.identity === 1)
+                                this.updateForm.identity = "1"
+                            else if (res.data.data.identity === 2)
+                                this.updateForm.identity = "2"
+                            else if (res.data.data.identity === 3)
+                                this.updateForm.identity = "3"
+                            else if (res.data.data.identity === 4)
+                                this.updateForm.identity = "4"
+                        })
+                        this.updateAdminVisible = true
+                    },
+
+                    updateAdmin() {
+                        if (!accountFormat.test(this.updateForm.account))
+                            this.$message({showClose: true, message: "账号由字母、数字和中文组成且长度在3-12位之间", type: "error"})
+                        else if(!passwordFormat.test(this.updateForm.password))
+                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "error"})
+                        else {
+                            axios.put("/adminsManagement/update", this.updateForm).then((resp) => {
+                                if (resp.data.code === 20041) {
+                                    this.updateAdminVisible = false
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                }
+                                else if (resp.data.code === 20042)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            }).finally(() => {
+                                this.selectByPage();
+                            })
+                        }
+                    },
+
+                    formatIdentity(row, column, cellValue) {
+                        if (cellValue === 0)
+                            return "总管理员"
+                        else if (cellValue === 1)
+                            return "订单管理员"
+                        else if (cellValue === 2)
+                            return "商品管理员"
+                        else if (cellValue === 3)
+                            return "售后管理员"
+                        else if (cellValue === 4)
+                            return "用户账号管理员"
+                    }
+                },
+
+                mounted() {
+                    this.selectByPage()
+                },
+
+                data() {
+                    return {
+                        addAdminVisible: false,
+
+                        updateAdminVisible: false,
+
+                        addForm: {
+                        },
+
+                        updateForm: {
+                        },
+
+                        searchForm: {
+                        },
+
+                        tableData: [],
+
+                        multipleSelection:[],
+
+                        pagination: {
+                            current: 1,
+                            pageSize: 15,
+                            total: 0,
+                        },
+                    }
+                }
+            })
+
+            new Vue({
+                el: "#nav",
+
+                data() {
+                    return {
+                        admin: {
+                        }
+                    }
+                },
+
+                created() {
+                    const adminInfo = window.localStorage.getItem("adminInfo")
+                    if (adminInfo)
+                        this.admin = JSON.parse(adminInfo);
+                    console.log(this.admin)
+                },
+
+                methods: {
+                    goToCommodity(){
+                        window.location.href = "commodity.html"
+                    },
+
+                    goToAftermarket(){
+                        window.location.href = "aftermarket.html"
+                    },
+
+                    goToOrder(){
+                        window.location.href = "order.html"
+                    },
+
+                    goToAdminsManagement(){
+                        window.location.href = "adminsManagement.html"
+                    },
+
+                    goToUsersManagement(){
+                        window.location.href = "usersManagement.html"
+                    },
+
+                    goToPersonalInformation() {
+                        window.location.href = "personalInformation.html"
+                    }
+                }
+            })
+        </script>
+
+    </body>
+</html>

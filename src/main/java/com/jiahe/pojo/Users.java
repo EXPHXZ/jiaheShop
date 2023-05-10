@@ -3,12 +3,13 @@ package com.jiahe.pojo;
 import lombok.Data;
 
 @Data
-public class Personal {
+public class Users {
     private Integer id;
+    private String username;
+    private String password;
     private String name;
-    private Integer userId;
     private String sex;
-    private String phoneNumber;
-    private String email;
+    private String phone;
+    private String avatar;
     private int isDeleted;
 }

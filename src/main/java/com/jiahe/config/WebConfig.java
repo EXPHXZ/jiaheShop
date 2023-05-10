@@ -17,8 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
         registration.addPathPatterns("/**");
         //配置可放行路径
         registration.excludePathPatterns(
-                "/login.html",
-                "/userManagement/login",
+                "/adminsLogin.html",
+                "/adminsManagement/login",
                 "/css/*",
                 "/js/*",
                 "/element-ui/**",

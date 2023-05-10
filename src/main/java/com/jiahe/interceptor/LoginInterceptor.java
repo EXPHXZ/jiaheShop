@@ -1,6 +1,6 @@
 package com.jiahe.interceptor;
 
-import com.jiahe.pojo.User;
+import com.jiahe.pojo.Admins;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -11,13 +11,13 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("执行了preHandle");
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null){
-            System.out.println("user不为null");
+        Admins admins = (Admins)request.getSession().getAttribute("admin");
+        if (admins != null) {
+            System.out.println("admin不为null");
             return true;
         }
-        System.out.println("请求"+request.getRequestURI()+"被拦截");
-        response.sendRedirect("/login.html");
+        System.out.println("请求" + request.getRequestURI() + "被拦截");
+        response.sendRedirect("/adminsLogin.html");
         return false;
     }
 

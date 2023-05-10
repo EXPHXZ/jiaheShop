@@ -6,13 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiahe.dao.OrderCommodityDao;
 import com.jiahe.dao.OrderDao;
 import com.jiahe.dao.CommodityDao;
-import com.jiahe.dao.UserDao;
+import com.jiahe.dao.UsersDao;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
-import com.jiahe.pojo.User;
+import com.jiahe.pojo.Users;
 import com.jiahe.service.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private CommodityDao commodityDao;
     @Autowired
-    private UserDao userDao;
+    private UsersDao usersDao;
 
     @Override
     public IPage<OrderDto> selectAllOrder(Integer page, Integer size, Integer desc) {
@@ -59,9 +59,9 @@ public class OrderServiceImpl implements OrderService {
             BeanUtils.copyProperties(order,orderDto);
 
             // 查询用户名
-            LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(User::getId,order.getUserId());
-            User user = userDao.selectOne(wrapper);
+            LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Users::getId,order.getUserId());
+            Users user = usersDao.selectOne(wrapper);
             orderDto.setUsername(user.getUsername());
 
             orderDtos.add(orderDto);
@@ -89,9 +89,9 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(order,orderDto);
 
         // 查询用户名
-        LambdaQueryWrapper<User> wrapper2 = new LambdaQueryWrapper<>();
-        wrapper2.eq(User::getId,order.getUserId());
-        User user = userDao.selectOne(wrapper2);
+        LambdaQueryWrapper<Users> wrapper2 = new LambdaQueryWrapper<>();
+        wrapper2.eq(Users::getId,order.getUserId());
+        Users user = usersDao.selectOne(wrapper2);
         orderDto.setUsername(user.getUsername());
 
         // 查询订单项
@@ -118,9 +118,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public IPage<OrderDto> selectOrderByUserName(String username, Integer page, Integer size, Integer desc) {
         // 根据userName在user表中模糊查询，查询对应的所有用户
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(User::getUsername,username);
-        List<User> users = userDao.selectList(wrapper);
+        LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(Users::getUsername,username);
+        List<Users> users = usersDao.selectList(wrapper);
 
         // 判空
         if (users.isEmpty()){
@@ -129,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 将用户id放入list中
         List<Integer> userIds = new ArrayList<>();
-        for (User user : users) {
+        for (Users user : users) {
             userIds.add(user.getId());
         }
 
@@ -153,9 +153,9 @@ public class OrderServiceImpl implements OrderService {
             BeanUtils.copyProperties(order,orderDto);
 
             // 查询用户名
-            LambdaQueryWrapper<User> wrapper1 = new LambdaQueryWrapper<>();
-            wrapper1.eq(User::getId,order.getUserId());
-            User user = userDao.selectOne(wrapper1);
+            LambdaQueryWrapper<Users> wrapper1 = new LambdaQueryWrapper<>();
+            wrapper1.eq(Users::getId,order.getUserId());
+            Users user = usersDao.selectOne(wrapper1);
             orderDto.setUsername(user.getUsername());
 
             orderDtos.add(orderDto);

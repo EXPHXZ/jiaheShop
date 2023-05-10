@@ -16,31 +16,38 @@
         </header>
 
         <div id = "nav">
-            <nav v-if = "user.identity === 0">
+            <nav v-if = "admin.identity === 0">
                 <ul>
                     <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
                     <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
                     <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
-                    <li @click = "goToUserManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
+                    <li @click = "goToAdminsManagement"><a><i class = "fas fa-shield-alt"></i>管理员账号管理</a></li>
+                    <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
                     <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
                 </ul>
             </nav>
-            <nav v-else-if = "user.identity === 1">
+            <nav v-else-if = "admin.identity === 1">
                 <ul>
                     <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
-                    <li><a><i class = "fas fa-user"></i>个人中心</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
                 </ul>
             </nav>
-            <nav v-else-if = "user.identity === 2">
+            <nav v-else-if = "admin.identity === 2">
                 <ul>
                     <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
-                    <li><a><i class = "fas fa-user"></i>个人中心</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
                 </ul>
             </nav>
-            <nav v-else-if = "user.identity === 3">
+            <nav v-else-if = "admin.identity === 3">
                 <ul>
                     <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
-                    <li><a><i class = "fas fa-user"></i>个人中心</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+                </ul>
+            </nav>
+            <nav v-else-if = "admin.identity === 4">
+                <ul>
+                    <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
+                    <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
                 </ul>
             </nav>
         </div>
@@ -391,20 +398,20 @@
             });
 
             new Vue({
-                el:"#nav",
+                el: "#nav",
 
                 data() {
                     return {
-                        user: {
+                        admin: {
                         }
                     }
                 },
 
                 created() {
-                    const userInfo = window.localStorage.getItem("userInfo")
-                    if (userInfo)
-                        this.user = JSON.parse(userInfo)
-                    console.log(this.user)
+                    const adminInfo = window.localStorage.getItem("adminInfo")
+                    if (adminInfo)
+                        this.admin = JSON.parse(adminInfo);
+                    console.log(this.admin)
                 },
 
                 methods: {
@@ -420,8 +427,12 @@
                         window.location.href = "order.html"
                     },
 
-                    goToUserManagement(){
-                        window.location.href = "userManagement.html"
+                    goToAdminsManagement(){
+                        window.location.href = "adminsManagement.html"
+                    },
+
+                    goToUsersManagement(){
+                        window.location.href = "usersManagement.html"
                     },
 
                     goToPersonalInformation() {

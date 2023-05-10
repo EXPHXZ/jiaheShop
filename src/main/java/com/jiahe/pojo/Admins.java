@@ -1,14 +1,16 @@
 package com.jiahe.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
 @Data
-public class User {
+public class Admins {
     private Integer id;
-    private String username;
+    private String account;
     private String password;
+    private String name;
+    private String sex;
+    private String phone;
+    private String email;
     private Integer identity;
-    @TableLogic(value = "0",delval = "1")
     private int isDeleted;
 }

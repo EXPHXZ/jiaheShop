@@ -134,7 +134,7 @@
                 axios({
                   url: '/order/insertOrderCommodity',
                   params: {
-                    userId: this.user.id,
+                    userId: this.admin.id,
                   },
                   data: commitOrder,
                   method: 'post',
@@ -252,9 +252,9 @@
         },
 
         created() {
-          const userInfo = window.localStorage.getItem('userInfo')
-          if (userInfo) {
-            this.user = JSON.parse(userInfo)
+          const adminInfo = window.localStorage.getItem('adminInfo')
+          if (adminInfo) {
+            this.admin = JSON.parse(admin)
           }
           this.selectCommodityList()
         },

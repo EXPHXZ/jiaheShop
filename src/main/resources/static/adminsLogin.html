@@ -1,0 +1,106 @@
+<html>
+    <head>
+        <meta charset = "UTF-8">
+        <title>嘉禾商城 - 登陆/注册</title>
+        <link rel = "stylesheet" href = "css/login.css">
+    </head>
+
+    <body>
+        <div class = "header">
+            <img src = "images/logo.png" alt = "嘉禾商城 Logo">
+            <h1>欢迎来到嘉禾商城管理系统</h1>
+        </div>
+
+        <div id = "app" class = "form-container">
+            <div class = "tab">
+                <button class = "tablinks active" onclick = "openTab(event, 'adminsLogin')">登陆界面</button>
+            </div>
+
+            <el-form ref = "loginForm" :model = "loginForm" label-width = "80px" :rules = "rules">
+                <el-form-item label = "账号：" prop = "account">
+                    <el-input v-model = "loginForm.account"></el-input>
+                </el-form-item>
+                <el-form-item label = "密码：" prop = "password">
+                    <el-input v-model = "loginForm.password" show-password></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type = "warning" @click = "login">登 录</el-button>
+                    <el-button @click = "reset">重 置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+
+        <script src = "js/login.js"></script>
+        <script src = "js/vue.js"></script>
+        <script src = "element-ui/lib/index.js"></script>
+        <script src = "js/axios-0.18.0.js"></script>
+        <link rel = "stylesheet" href = "element-ui/lib/theme-chalk/index.css">
+
+        <script>
+            new Vue({
+                el: "#app",
+
+                methods: {
+                    login() {
+                        axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
+                                if (resp.data.code === 20051) {
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                    window.localStorage.setItem("adminInfo", JSON.stringify(resp.data.data))
+                                    window.location.href = "personalInformation.html"
+                                }
+                                else if (resp.data.code === 20052)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            }
+                        )
+                    },
+
+                    reset(){
+                        this.form = {}
+                    }
+                },
+
+                data() {
+                    return {
+                        loginForm: {
+                            account:"",
+                            password:""
+                        },
+
+                        rules: {
+                            account: [{
+                                    required : true,
+                                    message : "请输入账号",
+                                    trigger : "blur"
+                                }, {
+                                    type : "string",
+                                    pattern : /^[a-zA-Z0-9]+$/,
+                                    min:3,
+                                    max:12,
+                                    message: "账号由字母和数字组成且长度在3-12位之间",
+                                    trigger: 'blur'
+                                }
+                            ],
+                            password: [{
+                                    required : true,
+                                    message : "请输入密码",
+                                    trigger : "blur"
+                                }, {
+                                    type : "string",
+                                    pattern : /^[a-zA-Z0-9]+$/,
+                                    min:6,
+                                    max:12,
+                                    message: "密码由字母和数字组成且长度在6-12位之间",
+                                    trigger: 'blur'
+                                }
+                            ]
+                        }
+                    }
+                 }
+            })
+        </script>
+
+    </body>
+</html>
+
