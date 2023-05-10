@@ -95,7 +95,7 @@
                 <el-row class = "block">
                     <el-button type = "primary" @click = "addAdminVisible = true">新增管理员</el-button>
                     <el-button type = "danger" @click = "deleteBatchAdmins">批量删除</el-button>
-                    <el-button type = "primary" @click = "refresh">刷新</el-button>
+                    <el-button type = "primary" @click = "refresh">刷 新</el-button>
                     <el-pagination
                             @current-change = "handleCurrentChange"
                             @size-change = "handleSizeChange"
@@ -109,14 +109,14 @@
             </template>
 
             <el-dialog title = "添加管理员" :visible.sync = "addAdminVisible" width = "50%">
-                <el-form ref = "addForm" :model = "addForm" label-width = "80px">
-                    <el-form-item label = "账号">
+                <el-form ref = "addForm" :model = "addForm" label-width = "80px" :rules = "addRules">
+                    <el-form-item label = "账号" prop = "account">
                         <el-input v-model  = "addForm.account"></el-input>
                     </el-form-item>
-                    <el-form-item label = "密码">
+                    <el-form-item label = "密码" prop = "password">
                         <el-input v-model = "addForm.password"></el-input>
                     </el-form-item>
-                    <el-form-item label = "权限">
+                    <el-form-item label = "权限" prop = "identity">
                         <el-select v-model = "addForm.identity" placeholder = "请选择权限">
                             <el-option label = "总管理员" value = "0"></el-option>
                             <el-option label = "订单管理员" value = "1"></el-option>
@@ -133,14 +133,14 @@
             </el-dialog>
 
             <el-dialog title = "管理员修改" :visible.sync = "updateAdminVisible" width = "50%">
-                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px">
-                    <el-form-item label = "账号">
+                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "updateRules">
+                    <el-form-item label = "账号" prop = "account">
                         <el-input v-model = "updateForm.account"></el-input>
                     </el-form-item>
-                    <el-form-item label = "密码">
+                    <el-form-item label = "密码" prop = "password">
                         <el-input v-model = "updateForm.password"></el-input>
                     </el-form-item>
-                    <el-form-item label = "权限">
+                    <el-form-item label = "权限" prop = "identity">
                         <el-select v-model = "updateForm.identity" placeholder="请选择权限">
                             <el-option label = "总管理员" value = "0"></el-option>
                             <el-option label = "订单管理员" value = "1"></el-option>
@@ -197,13 +197,22 @@
                     },
 
                     addAdmin() {
-                        if (!accountFormat.test(this.addForm.account))
-                            this.$message({showClose: true, message: "账号由字母、数字和中文组成且长度在3-12位之间", type: "error"})
+                        if (this.addForm.account === "")
+                            this.$message({showClose: true, message: "账号不能为空", type: "warning"})
+                        else if (!accountFormat.test(this.addForm.account))
+                            this.$message({showClose: true, message: "账号由字母和数字组成且长度在3-12位之间", type: "warning"})
+                        else if (this.addForm.password === "")
+                            this.$message({showClose: true, message: "密码不能为空", type: "warning"})
                         else if (!passwordFormat.test(this.addForm.password))
-                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "error"})
+                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "warning"})
+                        else if (this.addForm.identity === "")
+                            this.$message({showClose: true, message: "权限不能为空", type: "warning"})
                         else {
                             axios.post("/adminsManagement/addAdmin", this.addForm).then((resp) => {
                                 if (resp.data.code === 20011) {
+                                    this.addForm.account = ""
+                                    this.addForm.password = ""
+                                    this.addForm.identity = ""
                                     this.addAdminVisible = false
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                 }
@@ -236,7 +245,7 @@
                             cancelButtonText: "取消",
                             type: "warning"
                         }).then(() => {
-                            axios.post("/adminsManagement/delete", this.multipleSelection).then((resp) => {
+                            axios.post("/adminsManagement/deleteBatchAdmins", this.multipleSelection).then((resp) => {
                                 if (resp.data.code === 20021)
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                 else if (resp.data.code === 20022)
@@ -257,29 +266,35 @@
                     },
 
                     searchUpdateAdmin(row) {
-                        axios.get("/adminsManagement/search/" + row.id).then((res) => {
-                            this.updateForm = res.data.data;
-                            if (res.data.data.identity === 0)
+                        axios.get("/adminsManagement/search/" + row.id).then((resp) => {
+                            this.updateForm = resp.data.data
+                            if (resp.data.data.identity === 0)
                                 this.updateForm.identity = "0"
-                            else if (res.data.data.identity === 1)
+                            else if (resp.data.data.identity === 1)
                                 this.updateForm.identity = "1"
-                            else if (res.data.data.identity === 2)
+                            else if (resp.data.data.identity === 2)
                                 this.updateForm.identity = "2"
-                            else if (res.data.data.identity === 3)
+                            else if (resp.data.data.identity === 3)
                                 this.updateForm.identity = "3"
-                            else if (res.data.data.identity === 4)
+                            else if (resp.data.data.identity === 4)
                                 this.updateForm.identity = "4"
                         })
                         this.updateAdminVisible = true
                     },
 
                     updateAdmin() {
-                        if (!accountFormat.test(this.updateForm.account))
-                            this.$message({showClose: true, message: "账号由字母、数字和中文组成且长度在3-12位之间", type: "error"})
-                        else if(!passwordFormat.test(this.updateForm.password))
-                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "error"})
+                        if (this.updateForm.account === "")
+                            this.$message({showClose: true, message: "账号不能为空", type: "warning"})
+                        else if (!accountFormat.test(this.updateForm.account))
+                            this.$message({showClose: true, message: "账号由字母和数字组成且长度在3-12位之间", type: "warning"})
+                        else if (this.updateForm.password === "")
+                            this.$message({showClose: true, message: "密码不能为空", type: "warning"})
+                        else if (!passwordFormat.test(this.updateForm.password))
+                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "warning"})
+                        else if (this.updateForm.identity === "")
+                            this.$message({showClose: true, message: "权限不能为空", type: "warning"})
                         else {
-                            axios.put("/adminsManagement/update", this.updateForm).then((resp) => {
+                            axios.put("/adminsManagement", this.updateForm).then((resp) => {
                                 if (resp.data.code === 20041) {
                                     this.updateAdminVisible = false
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
@@ -319,9 +334,15 @@
                         updateAdminVisible: false,
 
                         addForm: {
+                            account: "",
+                            password: "",
+                            identity: ""
                         },
 
                         updateForm: {
+                            account: "",
+                            password: "",
+                            identity: ""
                         },
 
                         searchForm: {
@@ -333,8 +354,64 @@
 
                         pagination: {
                             current: 1,
-                            pageSize: 15,
+                            pageSize: 10,
                             total: 0,
+                        },
+
+                        addRules: {
+                            account: [{
+                                required: true,
+                                message: "请输入账号",
+                                trigger: "blur"
+                            }, {
+                                type: "string",
+                                pattern: accountFormat,
+                                message: "账号由字母和数字组成且长度在3-12位之间",
+                                trigger: "blur"
+                            }],
+                            password: [{
+                                required: true,
+                                message: "请输入密码",
+                                trigger: "blur"
+                            }, {
+                                type: "string",
+                                pattern: passwordFormat,
+                                message: "密码由字母和数字组成且长度在6-12位之间",
+                                trigger: "blur"
+                            }],
+                            identity: [{
+                                required: true,
+                                message: "请选择权限",
+                                trigger: "change"
+                            }],
+                        },
+
+                        updateRules: {
+                            account: [{
+                                required: true,
+                                message: "请输入账号",
+                                trigger: "blur"
+                            }, {
+                                type: "string",
+                                pattern: accountFormat,
+                                message: "账号由字母和数字组成且长度在3-12位之间",
+                                trigger: "blur"
+                            }],
+                            password: [{
+                                required: true,
+                                message: "请输入密码",
+                                trigger: "blur"
+                            }, {
+                                type: "string",
+                                pattern: passwordFormat,
+                                message: "密码由字母和数字组成且长度在6-12位之间",
+                                trigger: "blur"
+                            }],
+                            identity: [{
+                                required: true,
+                                message: "请选择权限",
+                                trigger: "change"
+                            }],
                         },
                     }
                 }
@@ -350,11 +427,8 @@
                     }
                 },
 
-                created() {
-                    const adminInfo = window.localStorage.getItem("adminInfo")
-                    if (adminInfo)
-                        this.admin = JSON.parse(adminInfo);
-                    console.log(this.admin)
+                mounted() {
+                    this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
                 },
 
                 methods: {

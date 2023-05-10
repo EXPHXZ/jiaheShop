@@ -262,11 +262,8 @@
             }
         },
 
-        created() {
-            const adminInfo = window.localStorage.getItem("adminInfo")
-            if (adminInfo)
-                this.admin = JSON.parse(adminInfo);
-            console.log(this.admin)
+        mounted() {
+            this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
         },
 
         methods: {

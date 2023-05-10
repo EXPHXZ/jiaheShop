@@ -21,6 +21,6 @@ public interface AdminsService {
 
     public List<Admins> searchAdmins(Admins admins);
 
-    public Admins searchUpdateAdmins(Integer id);
+    public Admins searchAdmin(Integer id);
 
 }

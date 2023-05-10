@@ -16,5 +16,6 @@ public class Code {
     public static final Integer LOGIN_SUCCESS = 20051;
     public static final Integer LOGIN_FAIL = 20052;
 
-
+    public static final Integer LOGOUT_SUCCESS = 20061;
+    public static final Integer LOGOUT_FAIL = 20062;
 }

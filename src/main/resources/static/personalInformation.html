@@ -53,9 +53,9 @@
         </div>
 
         <div id = "information">
-
             <el-empty description = "我们还没有您的个人信息哦！" v-if = "infoIsEmpty">
                 <el-button type = "primary" plain @click = "addVisible = true">添加个人信息</el-button>
+                <el-button type = "warning" plain @click = "logout">退出登录</el-button>
             </el-empty>
 
             <el-avatar v-if = "!infoIsEmpty" shape = "square" size = "large" src = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
@@ -67,12 +67,13 @@
                     <template slot = "extra">
                         <el-button type = "primary" icon = "el-icon-edit" circle @click = "showUpdateForm"></el-button>
                         <el-button type = "danger" icon = "el-icon-delete" circle @click = "deleteVisible = true"></el-button>
+                        <el-button type = "warning" plain @click = "logout">退出登录</el-button>
                     </template>
                     <el-descriptions-item>
                         <template slot = "label"><i class = "el-icon-user"></i>姓名</template>{{nameShow}}
                     </el-descriptions-item>
                     <el-descriptions-item>
-                        <template slot = "label"><i class = "el-icon-mobile-phone"></i>手机号</template>{{phoneNumberShow}}
+                        <template slot = "label"><i class = "el-icon-mobile-phone"></i>手机号</template>{{phoneShow}}
                     </el-descriptions-item>
                     <el-descriptions-item>
                         <template slot = "label"><i class = "el-icon-s-custom"></i>身份权限</template>
@@ -90,20 +91,20 @@
 
             <el-dialog title = "添加信息" :visible.sync = "addVisible" width = "50%">
                 <el-form ref = "addForm" :model = "addForm" label-width = "80px" :rules = "addRules">
-                    <el-form-item label = "姓名" prop = "addName">
-                        <el-input v-model = "addForm.addName"></el-input>
+                    <el-form-item label = "姓名" prop = "name">
+                        <el-input v-model = "addForm.name"></el-input>
                     </el-form-item>
-                    <el-form-item label = "性别" prop = "addSex">
-                        <el-radio-group v-model = "addForm.addSex">
+                    <el-form-item label = "性别" prop = "sex">
+                        <el-radio-group v-model = "addForm.sex">
                             <el-radio label = "男"></el-radio>
                             <el-radio label = "女"></el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label = "手机号" prop = "addPhoneNumber">
-                        <el-input v-model = "addForm.addPhoneNumber"></el-input>
+                    <el-form-item label = "手机号" prop = "phone">
+                        <el-input v-model = "addForm.phone"></el-input>
                     </el-form-item>
-                    <el-form-item label = "电子邮箱" prop = "addEmail">
-                        <el-input v-model = "addForm.addEmail"></el-input>
+                    <el-form-item label = "电子邮箱" prop = "email">
+                        <el-input v-model = "addForm.email"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot = "footer" class = "dialog-footer">
@@ -113,21 +114,21 @@
             </el-dialog>
 
             <el-dialog title = "修改信息" :visible.sync = "updateVisible" width = "50%">
-                <el-form ref = "changeForm" :model = "changeForm" label-width = "80px" :rules = "updateRules">
-                    <el-form-item label = "姓名" prop = "changeName">
-                        <el-input v-model = "changeForm.changeName"></el-input>
+                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "updateRules">
+                    <el-form-item label = "姓名" prop = "name">
+                        <el-input v-model = "updateForm.name"></el-input>
                     </el-form-item>
-                    <el-form-item label = "性别" prop = "changeSex">
-                        <el-radio-group v-model = "changeForm.changeSex">
+                    <el-form-item label = "性别" prop = "sex">
+                        <el-radio-group v-model = "updateForm.sex">
                             <el-radio label = "男"></el-radio>
                             <el-radio label = "女"></el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label = "手机号" prop = "changePhoneNumber">
-                        <el-input v-model = "changeForm.changePhoneNumber"></el-input>
+                    <el-form-item label = "手机号" prop = "phone">
+                        <el-input v-model = "updateForm.phone"></el-input>
                     </el-form-item>
-                    <el-form-item label = "电子邮箱" prop = "changeEmail">
-                        <el-input v-model = "changeForm.changeEmail"></el-input>
+                    <el-form-item label = "电子邮箱" prop = "email">
+                        <el-input v-model = "updateForm.email"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot = "footer" class = "dialog-footer">
@@ -136,10 +137,10 @@
                 </div>
             </el-dialog>
 
-            <el-dialog title = "删除信息" :visible.sync = "deleteVisible" width = "30%">
-                <span>您确认要删除您的个人信息吗？</span>
+            <el-dialog title = "注意" :visible.sync = "deleteVisible" width = "30%">
+                <span>此操作为删除您的管理员账号，是否继续？</span>
                 <span slot = "footer" class = "dialog-footer">
-                    <el-button type = "danger" plain @click = "deleteInfo">确 定</el-button>
+                    <el-button type = "danger" plain @click = "deleteAdminBySelf">确 定</el-button>
                     <el-button plain @click = "deleteVisible = false">取 消</el-button>
                 </span>
             </el-dialog>
@@ -157,26 +158,28 @@
 
                 methods: {
                     showInfo() {
-                        this.personal.userId = JSON.parse(window.localStorage.getItem("userInfo")).id
-                        this.identity = JSON.parse(window.localStorage.getItem("userInfo")).identity
+                        this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
                         this.searchInfo()
                     },
 
                     searchInfo() {
-                        axios.get("/personal/" + this.personal.userId).then((resp) => {
-                            if (resp.data.code === 20031) {
-                                this.nameShow = resp.data.data.name
-                                this.sexShow = resp.data.data.sex
-                                this.phoneNumberShow = resp.data.data.phoneNumber
-                                this.emailShow = resp.data.data.email
-                                if (this.identity === 0)
+                        axios.get("/adminsManagement/search/" + this.admin.id).then((resp) => {
+                            this.adminInfo = resp.data.data
+                            if (resp.data.code === 20031 && this.adminInfo.name !== null) {
+                                this.nameShow = this.adminInfo.name
+                                this.sexShow = this.adminInfo.sex
+                                this.phoneShow = this.adminInfo.phone
+                                this.emailShow = this.adminInfo.email
+                                if (this.adminInfo.identity === 0)
                                     this.identityShow = "总管理员"
-                                else if (this.identity === 1)
+                                else if (this.adminInfo.identity === 1)
                                     this.identityShow = "订单管理员"
-                                else if (this.identity === 2)
+                                else if (this.adminInfo.identity === 2)
                                     this.identityShow = "商品管理员"
-                                else if (this.identity === 3)
+                                else if (this.adminInfo.identity === 3)
                                     this.identityShow = "售后管理员"
+                                else if (this.adminInfo.identity === 4)
+                                    this.identityShow = "用户账号管理员"
                                 this.getDateTime()
                                 this.infoIsEmpty = false
                             }
@@ -199,83 +202,98 @@
                         this.handleTime = setTimeout(this.getDateTime, 1000)
                     },
 
-                    addInfo() {
-                        if (this.addForm.addName === "")
-                            this.$message({showClose: true, message: "姓名不能为空", type: "warning"})
-                        else if (this.addForm.addSex === "")
-                            this.$message({showClose: true, message: "性别不能为空", type: "warning"})
-                        else if (this.addForm.addPhoneNumber === "")
-                            this.$message({showClose: true, message: "手机号不能为空", type: "warning"})
-                        else if (this.addForm.addPhoneNumber.search(/^[0-9]{11}$/))
-                            this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
-                        else if (this.addForm.addEmail === "")
-                            this.$message({showClose: true, message: "电子邮箱不能为空", type: "warning"})
-                        else if (this.addForm.addEmail.search(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/))
-                            this.$message({showClose: true, message: "请输入正确的电子邮箱", type: "warning"})
-                        else {
-                            this.personal.name = this.addForm.addName
-                            this.personal.sex = this.addForm.addSex
-                            this.personal.phoneNumber = this.addForm.addPhoneNumber
-                            this.personal.email = this.addForm.addEmail
-                            this.addVisible = false
-                            axios.post("/personal", this.personal).then((resp) => {
-                                if (resp.data.code === 20011) {
+                    logout() {
+                        axios.get("/adminsManagement/logout").then((resp) => {
+                                if (resp.data.code === 20061) {
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                    this.searchInfo()
+                                    window.localStorage.removeItem("adminInfo")
+                                    window.location.href = "adminsLogin.html"
                                 }
-                                else if (resp.data.code === 20012)
+                                else if (resp.data.code === 20062)
                                     this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                            })
-                        }
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            }
+                        )
                     },
 
-                    showUpdateForm() {
-                        this.changeForm.changeName = this.nameShow
-                        this.changeForm.changeSex = this.sexShow
-                        this.changeForm.changePhoneNumber = this.phoneNumberShow
-                        this.changeForm.changeEmail = this.emailShow
-                        this.updateVisible = true
-                    },
-
-                    updateInfo() {
-                        if (this.changeForm.changeName === "")
+                    addInfo() {
+                        if (this.addForm.name === "")
                             this.$message({showClose: true, message: "姓名不能为空", type: "warning"})
-                        else if (this.changeForm.changeSex === "")
+                        else if (this.addForm.sex === "")
                             this.$message({showClose: true, message: "性别不能为空", type: "warning"})
-                        else if (this.changeForm.changePhoneNumber === "")
+                        else if (this.addForm.phone === "")
                             this.$message({showClose: true, message: "手机号不能为空", type: "warning"})
-                        else if (this.changeForm.changePhoneNumber.search(/^[0-9]{11}$/))
+                        else if (this.addForm.phone.search(/^[0-9]{11}$/))
                             this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
-                        else if (this.changeForm.changeEmail === "")
+                        else if (this.addForm.email === "")
                             this.$message({showClose: true, message: "电子邮箱不能为空", type: "warning"})
-                        else if (this.changeForm.changeEmail.search(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/))
+                        else if (this.addForm.email.search(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/))
                             this.$message({showClose: true, message: "请输入正确的电子邮箱", type: "warning"})
                         else {
-                            this.personal.name = this.changeForm.changeName
-                            this.personal.sex = this.changeForm.changeSex
-                            this.personal.phoneNumber = this.changeForm.changePhoneNumber
-                            this.personal.email = this.changeForm.changeEmail
-                            this.updateVisible = false
-                            axios.put("/personal", this.personal).then((resp) => {
+                            this.adminInfo.name = this.addForm.name
+                            this.adminInfo.sex = this.addForm.sex
+                            this.adminInfo.phone = this.addForm.phone
+                            this.adminInfo.email = this.addForm.email
+                            this.addVisible = false
+                            axios.put("/adminsManagement/updateAdminsInfo", this.adminInfo).then((resp) => {
                                 if (resp.data.code === 20041) {
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                     this.searchInfo()
                                 }
                                 else if (resp.data.code === 20042)
                                     this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
                             })
                         }
                     },
 
-                    deleteInfo() {
+                    showUpdateForm() {
+                        this.updateForm = this.adminInfo
+                        this.updateVisible = true
+                    },
+
+                    updateInfo() {
+                        if (this.updateForm.name === "")
+                            this.$message({showClose: true, message: "姓名不能为空", type: "warning"})
+                        else if (this.updateForm.sex === "")
+                            this.$message({showClose: true, message: "性别不能为空", type: "warning"})
+                        else if (this.updateForm.phone === "")
+                            this.$message({showClose: true, message: "手机号不能为空", type: "warning"})
+                        else if (this.updateForm.phone.search(/^[0-9]{11}$/))
+                            this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
+                        else if (this.updateForm.email === "")
+                            this.$message({showClose: true, message: "电子邮箱不能为空", type: "warning"})
+                        else if (this.updateForm.email.search(/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/))
+                            this.$message({showClose: true, message: "请输入正确的电子邮箱", type: "warning"})
+                        else {
+                            this.updateVisible = false
+                            axios.put("/adminsManagement/updateAdminsInfo", this.updateForm).then((resp) => {
+                                if (resp.data.code === 20041) {
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                    this.searchInfo()
+                                }
+                                else if (resp.data.code === 20042)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            })
+                        }
+                    },
+
+                    deleteAdminBySelf() {
                         this.deleteVisible = false
-                        axios.delete("/personal/" + this.personal.userId).then((resp) => {
+                        axios.delete("/adminsManagement/deleteBySelf/" + this.admin.id).then((resp) => {
                             if (resp.data.code === 20021) {
                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                 clearTimeout(this.handleTime)
-                                this.infoIsEmpty = true
+                                window.localStorage.removeItem("adminInfo")
+                                window.location.href = "adminsLogin.html"
                             }
                             else if (resp.data.code === 20022)
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            else
                                 this.$message({showClose: true, message: resp.data.msg, type: "error"})
                         })
                     }
@@ -287,14 +305,10 @@
 
                 data() {
                     return {
-                        personal: {
-                            name: "",
-                            userId: "",
-                            sex: "",
-                            phoneNumber: "",
-                            email: ""
+                        admin: {
                         },
-                        identity: "",
+                        adminInfo: {
+                        },
 
                         dateTime: "",
                         greeting: "",
@@ -302,44 +316,41 @@
 
                         nameShow: "",
                         sexShow: "",
-                        phoneNumberShow: "",
+                        phoneShow: "",
                         emailShow: "",
                         identityShow: "",
 
                         infoIsEmpty: true,
-
                         addVisible: false,
-
                         updateVisible: false,
-
                         deleteVisible: false,
 
                         addForm: {
-                            addName: "",
-                            addSex: "",
-                            addPhoneNumber: "",
-                            addEmail: ""
+                            name: "",
+                            sex: "",
+                            phone: "",
+                            email: ""
                         },
 
-                        changeForm: {
-                            changeName: "",
-                            changeSex: "",
-                            changePhoneNumber: "",
-                            changeEmail: ""
+                        updateForm: {
+                            name: "",
+                            sex: "",
+                            phone: "",
+                            email: ""
                         },
 
                         addRules: {
-                            addName: [{
+                            name: [{
                                 required: true,
                                 message: "请输入姓名",
                                 trigger: "blur"
                             }],
-                            addSex: [{
+                            sex: [{
                                 required: true,
                                 message: "请选择性别",
                                 trigger: "change"
                             }],
-                            addPhoneNumber: [{
+                            phone: [{
                                 required: true,
                                 message: "请输入手机号",
                                 trigger: "blur"
@@ -349,7 +360,7 @@
                                 message: "请输入正确的手机号",
                                 trigger: "blur"
                             }],
-                            addEmail: [{
+                            email: [{
                                 required: true,
                                 message: "请输入电子邮箱",
                                 trigger: "blur"
@@ -362,17 +373,17 @@
                         },
 
                         updateRules: {
-                            changeName: [{
+                            name: [{
                                 required: true,
                                 message: "请输入姓名",
                                 trigger: "blur"
                             }],
-                            changeSex: [{
+                            sex: [{
                                 required: true,
                                 message: "请选择性别",
                                 trigger: "change"
                             }],
-                            changePhoneNumber: [{
+                            phone: [{
                                 required: true,
                                 message: "请输入手机号",
                                 trigger: "blur"
@@ -382,7 +393,7 @@
                                 message: "请输入正确的手机号",
                                 trigger: "blur"
                             }],
-                            changeEmail: [{
+                            email: [{
                                 required: true,
                                 message: "请输入电子邮箱",
                                 trigger: "blur"
@@ -407,11 +418,8 @@
                     }
                 },
 
-                created() {
-                    const adminInfo = window.localStorage.getItem("adminInfo")
-                    if (adminInfo)
-                        this.admin = JSON.parse(adminInfo);
-                    console.log(this.admin)
+                mounted() {
+                    this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
                 },
 
                 methods: {

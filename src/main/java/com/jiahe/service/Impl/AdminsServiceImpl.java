@@ -67,7 +67,7 @@ public class AdminsServiceImpl implements AdminsService {
     }
 
     @Override
-    public Admins searchUpdateAdmins(Integer id) {
+    public Admins searchAdmin(Integer id) {
         return adminsDao.selectById(id);
     }
 }
