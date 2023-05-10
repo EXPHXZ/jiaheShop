@@ -50,8 +50,6 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderIPage.getRecords();
         List<OrderDto> orderDtos = new ArrayList<>();
 
-        Collections.reverse(orders);
-
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
 
@@ -146,8 +144,6 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderIPage.getRecords();
         List<OrderDto> orderDtos = new ArrayList<>();
 
-        Collections.reverse(orders);
-
         for (Order order : orders) {
             OrderDto orderDto = new OrderDto();
             BeanUtils.copyProperties(order,orderDto);
@@ -214,7 +210,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     //售后模块用的order相关办法
-
     //查询售后orderId所对应的订单信息
     @Override
     public Order searchOrder(Integer orderId) {
@@ -241,9 +236,8 @@ public class OrderServiceImpl implements OrderService {
             orderCommodity.setStatus(2);
             orderCommodityDao.updateById(orderCommodity);
         }
+
         return true;
     }
-
-
 
 }

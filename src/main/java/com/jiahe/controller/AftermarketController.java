@@ -36,14 +36,16 @@ public class AftermarketController {
      * 获取所有的售后信息
      * @return
      */
+
     @GetMapping("/getAll")
     public Result getAll(){
         //获取没有删除的订单列表
         List<Aftermarket> list = aftermarketService.list(
                 new LambdaQueryWrapper<Aftermarket>().eq(Aftermarket::getIsDeleted,0));
-
+        //遍历售后信息根据订单id获取到的对应的订单状态
         for(Aftermarket aftermarket:list){
             Integer orderId = aftermarket.getOrderId();
+            //调用orderService写好的查询订单功能查询到对于的订单信息，拿到订单状态
             Order order = orderService.searchOrder(orderId);
             aftermarket.setStatus(order.getStatus());
         }
@@ -76,6 +78,12 @@ public class AftermarketController {
         }
         return new Result(null,Code.UPDATE_FAIL,"修改失败");
     }
+
+
+
+
+
+
 
 
     @PostMapping("/delete")

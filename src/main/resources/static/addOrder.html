@@ -10,15 +10,11 @@
   </head>
   <body>
     <header>
-      <div class="logo">
-        <h1>嘉禾商城</h1>
-      </div>
+      <div class="logo">嘉禾商城</div>
     </header>
 
     <div id="content" class="order-content">
-      <div class="order-title">
-        <h1>新增订单</h1>
-      </div>
+      <div class="order-title">新增订单</div>
 
       <el-form
         :model="addOrderForm"
@@ -131,6 +127,7 @@
                     price: +item.price,
                   })
                 })
+
                 axios({
                   url: '/order/insertOrderCommodity',
                   params: {
@@ -196,6 +193,14 @@
           },
 
           removeItem(item) {
+            // 判断是否只剩一个
+            if (this.addOrderForm.from.length === 1) {
+              this.$message({
+                type: 'error',
+                message: '至少购买一个商品',
+              })
+              return
+            }
             // 询问是否删除
             this.$confirm('是否删除？', '提示', {
               confirmButtonText: '确定',
