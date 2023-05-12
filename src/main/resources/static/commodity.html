@@ -201,8 +201,19 @@
         <el-form-item label="商品名">
             <el-input v-model="searchCommodity.commodityName" placeholder="商品名"></el-input>
         </el-form-item>
-        <el-form-item label="类别">
-            <el-input v-model="searchCommodity.category" placeholder="类别"></el-input>
+
+        <el-form-item label="品牌名">
+            <el-input v-model="searchCommodity.brandName" placeholder="品牌名"></el-input>
+        </el-form-item>
+
+        <el-form-item label="分类">
+            <el-select v-model="addCommodity.categoryId" placeholder="请选择规格">
+                <el-option v-for="category in categoryList"
+                           :key="category.categoryName"
+                           :value="category.id"
+                           :label="category.categoryName"
+                ></el-option>
+            </el-select>
         </el-form-item>
         <el-form-item label="商品状态">
             <el-select v-model="searchCommodity.status" placeholder="商品状态" :formatter="status">
@@ -566,8 +577,8 @@
 
                 //分页所需数据
                 pagination: {
-                    current: "1",
-                    pageSize: "5",
+                    current: 1,
+                    pageSize: 5,
                     total: ""
                 },
 
