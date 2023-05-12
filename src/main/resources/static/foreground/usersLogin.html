@@ -2,17 +2,16 @@
     <head>
         <meta charset = "UTF-8">
         <title>嘉禾商城登录</title>
-        <link rel = "stylesheet" href = "css/usersLogin.css">
+        <link rel = "stylesheet" href = "../css/usersLogin.css">
     </head>
 
     <body>
         <div class = "header">
-            <img src = "images/logo.png" alt = "嘉禾商城 Logo">
+            <img src = "../images/logo.png" alt = "嘉禾商城 Logo">
             <h1>欢迎来到嘉禾商城</h1>
         </div>
 
         <div id = "app" class = "form-container">
-
             <el-form ref = "loginForm" :model = "loginForm" label-width = "80px" :rules = "rules">
                 <el-form-item label = "用户名：" prop = "account">
                     <el-input v-model = "loginForm.account"></el-input>
@@ -20,23 +19,29 @@
                 <el-form-item label = "密码：" prop = "password">
                     <el-input v-model = "loginForm.password" show-password></el-input>
                 </el-form-item>
+
                 <el-form-item>
-                    <el-button type="warning" plain @click = "login">登 录</el-button>
-                    <el-button @click = "reset">重 置</el-button>
+                    <a href = "forgetPassword">忘记密码？</a>
+                    <el-button type = "warning" plain @click = "login" @keyup.enter = "keyDown(e)">登 录</el-button>
                 </el-form-item>
             </el-form>
         </div>
 
-        <script src = "js/vue.js"></script>
-        <script src = "element-ui/lib/index.js"></script>
-        <script src = "js/axios-0.18.0.js"></script>
-        <link rel = "stylesheet" href = "element-ui/lib/theme-chalk/index.css">
+        <script src = "../js/vue.js"></script>
+        <script src = "../element-ui/lib/index.js"></script>
+        <script src = "../js/axios-0.18.0.js"></script>
+        <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
             new Vue({
                 el: "#app",
 
                 methods: {
+                    keyDown(e) {
+                        if (e.keyCode === 13)
+                            this.login()
+                    },
+
                     login() {
                         axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
                                 if (resp.data.code === 20051) {
@@ -52,9 +57,17 @@
                         )
                     },
 
-                    reset(){
-                        this.form = {}
+                    forgetPassword() {
+                        window.location.href = "/background/adminsLogin.html"
                     }
+                },
+
+                mounted() {
+                    window.addEventListener("keydown", this.keyDown)
+                },
+
+                destroyed() {
+                    window.removeEventListener("keydown", this.keyDown, false)
                 },
 
                 data() {

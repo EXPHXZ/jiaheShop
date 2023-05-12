@@ -15,7 +15,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (admins != null)
             return true;
         System.out.println("请求" + request.getRequestURI() + "被拦截");
-        response.sendRedirect("/adminsLogin.html");
+        response.sendRedirect("/background/adminsLogin.html");
         return false;
     }
 
