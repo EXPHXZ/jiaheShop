@@ -1,19 +1,12 @@
 package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jiahe.pojo.Commodity;
 
 import java.util.List;
 
-public interface CommodityService {
-
-    /**
-     * 根据传入的页码和页数来进行分页查询
-     * @param current
-     * @param pageSize
-     * @return
-     */
-    public IPage<Commodity> SelectAll(int current, int pageSize);
+public interface CommodityService extends IService<Commodity> {
 
     /**
      * 添加商品数据

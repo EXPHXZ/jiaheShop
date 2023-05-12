@@ -3,6 +3,7 @@ package com.jiahe.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiahe.dao.CommodityDao;
 import com.jiahe.pojo.Commodity;
 import com.jiahe.service.CommodityService;
@@ -13,17 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CommodityServiceImpl implements CommodityService {
+public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> implements CommodityService {
 
     @Autowired
     private CommodityDao commodityDao;
-
-    @Override
-    public IPage<Commodity> SelectAll(int current, int pageSize) {
-        IPage<Commodity> page = new Page<>(current,pageSize);
-        IPage<Commodity> page1 = commodityDao.selectPage(page,null);
-        return page1;
-    }
 
     @Override
     public Boolean addCommodity(Commodity commodity) {
@@ -50,7 +44,6 @@ public class CommodityServiceImpl implements CommodityService {
     public List<Commodity> searchCommodity(Commodity commodity) {
         LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(commodity.getCommodityName() != null,Commodity::getCommodityName,commodity.getCommodityName());
-        wrapper.like(commodity.getCategory() != null,Commodity::getCategory,commodity.getCategory());
         wrapper.like(commodity.getStatus() != null,Commodity::getStatus,commodity.getStatus());
         List<Commodity> commodities = commodityDao.selectList(wrapper);
         return commodities;
