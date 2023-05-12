@@ -34,8 +34,7 @@ public class AdminsController {
 
     @GetMapping("/logout")
     public Result logout(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.removeAttribute("admin");
+        request.getSession().removeAttribute("admin");
         return new Result(0, Code.LOGOUT_SUCCESS, "已成功退出登录");
     }
 

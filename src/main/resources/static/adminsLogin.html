@@ -2,7 +2,7 @@
     <head>
         <meta charset = "UTF-8">
         <title>嘉禾商城后台管理系统登录</title>
-        <link rel = "stylesheet" href = "css/login.css">
+        <link rel = "stylesheet" href = "css/adminsLogin.css">
     </head>
 
     <body>
@@ -12,10 +12,6 @@
         </div>
 
         <div id = "app" class = "form-container">
-            <div class = "tab">
-                <button class = "tablinks active" onclick = "openTab(event, 'adminsLogin')">登陆界面</button>
-            </div>
-
             <el-form ref = "loginForm" :model = "loginForm" label-width = "80px" :rules = "rules">
                 <el-form-item label = "账号：" prop = "account">
                     <el-input v-model = "loginForm.account"></el-input>
@@ -30,7 +26,6 @@
             </el-form>
         </div>
 
-        <script src = "js/login.js"></script>
         <script src = "js/vue.js"></script>
         <script src = "element-ui/lib/index.js"></script>
         <script src = "js/axios-0.18.0.js"></script>

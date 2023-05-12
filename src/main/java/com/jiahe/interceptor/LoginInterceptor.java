@@ -12,10 +12,8 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("执行了preHandle");
         Admins admins = (Admins)request.getSession().getAttribute("admin");
-        if (admins != null) {
-            System.out.println("admin不为null");
+        if (admins != null)
             return true;
-        }
         System.out.println("请求" + request.getRequestURI() + "被拦截");
         response.sendRedirect("/adminsLogin.html");
         return false;
