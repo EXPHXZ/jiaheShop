@@ -220,7 +220,7 @@ public class OrderServiceImpl implements OrderService {
     //处理售后订单对应的状态，将订单状态为1(退货中)的订单改为0(正常)
     @Override
     public Boolean updateOrderForAftermarket(Order order) {
-        order.setStatus(0);
+        order.setStatus(2);
         return orderDao.updateById(order) > 0;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ProjectException {
 
+
     //拦截所有异常，返回一个Result
     @ExceptionHandler(Exception.class)
     public Result doException(Exception ex){

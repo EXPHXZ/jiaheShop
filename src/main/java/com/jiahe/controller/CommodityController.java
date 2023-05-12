@@ -1,16 +1,24 @@
 package com.jiahe.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jiahe.dto.CommodityDto;
+import com.jiahe.pojo.Category;
 import com.jiahe.pojo.Commodity;
+import com.jiahe.service.CategoryService;
 import com.jiahe.service.CommodityService;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/commodity")
@@ -18,6 +26,9 @@ public class CommodityController {
 
     @Autowired
     private CommodityService commodityService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 分页查询所有商品数据
@@ -27,25 +38,43 @@ public class CommodityController {
      */
     @GetMapping("/{current}/{pageSize}")
     public Result selectAll(@PathVariable int current, @PathVariable int pageSize){
-        IPage<Commodity> page = commodityService.SelectAll(current,pageSize);
+        Page<Commodity> commodityPage = new Page<>(current,pageSize);
+        Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
+
+        commodityService.page(commodityPage);
+
+        BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
+
+        List<Commodity> records = commodityPage.getRecords();
+
+        List<CommodityDto> list = records.stream().map((item) -> {
+            CommodityDto commodityDto = new CommodityDto();
+            BeanUtils.copyProperties(item, commodityDto);
+            int categoryId = commodityDto.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            if (category != null) {
+                commodityDto.setCategoryName(category.getCategoryName());
+            }
+            return commodityDto;
+        }).collect(Collectors.toList());
+
+        commodityDtoPage.setRecords(list);
+
         //当删除到页数发生变化的时候
-        if (current > page.getPages()){
-            page = commodityService.SelectAll((int)page.getPages(),pageSize);
+        if (current > commodityDtoPage.getPages()){
+            commodityDtoPage.setCurrent(commodityDtoPage.getPages());
         }
-        return new Result(Code.SELECT_SUCCESS,page);
+
+        return new Result(Code.SELECT_SUCCESS,commodityDtoPage);
+
+
+
     }
 
-    /**
-     * 根据传来的json数据来添加商品数据
-     * @param commodity
-     * @return
-     */
     @PostMapping
     public Result addCommodity(@RequestBody Commodity commodity) throws Exception {
-        Boolean addFlag = commodityService.checkAdd(commodity);
-        if (addFlag == true){
-            return new Result(null,Code.ADD_FAIL,"相同的商品已经存在于数据库中");
-        }
+        System.out.println("商品添加------------------");
+        System.out.println(commodity);
         Boolean flag = commodityService.addCommodity(commodity);
         if(flag){
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
@@ -73,21 +102,17 @@ public class CommodityController {
      */
     @GetMapping("/{id}")
     public Result searchCommodity(@PathVariable Integer id){
+        CommodityDto commodityDto = new CommodityDto();
         Commodity commodity = commodityService.searchCommodity(id);
-        return new Result(Code.SELECT_SUCCESS,commodity);
+        BeanUtils.copyProperties(commodity,commodityDto);
+        Category categoryServiceById = categoryService.getById(commodity.getCategoryId());
+        String categoryName = categoryServiceById.getCategoryName();
+        commodityDto.setCategoryName(categoryName);
+        return new Result(Code.SELECT_SUCCESS,commodityDto);
     }
 
-    /**
-     * 根据传来的json实体类来更新数据
-     * @param commodity
-     * @return
-     */
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
-        Boolean checkFlag = commodityService.checkAdd(commodity);
-        if(checkFlag == true){
-            return new Result(null,Code.UPDATE_FAIL,"修改失败，相同的商品已经存在");
-        }
         Boolean flag = commodityService.updateCommodity(commodity);
         return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
@@ -112,5 +137,11 @@ public class CommodityController {
     public Result deleteCommodities(@RequestBody List<Commodity> commodities){
         Boolean flag = commodityService.deleteCommodities(commodities);
         return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"批量删除成功":"批量删除失败");
+    }
+
+    @GetMapping("/category")
+    public Result getCategory(){
+        List<Category> categories = categoryService.list();
+        return new Result(Code.SELECT_SUCCESS,categories);
     }
 }
