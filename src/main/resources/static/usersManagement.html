@@ -111,14 +111,6 @@
                 </div>
             </el-dialog>
 
-            <el-dialog title = "删除用户" :visible.sync = "deleteVisible" width = "30%">
-                <span>您确认要删除此用户吗？</span>
-                <span slot = "footer" class = "dialog-footer">
-                    <el-button type = "danger" plain @click = "deleteUser(scope.row)">确 定</el-button>
-                    <el-button plain @click = "deleteVisible = false">取 消</el-button>
-                </span>
-            </el-dialog>
-
         </div>
 
         <script src = "js/vue.js"></script>
