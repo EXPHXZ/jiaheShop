@@ -207,7 +207,7 @@
         </el-form-item>
 
         <el-form-item label="分类">
-            <el-select v-model="addCommodity.categoryId" placeholder="请选择规格">
+            <el-select v-model="searchCommodity.categoryId" placeholder="请选择规格">
                 <el-option v-for="category in categoryList"
                            :key="category.categoryName"
                            :value="category.id"
@@ -215,6 +215,7 @@
                 ></el-option>
             </el-select>
         </el-form-item>
+
         <el-form-item label="商品状态">
             <el-select v-model="searchCommodity.status" placeholder="商品状态" :formatter="status">
                 <el-option label="上架" value="0"></el-option>
@@ -222,7 +223,7 @@
             </el-select>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="search">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
         </el-form-item>
     </el-form>
 

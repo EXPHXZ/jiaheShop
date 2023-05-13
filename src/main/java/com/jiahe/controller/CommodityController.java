@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +74,10 @@ public class CommodityController {
 
     @PostMapping
     public Result addCommodity(@RequestBody Commodity commodity) throws Exception {
-        System.out.println("商品添加------------------");
-        System.out.println(commodity);
+        Boolean addFlag = commodityService.checkAdd(commodity);
+        if (addFlag == true){
+            return new Result(null,Code.ADD_FAIL,"商品表中已经有同品牌的商品");
+        }
         Boolean flag = commodityService.addCommodity(commodity);
         if(flag){
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
@@ -113,6 +116,10 @@ public class CommodityController {
 
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
+        Boolean addFlag = commodityService.checkAdd(commodity);
+        if (addFlag == true){
+            return new Result(null,Code.ADD_FAIL,"商品表中已经有同品牌的商品");
+        }
         Boolean flag = commodityService.updateCommodity(commodity);
         return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
     }
@@ -124,8 +131,18 @@ public class CommodityController {
      */
     @PostMapping("/search")
     public Result search(@RequestBody Commodity commodity){
+
         List<Commodity> commodities = commodityService.searchCommodity(commodity);
-        return new Result(commodities,Code.SELECT_SUCCESS,"共查询到"+commodities.size()+"条数据");
+
+        List<CommodityDto> commodityDtos = commodities.stream().map((item) -> {
+            CommodityDto commodityDto = new CommodityDto();
+            BeanUtils.copyProperties(item, commodityDto);
+            Category category = categoryService.getById(item.getCategoryId());
+            commodityDto.setCategoryName(category.getCategoryName());
+            return commodityDto;
+        }).collect(Collectors.toList());
+
+        return new Result(commodityDtos,Code.SELECT_SUCCESS,"共查询到"+commodityDtos.size()+"条数据");
     }
 
     /**
