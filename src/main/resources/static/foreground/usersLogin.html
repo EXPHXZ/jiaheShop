@@ -13,8 +13,6 @@
 
         <div id = "app" class = "form-container">
 
-
-
             <el-form  ref = "loginForm" :model = "loginForm" label-width = "130px" :rules = "loginRules">
                 <el-form-item v-if = "!approach" label = "用户名/手机号" prop = "username">
                     <el-input v-model = "loginForm.username"></el-input>
@@ -122,7 +120,7 @@
                             else {
                                 this.loginForm.username = ""
                                 this.loginForm.password = ""
-                                axios.post("/usersManagement/loginByCode", this.loginForm).then((resp) => {
+                                axios.post("/usersManagement/login", this.loginForm).then((resp) => {
                                     if (resp.data.code === 20051) {
                                         window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
                                         this.$message({showClose: true, message: resp.data.msg, type: "success"})
@@ -209,9 +207,30 @@
                         else {
                             axios.post("/usersManagement/register", this.registerForm).then((resp) => {
                                 if (resp.data.code === 20011) {
-                                    window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
+                                    this.registerLoginPhone.phone = this.registerForm.phone
                                     this.registerVisible = false
+                                    this.registerForm.username = ""
+                                    this.registerForm.password = ""
+                                    this.registerForm.phone = ""
+                                    this.registerForm.validateCode = ""
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                    this.$confirm("已经成功注册账号, 是否直接登录?", "成功", {
+                                        confirmButtonText: "确定",
+                                        cancelButtonText: "取消",
+                                        type: "success"
+                                    }).then(() => {
+                                        axios.post("/usersManagement/login", this.registerLoginPhone).then((resp) => {
+                                            if (resp.data.code === 20051) {
+                                                window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
+                                                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                                window.location.href = "/background/adminsLogin.html"
+                                            }
+                                            else if (resp.data.code === 20052)
+                                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                            else
+                                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                        })
+                                    })
                                 }
                                 else if (resp.data.code === 20012)
                                     this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -292,6 +311,10 @@
                         getCode: "获取验证码",
                         code: "",
                         sendCodePhone: "",
+
+                        registerLoginPhone: {
+                            phone: ""
+                        },
 
                         loginForm: {
                             username: "",

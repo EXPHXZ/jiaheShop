@@ -30,17 +30,6 @@ public class UsersController {
             return new Result(0, Code.LOGIN_FAIL, "登录失败，请检查用户名/手机号和密码");
     }
 
-    @PostMapping("/loginByCode")
-    public Result loginByCode(@RequestBody Users users, HttpServletRequest request) {
-        Users checkUser = usersService.checkUsers(users);
-        if (checkUser != null) {
-            request.getSession().setAttribute("user", users);
-            return new Result(checkUser, Code.LOGIN_SUCCESS, "登录成功");
-        }
-        else
-            return new Result(0, Code.LOGIN_FAIL, "登录失败，请检查用户名/手机号和密码");
-    }
-
 //    @GetMapping("/logout")
 //    public Result logout(HttpServletRequest request) {
 //        request.getSession().removeAttribute("user");
