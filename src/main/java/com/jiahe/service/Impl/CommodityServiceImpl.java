@@ -44,7 +44,9 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> im
     public List<Commodity> searchCommodity(Commodity commodity) {
         LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(commodity.getCommodityName() != null,Commodity::getCommodityName,commodity.getCommodityName());
-        wrapper.like(commodity.getStatus() != null,Commodity::getStatus,commodity.getStatus());
+        wrapper.like(commodity.getBrandName() != null,Commodity::getBrandName,commodity.getBrandName());
+        wrapper.eq(commodity.getCategoryId() != null,Commodity::getCategoryId,commodity.getCategoryId());
+        wrapper.eq(commodity.getStatus() != null,Commodity::getStatus,commodity.getStatus());
         List<Commodity> commodities = commodityDao.selectList(wrapper);
         return commodities;
     }
@@ -64,7 +66,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> im
     public Boolean checkAdd(Commodity commodity) {
         LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Commodity::getCommodityName,commodity.getCommodityName());
-        wrapper.eq(Commodity::getSize,commodity.getSize());
+        wrapper.eq(Commodity::getBrandName,commodity.getBrandName());
         Commodity commodity1 = commodityDao.selectOne(wrapper);
         return commodity1 != null;
     }

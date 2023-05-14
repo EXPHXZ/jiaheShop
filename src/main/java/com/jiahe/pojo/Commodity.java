@@ -18,7 +18,7 @@ public class Commodity {
     private String simpleDescription;
     private String detailedDescription;
     private String size;
-    private int categoryId;
+    private Integer categoryId;
     private BigDecimal price;
     private BigDecimal discount;
     private Integer status;
