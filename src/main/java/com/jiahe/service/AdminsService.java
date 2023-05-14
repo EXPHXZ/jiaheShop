@@ -9,6 +9,8 @@ public interface AdminsService {
 
     public Admins checkAdmins(Admins admins);
 
+    public Boolean checkAccount(String account);
+
     public IPage<Admins> selectByPage(Integer current, Integer size);
 
     public Boolean addAdmins(Admins admins);
@@ -18,6 +20,8 @@ public interface AdminsService {
     public Boolean deleteBatchAdmins(List<Admins> admins);
 
     public Boolean updateAdmins(Admins admins);
+
+    public Boolean updateAdminsInfo(Admins admins);
 
     public List<Admins> searchAdmins(Admins admins);
 

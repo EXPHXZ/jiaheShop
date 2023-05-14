@@ -21,9 +21,36 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public Users checkUsers(Users users) {
         LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
+        if (!users.getPhone().equals("")) {
+            lqw.eq(Users::getPhone, users.getPhone());
+            return usersDao.selectOne(lqw);
+        }
+        if (users.getUsername().matches("^[0-9]{11}$")) {
+            lqw.eq(Users::getPhone, users.getUsername());
+            lqw.eq(Users::getPassword, users.getPassword());
+            return usersDao.selectOne(lqw);
+        }
         lqw.eq(Users::getUsername, users.getUsername());
         lqw.eq(Users::getPassword, users.getPassword());
         return usersDao.selectOne(lqw);
+    }
+
+    @Override
+    public Boolean checkUsername(String username) {
+        LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
+        lqw.eq(Users::getUsername, username);
+        if (usersDao.selectOne(lqw) != null)
+            return true;
+        return false;
+    }
+
+    @Override
+    public Boolean checkPhone(String phone) {
+        LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
+        lqw.eq(Users::getPhone, phone);
+        if (usersDao.selectOne(lqw) != null)
+            return true;
+        return false;
     }
 
     @Override
@@ -32,12 +59,12 @@ public class UsersServiceImpl implements UsersService {
         return usersDao.selectPage(page, null);
     }
 
-//    @Override
-//    public Boolean addUsers(Users users) {
-//        if (checkAdmins(users) != null)
-//            return false;
-//        return adminsDao.insert(users) > 0;
-//    }
+    @Override
+    public Boolean addUsers(Users users) {
+        if (checkUsername(users.getUsername()) || checkPhone(users.getPhone()))
+            return false;
+        return usersDao.insert(users) > 0;
+    }
 
     @Override
     public Boolean deleteUsers(Integer id) {
@@ -54,6 +81,22 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public Boolean updateUsers(Users users) {
+        if (checkUsername(users.getUsername()))
+            return false;
+        return usersDao.updateById(users) > 0;
+    }
+
+    @Override
+    public Boolean updatePassword(Users users) {
+        LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
+        lqw.eq(Users::getPhone, users.getPhone());
+        return usersDao.update(users, lqw) > 0;
+    }
+
+    @Override
+    public Boolean updateUsersInfo(Users users) {
+        if (checkPhone(users.getPhone()))
+            return false;
         return usersDao.updateById(users) > 0;
     }
 
