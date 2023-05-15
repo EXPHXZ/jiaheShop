@@ -20,18 +20,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @TableName("aftermarket")
 public class Aftermarket implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     private Integer id;
-
-    private Integer orderId;
-
+    private String type;
     private String cause;
-
+    private String description;
+    private String image;
     @TableField(exist = false)
     private int status;
-
+    private Integer orderId;
+    private Integer orderCommodityId;
     private Integer isDeleted;
 
 }
