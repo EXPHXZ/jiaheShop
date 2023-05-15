@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+a {
+    text-decoration: none; /* 移除链接下划线 */
+}
+
+.el-header, .el-footer {
+    background-color: #202124;
+    text-align: center;
+    line-height: 60px;
+  }
+  
+  .el-aside {
+    text-align: center;
+    line-height: 200px;
+  }
+  
+  .el-main {
+    text-align: center;
+    line-height: 160px;
+  }
+  
+  body > .el-container {
+    margin-bottom: 40px;
+  }
+
+  
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 260px;
+  }
+  
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
+  }
+
+  .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 150px;
+    margin: 0;
+  }
+
+  .el-carousel__item:nth-child(2n) {
+     background-color: #99a9bf;
+  }
+  
+  .el-carousel__item:nth-child(2n+1) {
+     background-color: #d3dce6;
+  }
+
+  ul,li{
+    list-style: none;
+    margin:0;
+    padding:0;
+}
+
+ul>li {
+    height: 30px;
+    line-height: 30px;
+    padding-left:10px;
+    text-align: center;
+}
+.main-left {
+    float: left;
+    width: 150px;
+    background-color: #fefefe;
+}
+
+.main-left li a {
+    color: #000;
+
+}
+
+.main-top {
+    height: 150px;
+    width: 100%;
+    background-color: #ffffff;
+    padding-top: 50px;
+    padding-left: 50px;
+}
+
+.main-top img {
+    float: left;
+    width: 100px;
+    height: 100px;
+}
+
+.discount {
+    background-color: #ffffff;
+    margin-top: 30px;
+}
+.discount-h {
+    padding-top: 20px;
+    height: 20px;
+    line-height: 20px;
+}
+.discount-w {
+    height: 50px;
+}
+
+
+.time {
+    font-size: 13px;
+    color: #999;
+  }
+  
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
+
+  .button {
+    padding: 0;
+    float: right;
+  }
+
+  .image {
+    width: 100%;
+    display: block;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+      display: table;
+      content: "";
+  }
+  
+  .clearfix:after {
+      clear: both
+  }
+
+  .demo-form-inline {
+    .el-form-item {
+        .el-input {
+            width: 600px;
+        }
+    }
+  }

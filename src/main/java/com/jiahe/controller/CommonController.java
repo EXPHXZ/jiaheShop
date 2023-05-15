@@ -35,7 +35,6 @@ public class CommonController {
         //lastIndexOf(".") 获取.最后一次出现出现的下标
         String suffix = originalFilename.substring(originalFilename.lastIndexOf(".")); //截取到后缀名
 
-
         //使用UUID重新生成文件名，反正文件名称重复造成文件覆盖
         String fileName = UUID.randomUUID().toString()+suffix;
 
