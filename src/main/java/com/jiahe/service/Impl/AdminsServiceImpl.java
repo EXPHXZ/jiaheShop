@@ -27,6 +27,15 @@ public class AdminsServiceImpl implements AdminsService {
     }
 
     @Override
+    public Boolean checkAccount(String account) {
+        LambdaQueryWrapper<Admins> lqw = new LambdaQueryWrapper<Admins>();
+        lqw.eq(Admins::getAccount, account);
+        if (adminsDao.selectOne(lqw) != null)
+            return true;
+        return false;
+    }
+
+    @Override
     public IPage<Admins> selectByPage(Integer current, Integer size) {
         IPage<Admins> page = new Page<Admins>(current, size);
         return adminsDao.selectPage(page, null);
@@ -34,7 +43,7 @@ public class AdminsServiceImpl implements AdminsService {
 
     @Override
     public Boolean addAdmins(Admins admins) {
-        if (checkAdmins(admins) != null)
+        if (checkAccount(admins.getAccount()))
             return false;
         return adminsDao.insert(admins) > 0;
     }
@@ -54,6 +63,13 @@ public class AdminsServiceImpl implements AdminsService {
 
     @Override
     public Boolean updateAdmins(Admins admins) {
+        if (checkAccount(admins.getAccount()))
+            return false;
+        return adminsDao.updateById(admins) > 0;
+    }
+
+    @Override
+    public Boolean updateAdminsInfo(Admins admins) {
         return adminsDao.updateById(admins) > 0;
     }
 

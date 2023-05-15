@@ -21,13 +21,19 @@ public class WebConfig implements WebMvcConfigurer {
                 "/background/adminsLogin.html",
                 "/adminsManagement/login",
                 "/usersManagement/login",
+                "/usersManagement/loginByCode",
+                "/usersManagement/getValidateCode",
+                "/usersManagement/updatePassword",
+                "/usersManagement/checkPhone",
+                "/usersManagement/register",
                 "/css/*",
                 "/js/*",
                 "/element-ui/**",
                 "/images/*",
                 "/favicon.ico",
                 "/commodity/**",
-                "/common/*"
+                "/common/*",
+                "/error"
         );
     }
 

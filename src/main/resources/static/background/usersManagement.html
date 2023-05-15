@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang = "en">
     <head>
         <title>用户账号管理</title>
         <meta charset = "UTF-8">
@@ -100,10 +100,10 @@
             <el-dialog title = "用户修改" :visible.sync = "updateUserVisible" width = "50%">
                 <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "updateRules">
                     <el-form-item label = "用户名" prop = "username">
-                        <el-input v-model = "updateForm.username"></el-input>
+                        <el-input v-model = "updateForm.username" placeholder = "请输入修改后的用户名"></el-input>
                     </el-form-item>
                     <el-form-item label = "密码" prop = "password">
-                        <el-input v-model = "updateForm.password"></el-input>
+                        <el-input v-model = "updateForm.password" placeholder = "请输入修改后的密码"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot = "footer" class = "dialog-footer">
@@ -120,7 +120,7 @@
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
-            let usernameFormat = /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){3,12}$/
+            let usernameFormat = /^[a-zA-Z][a-zA-Z0-9]{2,11}$/
             let passwordFormat = /^[a-zA-Z0-9]{6,12}$/
 
             new Vue({
@@ -208,7 +208,7 @@
                         if (this.updateForm.username === "")
                             this.$message({showClose: true, message: "用户名不能为空", type: "warning"})
                         else if (!usernameFormat.test(this.updateForm.username))
-                            this.$message({showClose: true, message: "用户名由字母和数字组成且长度在3-12位之间", type: "warning"})
+                            this.$message({showClose: true, message: "用户名需字母开头，由字母和数字组成且长度在3-12位之间", type: "warning"})
                         else if (this.updateForm.password === "")
                             this.$message({showClose: true, message: "密码不能为空", type: "warning"})
                         else if (!passwordFormat.test(this.updateForm.password))
@@ -266,7 +266,7 @@
                             }, {
                                 type: "string",
                                 pattern: usernameFormat,
-                                message: "用户名由字母和数字组成且长度在3-12位之间",
+                                message: "用户名需字母开头，由字母和数字组成且长度在3-12位之间",
                                 trigger: "blur"
                             }],
                             password: [{
@@ -325,6 +325,5 @@
                 }
             })
         </script>
-
     </body>
 </html>

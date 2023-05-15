@@ -5,7 +5,6 @@ img {
 
 form {
     padding: 25px;
-
 }
 
 .el-button--warning.is-plain {
@@ -25,9 +24,26 @@ form {
 .form-container {
     margin: 20px auto;
     padding: 20px;
-    width: 500px;
+    width: 600px;
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow: hidden;
+}
+
+.left {
+    margin-left: 110px;
+    color: #666666;
+    text-decoration: none;
+}
+
+.form-container a {
+    color: #666666;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.form-container a:hover {
+    color: #359cec;
+    text-decoration: underline;
 }
 

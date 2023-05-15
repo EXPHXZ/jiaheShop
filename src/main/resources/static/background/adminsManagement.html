@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang = "en">
     <head>
         <title>管理员账号管理</title>
         <meta charset = "UTF-8">
@@ -108,12 +108,12 @@
             </template>
 
             <el-dialog title = "添加管理员" :visible.sync = "addAdminVisible" width = "50%">
-                <el-form ref = "addForm" :model = "addForm" label-width = "80px" :rules = "addRules">
+                <el-form ref = "addForm" :model = "addForm" label-width = "80px" :rules = "rules">
                     <el-form-item label = "账号" prop = "account">
-                        <el-input v-model  = "addForm.account"></el-input>
+                        <el-input v-model  = "addForm.account" placeholder = "账号需字母开头，由字母和数字组成且长度在3-12位之间"></el-input>
                     </el-form-item>
                     <el-form-item label = "密码" prop = "password">
-                        <el-input v-model = "addForm.password"></el-input>
+                        <el-input v-model = "addForm.password" placeholder = "密码由字母和数字组成且长度在6-12位之间"></el-input>
                     </el-form-item>
                     <el-form-item label = "权限" prop = "identity">
                         <el-select v-model = "addForm.identity" placeholder = "请选择权限">
@@ -132,15 +132,15 @@
             </el-dialog>
 
             <el-dialog title = "管理员修改" :visible.sync = "updateAdminVisible" width = "50%">
-                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "updateRules">
+                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "rules">
                     <el-form-item label = "账号" prop = "account">
-                        <el-input v-model = "updateForm.account"></el-input>
+                        <el-input v-model = "updateForm.account" placeholder = "请输入修改后的账号"></el-input>
                     </el-form-item>
                     <el-form-item label = "密码" prop = "password">
-                        <el-input v-model = "updateForm.password"></el-input>
+                        <el-input v-model = "updateForm.password" placeholder = "请输入修改后的密码"></el-input>
                     </el-form-item>
                     <el-form-item label = "权限" prop = "identity">
-                        <el-select v-model = "updateForm.identity" placeholder="请选择权限">
+                        <el-select v-model = "updateForm.identity" placeholder = "请选择权限">
                             <el-option label = "总管理员" value = "0"></el-option>
                             <el-option label = "订单管理员" value = "1"></el-option>
                             <el-option label = "商品管理员" value = "2"></el-option>
@@ -163,7 +163,7 @@
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
-            let accountFormat = /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){3,12}$/
+            let accountFormat = /^[a-zA-Z][a-zA-Z0-9]{2,11}$/
             let passwordFormat = /^[a-zA-Z0-9]{6,12}$/
 
             new Vue({
@@ -195,18 +195,32 @@
                         this.multipleSelection = val
                     },
 
-                    addAdmin() {
-                        if (this.addForm.account === "")
+                    checkAdminForm(form) {
+                        if (form.account === "") {
                             this.$message({showClose: true, message: "账号不能为空", type: "warning"})
-                        else if (!accountFormat.test(this.addForm.account))
-                            this.$message({showClose: true, message: "账号由字母和数字组成且长度在3-12位之间", type: "warning"})
-                        else if (this.addForm.password === "")
+                            return false
+                        }
+                        else if (!accountFormat.test(form.account)) {
+                            this.$message({showClose: true, message: "账号需字母开头，由字母和数字组成且长度在3-12位之间", type: "warning"})
+                            return false
+                        }
+                        else if (form.password === "") {
                             this.$message({showClose: true, message: "密码不能为空", type: "warning"})
-                        else if (!passwordFormat.test(this.addForm.password))
+                            return false
+                        }
+                        else if (!passwordFormat.test(form.password)) {
                             this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "warning"})
-                        else if (this.addForm.identity === "")
+                            return false
+                        }
+                        else if (form.identity === "") {
                             this.$message({showClose: true, message: "权限不能为空", type: "warning"})
-                        else {
+                            return false
+                        }
+                        return true
+                    },
+
+                    addAdmin() {
+                        if (this.checkAdminForm(this.addForm)) {
                             axios.post("/adminsManagement/addAdmin", this.addForm).then((resp) => {
                                 if (resp.data.code === 20011) {
                                     this.addForm.account = ""
@@ -288,17 +302,7 @@
                     },
 
                     updateAdmin() {
-                        if (this.updateForm.account === "")
-                            this.$message({showClose: true, message: "账号不能为空", type: "warning"})
-                        else if (!accountFormat.test(this.updateForm.account))
-                            this.$message({showClose: true, message: "账号由字母和数字组成且长度在3-12位之间", type: "warning"})
-                        else if (this.updateForm.password === "")
-                            this.$message({showClose: true, message: "密码不能为空", type: "warning"})
-                        else if (!passwordFormat.test(this.updateForm.password))
-                            this.$message({showClose: true, message: "密码由字母和数字组成且长度在6-12位之间", type: "warning"})
-                        else if (this.updateForm.identity === "")
-                            this.$message({showClose: true, message: "权限不能为空", type: "warning"})
-                        else {
+                        if (this.checkAdminForm(this.updateForm)) {
                             axios.put("/adminsManagement/updateAdmins", this.updateForm).then((resp) => {
                                 if (resp.data.code === 20041) {
                                     this.updateAdminVisible = false
@@ -362,7 +366,7 @@
                             total: 0,
                         },
 
-                        addRules: {
+                        rules: {
                             account: [{
                                 required: true,
                                 message: "请输入账号",
@@ -370,35 +374,7 @@
                             }, {
                                 type: "string",
                                 pattern: accountFormat,
-                                message: "账号由字母和数字组成且长度在3-12位之间",
-                                trigger: "blur"
-                            }],
-                            password: [{
-                                required: true,
-                                message: "请输入密码",
-                                trigger: "blur"
-                            }, {
-                                type: "string",
-                                pattern: passwordFormat,
-                                message: "密码由字母和数字组成且长度在6-12位之间",
-                                trigger: "blur"
-                            }],
-                            identity: [{
-                                required: true,
-                                message: "请选择权限",
-                                trigger: "change"
-                            }]
-                        },
-
-                        updateRules: {
-                            account: [{
-                                required: true,
-                                message: "请输入账号",
-                                trigger: "blur"
-                            }, {
-                                type: "string",
-                                pattern: accountFormat,
-                                message: "账号由字母和数字组成且长度在3-12位之间",
+                                message: "账号需字母开头，由字母和数字组成且长度在3-12位之间",
                                 trigger: "blur"
                             }],
                             password: [{
@@ -462,6 +438,5 @@
                 }
             })
         </script>
-
     </body>
 </html>

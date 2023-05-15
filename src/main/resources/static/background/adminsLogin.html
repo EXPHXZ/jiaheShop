@@ -1,4 +1,5 @@
-<html>
+<!doctype html>
+<html lang = "en">
     <head>
         <meta charset = "UTF-8">
         <title>嘉禾商城后台管理系统登录</title>
@@ -13,10 +14,10 @@
 
         <div id = "app" class = "form-container">
             <el-form ref = "loginForm" :model = "loginForm" label-width = "80px" :rules = "rules">
-                <el-form-item label = "账号：" prop = "account">
+                <el-form-item label = "账号" prop = "account">
                     <el-input v-model = "loginForm.account"></el-input>
                 </el-form-item>
-                <el-form-item label = "密码：" prop = "password">
+                <el-form-item label = "密码" prop = "password">
                     <el-input v-model = "loginForm.password" show-password></el-input>
                 </el-form-item>
                 <el-form-item>
@@ -42,18 +43,23 @@
                     },
 
                     login() {
-                        axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
+                        if (this.loginForm.account === "")
+                            this.$message({showClose: true, message: "请输入账号", type: "success"})
+                        else if (this.loginForm.password === "")
+                            this.$message({showClose: true, message: "请输入密码", type: "success"})
+                        else {
+                            axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
                                 if (resp.data.code === 20051) {
-                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                     window.localStorage.setItem("adminInfo", JSON.stringify(resp.data.data))
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                     window.location.href = "personalInformation.html"
                                 }
                                 else if (resp.data.code === 20052)
                                     this.$message({showClose: true, message: resp.data.msg, type: "error"})
                                 else
                                     this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                            }
-                        )
+                            })
+                        }
                     },
 
                     reset(){
@@ -72,43 +78,26 @@
                 data() {
                     return {
                         loginForm: {
-                            account:"",
-                            password:""
+                            account: "",
+                            password: ""
                         },
 
                         rules: {
                             account: [{
-                                    required : true,
-                                    message : "请输入账号",
-                                    trigger : "blur"
-                                }, {
-                                    type : "string",
-                                    pattern : /^[a-zA-Z0-9]+$/,
-                                    min:3,
-                                    max:12,
-                                    message: "账号由字母和数字组成且长度在3-12位之间",
-                                    trigger: "blur"
-                                }
-                            ],
+                                required: true,
+                                message: "请输入账号",
+                                trigger: "blur"
+                            }],
                             password: [{
-                                    required : true,
-                                    message : "请输入密码",
-                                    trigger : "blur"
-                                }, {
-                                    type : "string",
-                                    pattern : /^[a-zA-Z0-9]+$/,
-                                    min:6,
-                                    max:12,
-                                    message: "密码由字母和数字组成且长度在6-12位之间",
-                                    trigger: "blur"
-                                }
-                            ]
+                                required: true,
+                                message: "请输入密码",
+                                trigger: "blur"
+                            }]
                         }
                     }
                  }
             })
         </script>
-
     </body>
 </html>
 

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <title>个人中心</title>
+        <link rel="stylesheet" href="../css/homepage.css">
+    </head>
+
+    <body>
+        <div id = "app">
+            <el-container>
+                <el-header>
+                    <el-menu class="el-menu-demo" mode="horizontal" :default-active="activeIndex" background-color="#202124"
+                        text-color="#fff" active-text-color="#ffd04b">
+                        <el-menu-item index="1">
+                            <i class="el-icon-s-goods"></i>
+                            <a href="./homepage.html" target="_blank">首页</a>
+                        </el-menu-item>
+                        <el-menu-item index="2">
+                            <i class="el-icon-s-release"></i>
+                            <a href="https://www.ele.me" target="_blank">售后服务</a>
+                        </el-menu-item>
+                        <el-menu-item index="3">
+                            <i class="el-icon-s-order"></i>
+                            <a href="https://www.ele.me" target="_blank">个人订单</a>
+                        </el-menu-item>
+                        <el-menu-item index="4">
+                            <i class="el-icon-s-custom"></i>
+                            <a href="https://www.ele.me" target="_blank">个人中心</a>
+                        </el-menu-item>
+                        <el-menu-item index="5">
+                            <i class="el-icon-shopping-cart-2"></i>
+                            <a href="https://www.ele.me" target="_blank">购物车</a>
+                        </el-menu-item>
+                    </el-menu>
+                </el-header>
+            </el-container>
+        </div>
+
+        <script src = "../js/vue.js"></script>
+        <script src = "../element-ui/lib/index.js"></script>
+        <script src = "../js/axios-0.18.0.js"></script>
+        <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
+
+        <script>
+            new Vue({
+                el: "#app",
+
+                methods: {
+
+                },
+
+                mounted(){
+                    this.user = JSON.parse(window.localStorage.getItem("userInfo"))
+                },
+
+                data() {
+                    return {
+                        user:{
+                        },
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
