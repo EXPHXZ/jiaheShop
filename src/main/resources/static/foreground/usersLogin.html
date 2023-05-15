@@ -1,4 +1,5 @@
-<html>
+<!doctype html>
+<html lang = "en">
     <head>
         <meta charset = "UTF-8">
         <title>嘉禾商城登录</title>
@@ -124,7 +125,7 @@
                                     if (resp.data.code === 20051) {
                                         window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
                                         this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                        window.location.href = "/background/adminsLogin.html"
+                                        window.location.href = "homepage.html"
                                     }
                                     else if (resp.data.code === 20052)
                                         this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -145,7 +146,7 @@
                                     if (resp.data.code === 20051) {
                                         window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
                                         this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                        window.location.href = "/background/adminsLogin.html"
+                                        window.location.href = "homepage.html"
                                     }
                                     else if (resp.data.code === 20052)
                                         this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -223,7 +224,7 @@
                                             if (resp.data.code === 20051) {
                                                 window.localStorage.setItem("userInfo", JSON.stringify(resp.data.data))
                                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                                window.location.href = "/background/adminsLogin.html"
+                                                window.location.href = "homepage.html"
                                             }
                                             else if (resp.data.code === 20052)
                                                 this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -410,7 +411,6 @@
                  }
             })
         </script>
-
     </body>
 </html>
 
