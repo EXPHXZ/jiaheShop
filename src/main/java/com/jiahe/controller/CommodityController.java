@@ -72,6 +72,49 @@ public class CommodityController {
 
     }
 
+    /**
+     * 分页查询所有上架了的商品数据
+     * @param current 当前页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @GetMapping("/grounding/{current}/{pageSize}")
+    public Result selectAllGrounding(@PathVariable int current, @PathVariable int pageSize){
+        Page<Commodity> commodityPage = new Page<>(current,pageSize);
+        Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Commodity::getStatus,0);
+
+        commodityService.page(commodityPage,queryWrapper);
+
+        BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
+
+        List<Commodity> records = commodityPage.getRecords();
+
+        List<CommodityDto> list = records.stream().map((item) -> {
+            CommodityDto commodityDto = new CommodityDto();
+            BeanUtils.copyProperties(item, commodityDto);
+            int categoryId = commodityDto.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            if (category != null) {
+                commodityDto.setCategoryName(category.getCategoryName());
+            }
+            return commodityDto;
+        }).collect(Collectors.toList());
+
+        commodityDtoPage.setRecords(list);
+
+        //当删除到页数发生变化的时候
+        if (current > commodityDtoPage.getPages()){
+            commodityDtoPage.setCurrent(commodityDtoPage.getPages());
+        }
+
+        return new Result(Code.SELECT_SUCCESS,commodityDtoPage);
+
+
+
+    }
+
     @PostMapping
     public Result addCommodity(@RequestBody Commodity commodity) throws Exception {
         Boolean addFlag = commodityService.checkAdd(commodity);
