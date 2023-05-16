@@ -21,7 +21,7 @@ a {
 
 .el-main {
     text-align: center;
-    line-height: 160px;
+    /*line-height: 160px;*/
 }
 
 body > .el-container {
@@ -54,28 +54,35 @@ body > .el-container {
     background-color: #d3dce6;
 }
 
-  ul,li {
+ul,li {
     list-style: none;
     margin:0;
     padding:0;
 }
 
 ul>li {
-    height: 30px;
-    line-height: 30px;
+    height: 40px;
+    line-height: 40px;
     padding-left:10px;
     text-align: center;
+    cursor: pointer;
 }
 
 .main-left {
     float: left;
-    width: 150px;
+    width: 200px;
     background-color: #fefefe;
 }
 
 .main-left li a {
     color: #000;
-
+    font-size: 18px;
+}
+.main-left li:hover{
+    background-color: #d9d9d9;
+}
+.main-left li a:hover{
+    text-decoration: underline;
 }
 
 .main-top {
@@ -147,4 +154,12 @@ display: block;
 .users {
     float: right;
     color: #ffffff;
+}
+.discount-w{
+    color: #e1251b;
+    text-align: left;
+}
+
+.el-card {
+    height: 370px;
 }

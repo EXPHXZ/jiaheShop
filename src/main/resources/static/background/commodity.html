@@ -95,6 +95,7 @@
                     <el-option label="大" value="大"></el-option>
                 </el-select>
             </el-form-item>
+            c
             <el-form-item label="分类">
                 <el-select v-model="addCommodity.categoryId" placeholder="请选择规格">
                     <el-option v-for="category in categoryList"
@@ -104,6 +105,17 @@
                     ></el-option>
                 </el-select>
             </el-form-item>
+
+            <el-form-item label="折扣">
+                <el-select v-model="addCommodity.discount" placeholder="请选择折扣">
+                    <el-option label="无" value=1></el-option>
+                    <el-option label="95折" value=0.95></el-option>
+                    <el-option label="9折" value=0.9></el-option>
+                    <el-option label="8.5折" value=0.85></el-option>
+                    <el-option label="8折" value=0.8></el-option>
+                </el-select>
+            </el-form-item>
+
             <el-form-item label="价格">
                 <el-input v-model="addCommodity.price"></el-input>
             </el-form-item>
@@ -111,6 +123,7 @@
                 <el-select v-model="addCommodity.status" placeholder="请选择商品状态">
                     <el-option label="上架" value="0"></el-option>
                     <el-option label="下架" value="1"></el-option>
+                    <el-option label="轮播图片" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="余量">
@@ -167,6 +180,17 @@
                     <el-option label="大" value="大"></el-option>
                 </el-select>
             </el-form-item>
+
+            <el-form-item label="折扣">
+                <el-select v-model="updateCommodity.discount" placeholder="请选择折扣">
+                    <el-option label="无" value=1></el-option>
+                    <el-option label="95折" value=0.95></el-option>
+                    <el-option label="9折" value=0.9></el-option>
+                    <el-option label="8.5折" value=0.85></el-option>
+                    <el-option label="8折" value=0.8></el-option>
+                </el-select>
+            </el-form-item>
+
             <el-form-item label="分类">
                 <el-select v-model="updateCommodity.categoryId" placeholder="请选择规格">
                     <el-option v-for="category in categoryList"
@@ -183,6 +207,7 @@
                 <el-select v-model="updateCommodity.status" placeholder="请选择商品状态">
                     <el-option label="上架" value="0"></el-option>
                     <el-option label="下架" value="1"></el-option>
+                    <el-option label="轮播图片" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="余量">
@@ -220,6 +245,7 @@
             <el-select v-model="searchCommodity.status" placeholder="商品状态" :formatter="status">
                 <el-option label="上架" value="0"></el-option>
                 <el-option label="下架" value="1"></el-option>
+                <el-option label="轮播图片" value="2"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item>
@@ -255,7 +281,7 @@
                     width="100">
             </el-table-column>
 
-            <el-table-column prop="image" label="图片" align="center">
+            <el-table-column prop="image" label="图片" align="center" width="300">
                 <template slot-scope="{ row }">
                     <el-image style="width: 100px; height: 100px; border:none;cursor: pointer;"
                               :src="getImage(row.image)">
@@ -304,6 +330,14 @@
                     align="center"
                     width="100">
             </el-table-column>
+
+            <el-table-column
+                    prop="discount"
+                    label="折扣"
+                    align="center"
+                    width="100">
+            </el-table-column>
+
             <el-table-column
                     prop="statusText"
                     label="状态"
@@ -372,6 +406,8 @@
                             item.statusText = "上架"
                         }else if (item.status === 1){
                             item.statusText = "下架"
+                        }else if (item.status === 2){
+                            item.statusText = "轮播图片"
                         }
                     })
                     this.tableData = res.data.data;
@@ -383,10 +419,19 @@
             selectAll(){
                 axios.get("/commodity/"+this.pagination.current+"/"+this.pagination.pageSize).then((res) => {
                     res.data.data.records.forEach((item) => {
+                        console.log(item.discount)
                         if (item.status === 0){
                             item.statusText = "上架"
                         }else if (item.status === 1){
                             item.statusText = "下架"
+                        }else if (item.status === 2){
+                            item.statusText = "轮播图片"
+                        }
+
+                        if(item.discount === 1){
+                            item.discount = "暂无折扣"
+                        }else if (item.discount < 1){
+                            item.discount = (item.discount*10)+"折"
                         }
                     })
                     this.tableData = res.data.data.records;
