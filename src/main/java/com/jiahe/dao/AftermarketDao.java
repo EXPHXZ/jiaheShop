@@ -9,3 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AftermarketDao extends BaseMapper<Aftermarket> {
 
 }
+
+
+
+
