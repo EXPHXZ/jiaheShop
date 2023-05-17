@@ -17,42 +17,80 @@
                 :visible.sync="addAddressVisible"
                 width="50%"
         >
-            <el-form ref="form" :model="addAddress" label-width="80px">
-                <el-form-item label="商品名">
-                    <el-input v-model="addAddress.contacts"></el-input>
+            <el-form ref="form" :model="addAddressForm" label-width="80px">
+                <el-form-item label="联系人">
+                    <el-input v-model="addAddressForm.contacts"></el-input>
                 </el-form-item>
-                <el-form-item label="品牌名">
-                    <el-input v-model="addAddress.contactsPhone"></el-input>
+                <el-form-item label=联系人手机号码>
+                    <el-input v-model="addAddressForm.contactsPhone"></el-input>
                 </el-form-item>
                 <el-form-item label="收货地址">
                     <el-cascader
-                            v-model="addAddress.prefixAddress"
+                            v-model="addAddressForm.prefixAddress"
                             :options="pcaTextArr"
                             :props="{ expandTrigger: 'hover' }"
                             style="width: 40%"
-                            @change="handleChange"
-                    ></el-cascader>
+                            @change="prefixAddressChange">
+                    </el-cascader>
                     <el-input
-                            v-model="addAddress.detailAddress"
+                            v-model="addAddressForm.detailAddress"
                             placeholder="请输入详细地址"
-                            style="width: 59.6%"
-                            @blur="detailAddressChange"
-                    ></el-input>
+                            style="width: 50%"
+                            @change="detailAddressChange">
+                    </el-input>
                 </el-form-item>
-                <el-form-item label="简单描述">
-                    <el-input type="textarea" v-model="addAddress.simpleDescription"></el-input>
+                <el-form-item label="标签">
+                    <el-input type="textarea" v-model="addAddressForm.tag"></el-input>
                 </el-form-item>
-                <el-form-item label="详细描述">
-                    <el-input type="textarea" v-model="addAddress.detailedDescription"></el-input>
+                <el-form-item label="是否设为默认">
+                    <el-input type="textarea" v-model="addAddressForm.default"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="add">确定添加</el-button>
-                    <el-button @click="cancelAdd">取消</el-button>
+                    <el-button type="primary" @click="addAddress">确定添加</el-button>
+                    <el-button @click="handleCancel">取消</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
         <!--  地址编辑表单  -->
-
+        <el-dialog
+                title="新增地址"
+                :visible.sync="searchAddressVisible"
+                width="50%"
+        >
+            <el-form ref="form" :model="updateAddressForm" label-width="80px">
+                <el-form-item label="联系人">
+                    <el-input v-model="updateAddressForm.contacts"></el-input>
+                </el-form-item>
+                <el-form-item label=联系人手机号码>
+                    <el-input v-model="updateAddressForm.contactsPhone"></el-input>
+                </el-form-item>
+                <el-form-item label="收货地址">
+                    <el-cascader
+                            v-model="updateAddressForm.prefixAddress"
+                            :options="pcaTextArr"
+                            :props="{ expandTrigger: 'hover' }"
+                            style="width: 40%"
+                            @change="prefixAddressChange">
+                    </el-cascader>
+                    <el-input
+                            v-model="updateAddressForm.detailAddress"
+                            placeholder="请输入详细地址"
+                            style="width: 50%"
+                            @change="detailAddressChange">
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="标签">
+                    <el-input type="textarea" v-model="updateAddressForm.tag"></el-input>
+                </el-form-item>
+                <el-form-item label="是否设为默认">
+                    <el-input type="textarea" v-model="updateAddressForm.default"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="upadteAddress">确定修改</el-button>
+                    <el-button @click="handleCancel">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
         <!--  个人中心之地址管理界面  -->
         <el-container>
             <!--表头-->
@@ -81,58 +119,46 @@
                                 width: 10%;
                                 height: 10%;
                                 margin: 0 0 1% 90%"
-                            @click="handleAdd">添加新地址</el-button>
+                            @click="handleAdd">
+                        添加新地址
+                    </el-button>
                     <el-table
                             :data="tableData"
-                            border
                             style="width: 100%">
                         <el-table-column
-                                prop="name"
+                                prop="contacts"
                                 label="联系人"
                                 min-width="5%">
                         </el-table-column>
                         <el-table-column
-                                prop="phoneNumber"
-                                label="手机号码"
-                                min-width="10%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="province"
-                                label="省份"
-                                min-width="5%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="city"
-                                label="市区"
+                                prop="contactsPhone"
+                                label="联系人手机号码"
                                 min-width="10%">
                         </el-table-column>
                         <el-table-column
                                 prop="address"
                                 label="地址"
-                                min-width="25%">
+                                min-width="30%">
                         </el-table-column>
                         <el-table-column
                                 prop="tag"
                                 label="标签"
-                                min-width="5%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="name"
-                                label="是否为默认"
-
-                                min-width="5%">
-                        </el-table-column>
-                        <el-table-column
-                                fixed="right"
-                                label="操作"
                                 min-width="10%">
+                        </el-table-column>
+                        <el-table-column
+                                prop="default"
+                                label="是否为默认"
+                                min-width="10%">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作"
+                                min-width="20%">
                             <template slot-scope="scope">
                                 <el-button
                                         type="primary"
                                         icon="el-icon-edit"
                                         circle
-                                        style="margin-left: 10%"
-                                        @click="searchUpdateAddress(scope.row)">编辑</el-button>
+                                        @click="handleUpdate(scope.row)">编辑</el-button>
                                 <el-button
                                         type="danger"
                                         icon="el-icon-delete"
@@ -156,9 +182,45 @@
     </div>
     <script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
     <script>
+        let detailAddressFormat = /^[a-zA-Z0-9_\u4e00-\u9fa5]$/
+
         new Vue({
             el:"#PersonalAddress",
+
+
             methods: {
+                //查询当前用户个人的所有地址
+                selectPersonalAddress() {
+
+                },
+                //重置表单
+                resetForm(){
+                    this.addAddress = {}
+                    this.updateAdress = {}
+                },
+                //省市区信息发生变化 触发
+                prefixAddressChange () {
+                    console.log(this.addAddress.prefixAddress)
+                },
+                //详细地址发生变化 触发
+                detailAddressChange() {
+                    console.log(this.addAddress.detailAddress)
+                },
+                //管理添加按钮
+                handleAdd() {
+                    this.addAddressVisible = true
+                    this.resetForm()
+                },
+                //管理编辑按钮
+                handleUpdate() {
+                    this.searchAddressVisible = true
+                    this.resetForm()
+                },
+                //管理表单中的取消按钮
+                handleCancel() {
+                    this.addAddressVisible = false
+                    this.searchAddressVisible = false
+                },
                 //分页管理
                 handleCurrentChange(val) {
                     this.pagination.current = val
@@ -168,55 +230,49 @@
                     this.pagination.pageSize = val
                     this.selectByPage()
                 },
-                //省市区信息发生变化 触发
-                handleChange () {
-                    console.log(this.addAddress.prefixAddress)
-                },
-                //详细地址发生变化 触发
-                detailAddressChange() {
-                    var prefixAddress = ""
-                    if(this.addAddress.prefixAddress.at(1) == "市辖区")
-                        this.addAddress.detailAddress = this.addAddress.prefixAddress.at(0) + this.addAddress.prefixAddress.at(2) +this.addAddress.detailAddress
-                    else{
-                        for (var i = 0;i<=2;i++){
-                            prefixAddress += this.addAddress.prefixAddress.at(i);
-                        }
-                        this.addAddress.detailAddress = prefixAddress +  this.addAddress.detailAddress
-                    }
-                    console.log(this.addAddress.detailAddress)
-                },
-                //添加按钮弹出表格
-                handleAdd() {
-                    this.addAddressVisible = true
-                    this.resetAddForm()
-                },
-                //重置添加表单
-                resetAddForm(){
-                    this.addAddress = {}
-                },
                 //添加地址
-                addPersonalAddress() {
+                addAddress() {
+
                 },
-                //查找要修改的地址
-                searchUpdateAddress(row) {
+                //修改地址
+                upadteAddress() {
+
                 },
                 //删除地址
                 deletelAddress(row) {
                 },
             },
+
+            //钩子函数，进去页面就会执行查询所有
+            created() {
+                this.selectPersonalAddress();
+            },
+
             data() {
                 return {
-                    //添加地址弹窗默认不可见
+                    //添加、搜索表单弹窗默认不可见
                     addAddressVisible: false,
+                    searchAddressVisible: false,
                     //省市区
                     codeToText: elementChinaAreaData.codeToText,
                     pcaTextArr: elementChinaAreaData.pcaTextArr,
-
-                    addAddress: {
+                    //添加表单数据
+                    addAddressForm: {
                         contacts: '',
                         contactsPhone: '',
                         prefixAddress: [],
-                        detailAddress: ''
+                        detailAddress: '',
+                        tag: '',
+                        default: ''
+                    },
+                    //修改表单数据
+                    updateAddressForm: {
+                        contacts: '',
+                        contactsPhone: '',
+                        prefixAddress: [],
+                        detailAddress: '',
+                        tag: '',
+                        default: ''
                     },
                     //分页管理数据
                     pagination: {
@@ -225,54 +281,47 @@
                         total: 0,
                     },
                     tableData: [{
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-08',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-06',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }, {
-                        date: '2016-05-07',
-                        name: '王小虎',
-                        province: '上海',
-                        city: '普陀区',
+                        contacts: '王小虎',
+                        contactsPhone: '18929338160',
                         address: '上海市普陀区金沙江路 1518 弄',
-                        zip: 200333
+                        tag: '家',
+                        default: 0,
                     }]
                 }
             },
