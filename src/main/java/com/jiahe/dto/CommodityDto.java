@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class CommodityDto extends Commodity {
+
     private String categoryName;
 
     @Override

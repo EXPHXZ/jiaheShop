@@ -95,7 +95,7 @@
                 style="width: 100%">
             <el-table-column
                     prop="id"
-                    label="商品id"
+                    label="售后id"
                     align="center"
             >
             </el-table-column>
@@ -105,9 +105,31 @@
                     align="center">
             </el-table-column>
             <el-table-column
-                    prop="cause"
-                    label="原因"
+                    prop="orderCommodityId"
+                    label="订单项id"
                     align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="type"
+                    label="售后类型"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="cause"
+                    label="售后原因"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="description"
+                    label="问题描述"
+                    align="center">
+            </el-table-column>
+            <el-table-column prop="image" label="图片" align="center">
+                <template slot-scope="{ row }">
+                    <el-image style="width: 100px; height: 100px; border:none;cursor: pointer;"
+                              :src="getImage(row.image)">
+                    </el-image>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="statusText"
@@ -223,6 +245,9 @@
                     }
                 )
                 this.dialogVisible1 = false;
+            },
+            getImage (image) {
+                return `/common/download?name=${image}`
             },
         },
 

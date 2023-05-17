@@ -15,3 +15,4 @@ import org.springframework.stereotype.Service;
 public class AftermarketServiceImpl extends ServiceImpl<AftermarketDao, Aftermarket> implements AftermarketService {
 
 }
+
