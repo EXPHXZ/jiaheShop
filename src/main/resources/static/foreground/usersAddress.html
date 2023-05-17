@@ -117,7 +117,8 @@
             <el-header
                     style="text-align: center;
                     background-color: rgb(252,239,230);
-                    margin-bottom: 5%">
+                    margin-bottom: 5%;
+                    ">
                 <h1>收货地址</h1>
             </el-header>
             <!--侧边导航栏+主要内容-->
@@ -125,7 +126,7 @@
                 <!--侧边导航栏-->
                 <el-aside
                         border
-                        style="width: 10%;background-color: rgb(252,239,230);">
+                        style="width: 10%;height: 100vh;background-color: rgb(252,239,230);">
                     <el-row>
 
                     </el-row>
@@ -167,7 +168,7 @@
                                 :formatter="formatTag">
                         </el-table-column>
                         <el-table-column
-                                prop="default"
+                                prop="isDefault"
                                 label="是否为默认"
                                 min-width="10%"
                                 :formatter = "formatDefault">
@@ -218,11 +219,11 @@
                 },
                 //省市区信息发生变化 触发
                 prefixAddressChange () {
-                    console.log(this.addAddress.prefixAddress)
+                    console.log(this.addAddressForm.prefixAddress.join(""))
                 },
                 //详细地址发生变化 触发
                 detailAddressChange() {
-                    console.log(this.addAddress.detailAddress)
+                    console.log(this.addAddressForm.prefixAddress.join(""))
                 },
                 //管理添加按钮
                 handleAdd() {
@@ -266,26 +267,31 @@
                 },
                 //分页查询
                 selectByPage() {
-                    axios.get("/usersAddress/" + this.pagination.current + "/" + this.pagination.pageSize,this.user).then((res) => {
+                    axios.get("/usersAddress/" + this.user.id + "/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
                         this.tableData = res.data.data.records
                         this.pagination.total = res.data.data.total
                     })
                 },
                 //添加地址
                 addAddress() {
-                    let prefixAddress = ''
-                    if (this.prefixAddress.at(1) == "市辖区")
+                    if (this.prefixAddress.at(1) === "市辖区")
                         this.addAddressForm.location = this.prefixAddress.at(0) + this.prefixAddress.at(2) + this.detailAddress
                     else{
-                        for (var i=0;i<=2;i++)
-                            prefixAddress += this.prefixAddress.at(i)
-                        location = prefixAddress + this.detailAddress
+                        this.addAddressForm.location = this.addAddressForm.prefixAddress.join("") + this.detailAddress
                     }
-                    this.addAddressForm.user_id = this.user.id;
+                    this.addAddressForm.userId = this.user.id;
                     axios.post("/usersAddress/addPersonalAddress",this.addAddressForm).then((res) => {
-                        this.tableData = res.data.data.records
-                        this.selectByPage()
-                    })
+                        if (res.data.code == 20011){
+                            this.addAddressVisible = false;
+                            this.$message.success(res.data.msg)
+                        }
+                        else if (res.data.code == 20012)
+                            this.$message.error(res.data.msg)
+                    }).finally(
+                        ()=>{
+                            this.selectByPage()
+                        }
+                    )
                 },
                 //修改地址
                 upadteAddress() {
@@ -324,7 +330,7 @@
 
                     //添加表单数据
                     addAddressForm: {
-                        user_id: '',
+                        userId: '',
                         contacts: '',
                         contactsPhone: '',
                         prefixAddress: [],
@@ -335,7 +341,7 @@
                     },
                     //修改表单数据
                     updateAddressForm: {
-                        user_id: '',
+                        userId: '',
                         contacts: '',
                         contactsPhone: '',
                         prefixAddress: [],

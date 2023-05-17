@@ -18,20 +18,22 @@ public class AddressServiceImpl implements AddressService {
 
     //分页查询
     @Override
-    public IPage<Address> selectByPage(Users user,Integer current, Integer size) {
+    public IPage<Address> selectByPage(Integer id,Integer current, Integer size) {
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Address::getUserId,user.getId());
+        lqw.eq(Address::getUserId,id);
         IPage<Address> page = new Page<Address>(current, size);
+        System.out.println(page);
         return addressDao.selectPage(page,lqw);
     }
 
     @Override
-    public Boolean addPersonalAddress(Address address,Users user) {
-        address.setUserId(user.getId());
+    public Boolean addPersonalAddress(Address address) {
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Address::getIsDefault,0);
-        addressDao.selectList(lqw);
-        return addressDao.insert(address) > 0;
+        lqw.eq(Address::getIsDefault,1);
+        if (addressDao.selectList(lqw) != null)
+            return false;
+        else
+            return addressDao.insert(address) > 0;
     }
 
 }

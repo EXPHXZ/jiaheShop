@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AddressService {
     //分页查询
-    public IPage<Address> selectByPage(Users user,Integer current, Integer size);
+    public IPage<Address> selectByPage(Integer userId,Integer current, Integer size);
 
-    public Boolean addPersonalAddress(Address address,Users user);
+    public Boolean addPersonalAddress(Address address);
 }
