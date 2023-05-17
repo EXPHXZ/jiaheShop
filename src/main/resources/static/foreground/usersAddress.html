@@ -211,10 +211,6 @@
 
 
             methods: {
-                //查询当前用户个人的所有地址
-                selectPersonalAddress() {
-
-                },
                 //重置表单
                 resetForm(){
                     this.addAddressForm = {}
@@ -252,12 +248,6 @@
                     this.pagination.pageSize = val
                     this.selectByPage()
                 },
-                selectByPage() {
-                    axios.get("/usersAddress/" + this.pagination.current + "/" + this.pagination.pageSize).then((resp) => {
-                        this.tableData = resp.data.data.records
-                        this.pagination.total = resp.data.data.total
-                    })
-                },
                 //tag列格式标准化
                 formatTag(row, column, cellValue) {
                     if (cellValue === 0)
@@ -274,13 +264,28 @@
                     else if (cellValue === 1)
                         return "否"
                 },
-                //查询数据库中当前登录用户的所有个人地址
-                selectPersonalAddress(user) {
-
+                //分页查询
+                selectByPage() {
+                    axios.get("/usersAddress/" + this.pagination.current + "/" + this.pagination.pageSize,this.user).then((res) => {
+                        this.tableData = res.data.data.records
+                        this.pagination.total = res.data.data.total
+                    })
                 },
                 //添加地址
                 addAddress() {
-
+                    let prefixAddress = ''
+                    if (this.prefixAddress.at(1) == "市辖区")
+                        this.addAddressForm.location = this.prefixAddress.at(0) + this.prefixAddress.at(2) + this.detailAddress
+                    else{
+                        for (var i=0;i<=2;i++)
+                            prefixAddress += this.prefixAddress.at(i)
+                        location = prefixAddress + this.detailAddress
+                    }
+                    this.addAddressForm.user_id = this.user.id;
+                    axios.post("/usersAddress/addPersonalAddress",this.addAddressForm).then((res) => {
+                        this.tableData = res.data.data.records
+                        this.selectByPage()
+                    })
                 },
                 //修改地址
                 upadteAddress() {
@@ -293,36 +298,51 @@
 
             //钩子函数，进去页面就会执行查询所有
             mounted() {
-
-                this.selectPersonalAddress(user);
+                //获取当前用户
+                axios.get("/usersManagement/getLoginUser").then((resp) => {
+                    if (resp.data.code === 20031)
+                        this.user = resp.data.data
+                    if (this.user !== null)
+                        this.isLogin = true
+                })
+                this.selectByPage(this.user);
             },
 
             data() {
                 return {
+
                     tableData: [],
+
+                    user:{},
                     //添加、搜索表单弹窗默认不可见
                     addAddressVisible: false,
                     searchAddressVisible: false,
                     //省市区
                     codeToText: elementChinaAreaData.codeToText,
                     pcaTextArr: elementChinaAreaData.pcaTextArr,
+
+
                     //添加表单数据
                     addAddressForm: {
+                        user_id: '',
                         contacts: '',
                         contactsPhone: '',
                         prefixAddress: [],
                         detailAddress: '',
+                        location: '',
                         tag: '',
-                        default: ''
+                        isDefault: ''
                     },
                     //修改表单数据
                     updateAddressForm: {
+                        user_id: '',
                         contacts: '',
                         contactsPhone: '',
                         prefixAddress: [],
                         detailAddress: '',
+                        location: '',
                         tag: '',
-                        default: ''
+                        isDefault: ''
                     },
                     //分页管理数据
                     pagination: {

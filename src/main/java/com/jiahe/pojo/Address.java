@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Address {
     private Integer id;
-    private Integer user_id;
+    private Integer userId;
     private String contacts;
     private String contactsPhone;
     private String location;
