@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+a {
+    text-decoration: none;
+}
+
+.el-header, .el-footer {
+    background-color: #202124;
+    text-align: center;
+    line-height: 60px;
+}
+
+.users {
+    float: right;
+    color: #ffffff;
+    cursor: pointer;
+}
+

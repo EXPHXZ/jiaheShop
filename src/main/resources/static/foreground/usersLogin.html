@@ -39,10 +39,12 @@
                 </el-form-item>
                 <el-form-item>
                     <a @click = "registerVisible = true">未有账号？点此注册</a>
-                    <a class = "left" @click = "findPasswordVisible = true">忘记密码？</a>
+                    <a class = "right" @click = "findPasswordVisible = true">忘记密码？</a>
                     <el-button type = "warning" plain @click = "login" @keyup.enter = "keyDown(e)">登 录</el-button>
                 </el-form-item>
             </el-form>
+
+            <a @click = "backwardPage">《返回</a>
 
             <el-dialog title = "新用户注册" :visible.sync = "registerVisible" width = "50%">
                 <el-form ref = "registerForm" :model = "registerForm" label-width = "80px" :rules = "registerRules">
@@ -112,6 +114,10 @@
                             this.login()
                     },
 
+                    backwardPage() {
+                        window.location.href = this.prePage
+                    },
+
                     login() {
                         if (this.approach) {
                             if (this.loginForm.phone === "")
@@ -128,7 +134,7 @@
                                 axios.post("/usersManagement/login", this.loginForm).then((resp) => {
                                     if (resp.data.code === 20051) {
                                         this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                        window.location.href = "homepage.html"
+                                        this.backwardPage()
                                     }
                                     else if (resp.data.code === 20052)
                                         this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -148,7 +154,7 @@
                                 axios.post("/usersManagement/login", this.loginForm).then((resp) => {
                                     if (resp.data.code === 20051) {
                                         this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                        window.location.href = "homepage.html"
+                                        this.backwardPage()
                                     }
                                     else if (resp.data.code === 20052)
                                         this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -210,11 +216,19 @@
                             else if (!phoneFormat.test(this.loginForm.phone))
                                 this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
                             else {
-                                this.sendCodePhone = this.loginForm.phone
-                                this.setLoading()
-                                axios.get("/usersManagement/getValidateCode").then((resp) => {
-                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                    this.code = resp.data.data
+                                axios.post("/usersManagement/checkPhone", this.loginForm).then((resp) => {
+                                    if (resp.data.code === 20031) {
+                                        this.sendCodePhone = this.loginForm.phone
+                                        this.setLoading()
+                                        axios.get("/usersManagement/getValidateCode").then((resp) => {
+                                            this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                            this.code = resp.data.data
+                                        })
+                                    }
+                                    else if (resp.data.code === 20032)
+                                        this.$message({showClose: true, message: "此手机号没有绑定用户", type: "error"})
+                                    else
+                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
                                 })
                             }
                         }
@@ -270,7 +284,7 @@
                                         axios.post("/usersManagement/login", this.registerLoginPhone).then((resp) => {
                                             if (resp.data.code === 20051) {
                                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                                window.location.href = "homepage.html"
+                                                this.backwardPage()
                                             }
                                             else if (resp.data.code === 20052)
                                                 this.$message({showClose: true, message: resp.data.msg, type: "error"})
@@ -341,6 +355,7 @@
                 },
 
                 mounted() {
+                    this.prePage = window.localStorage.getItem("prePage")
                     window.addEventListener("keydown", this.keyDown)
                 },
 
@@ -379,8 +394,20 @@
                                 callback()
                         })
                     }
+                    let loginPhoneCheck = (rule, value, callback) => {
+                        axios.post("/usersManagement/checkPhone", this.loginForm).then((resp) => {
+                            if (resp.data.code === 20031)
+                                callback()
+                            else if (resp.data.code === 20032)
+                                callback(new Error("此手机号没有绑定的用户"))
+                            else
+                                callback()
+                        })
+                    }
 
                     return {
+                        prePage: "",
+
                         registerVisible: false,
                         findPasswordVisible: false,
                         isLoading: false,
@@ -438,6 +465,9 @@
                                 type: "string",
                                 pattern: phoneFormat,
                                 message: "请输入正确的手机号",
+                                trigger: "blur"
+                            }, {
+                                validator: loginPhoneCheck,
                                 trigger: "blur"
                             }],
                             validateCode: [{
