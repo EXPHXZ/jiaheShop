@@ -39,18 +39,14 @@ public class UsersServiceImpl implements UsersService {
     public Boolean checkUsername(String username) {
         LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
         lqw.eq(Users::getUsername, username);
-        if (usersDao.selectOne(lqw) != null)
-            return true;
-        return false;
+        return usersDao.selectOne(lqw) != null;
     }
 
     @Override
     public Boolean checkPhone(String phone) {
         LambdaQueryWrapper<Users> lqw = new LambdaQueryWrapper<Users>();
         lqw.eq(Users::getPhone, phone);
-        if (usersDao.selectOne(lqw) != null)
-            return true;
-        return false;
+        return usersDao.selectOne(lqw) != null;
     }
 
     @Override
@@ -81,8 +77,6 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public Boolean updateUsers(Users users) {
-        if (checkUsername(users.getUsername()))
-            return false;
         return usersDao.updateById(users) > 0;
     }
 

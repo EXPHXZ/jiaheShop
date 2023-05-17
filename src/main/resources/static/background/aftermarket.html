@@ -262,7 +262,10 @@
         },
 
         mounted() {
-            this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
+            axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
+                if (resp.data.code === 20031)
+                    this.admin = resp.data.data
+            })
         },
 
         methods: {

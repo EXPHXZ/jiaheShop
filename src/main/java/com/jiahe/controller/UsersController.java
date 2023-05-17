@@ -23,18 +23,23 @@ public class UsersController {
     public Result login(@RequestBody Users users, HttpServletRequest request) {
         Users checkUser = usersService.checkUsers(users);
         if (checkUser != null) {
-            request.getSession().setAttribute("user", users);
+            request.getSession().setAttribute("user", checkUser);
             return new Result(checkUser, Code.LOGIN_SUCCESS, "登录成功");
         }
         else
             return new Result(0, Code.LOGIN_FAIL, "登录失败，请检查用户名/手机号和密码");
     }
 
-//    @GetMapping("/logout")
-//    public Result logout(HttpServletRequest request) {
-//        request.getSession().removeAttribute("user");
-//        return new Result(0, Code.LOGOUT_SUCCESS, "已成功退出登录");
-//    }
+    @GetMapping("/getLoginUser")
+    public Result getLoginUser(HttpServletRequest request) {
+        return new Result(Code.SELECT_SUCCESS, request.getSession().getAttribute("user"));
+    }
+
+    @GetMapping("/logout")
+    public Result logout(HttpServletRequest request) {
+        request.getSession().removeAttribute("user");
+        return new Result(0, Code.LOGOUT_SUCCESS, "已成功退出登录");
+    }
 
     @GetMapping("/{current}/{size}")
     public Result selectByPage(@PathVariable Integer current, @PathVariable Integer size) {
@@ -47,6 +52,14 @@ public class UsersController {
         String code = ValidateCodeUtils.generateValidateCode(6).toString();
         System.out.println("验证码为：" + code);
         return new Result(code, Code.SELECT_SUCCESS, "验证码发送成功");
+    }
+
+    @PostMapping("/checkUsername")
+    public Result checkUsername(@RequestBody Users users) {
+        if (usersService.checkUsername(users.getUsername()))
+            return new Result(1, Code.SELECT_SUCCESS, "此用户名已被注册");
+        else
+            return new Result(Code.SELECT_FAIL, 0);
     }
 
     @PostMapping("/register")
@@ -88,7 +101,7 @@ public class UsersController {
         if (usersService.updateUsers(users))
             return new Result(1, Code.UPDATE_SUCCESS, "修改成功");
         else
-            return new Result(0, Code.UPDATE_FAIL, "修改失败，已有此用户");
+            return new Result(0, Code.UPDATE_FAIL, "修改失败");
     }
 
     @PostMapping("/checkPhone")
@@ -96,7 +109,7 @@ public class UsersController {
         if (usersService.checkPhone(users.getPhone()))
             return new Result(Code.SELECT_SUCCESS, 1);
         else
-            return new Result(0, Code.SELECT_FAIL, "此手机号没有绑定用户");
+            return new Result(Code.SELECT_FAIL, 1);
     }
 
     @PutMapping("/updatePassword")

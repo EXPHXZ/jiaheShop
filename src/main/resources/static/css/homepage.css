@@ -147,4 +147,5 @@ display: block;
 .users {
     float: right;
     color: #ffffff;
+    cursor: pointer;
 }

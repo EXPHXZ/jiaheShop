@@ -31,7 +31,8 @@
                             <a href = "https://www.ele.me" target = "_blank">购物车</a>
                         </el-menu-item>
                         <a v-if = "!isLogin" class = "users" href = "usersLogin.html">登录</a>
-                        <a v-if = "isLogin" class = "users" href = "usersHome.html">登录</a>
+                        <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
+                        <a v-if = "isLogin" class = "users" @click = "logout">退出登录</a>
                     </el-menu>
                 </el-header>
                 <el-container>
@@ -178,14 +179,30 @@
                             this.pagination.pageSize = res.data.data.size;
                             this.pagination.current = res.data.data.current;
                         })
+                    },
+
+                    logout() {
+                        axios.get("/usersManagement/logout").then((resp) => {
+                            if (resp.data.code === 20061) {
+                                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                window.location.reload()
+                            }
+                            else if (resp.data.code === 20062)
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            else
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                        })
                     }
                 },
 
                 mounted(){
                     //获取用户信息
-                    this.user = JSON.parse(window.localStorage.getItem("userInfo"))
-                    if (this.user !== null)
-                        this.isLogin = true
+                    axios.get("/usersManagement/getLoginUser").then((resp) => {
+                        if (resp.data.code === 20031)
+                            this.user = resp.data.data
+                        if (this.user !== null)
+                            this.isLogin = true
+                    })
                 }
             })
         </script>

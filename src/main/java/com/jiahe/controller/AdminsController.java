@@ -22,11 +22,16 @@ public class AdminsController {
     public Result login(@RequestBody Admins admins, HttpServletRequest request) {
         Admins checkAdmin = adminsService.checkAdmins(admins);
         if (checkAdmin != null) {
-            request.getSession().setAttribute("admin", admins);
-            return new Result(checkAdmin, Code.LOGIN_SUCCESS, "登录成功");
+            request.getSession().setAttribute("admin", checkAdmin);
+            return new Result(1, Code.LOGIN_SUCCESS, "登录成功");
         }
         else
             return new Result(0, Code.LOGIN_FAIL, "登录失败，请检查账号和密码");
+    }
+
+    @GetMapping("/getLoginAdmin")
+    public Result getLoginAdmin(HttpServletRequest request) {
+        return new Result(Code.SELECT_SUCCESS, request.getSession().getAttribute("admin"));
     }
 
     @GetMapping("/logout")
@@ -80,7 +85,7 @@ public class AdminsController {
         if (adminsService.updateAdmins(admins))
             return new Result(1, Code.UPDATE_SUCCESS, "修改成功");
         else
-            return new Result(0, Code.UPDATE_FAIL, "修改失败，已有此管理员账号");
+            return new Result(0, Code.UPDATE_FAIL, "修改失败");
     }
 
     @PutMapping("/updateAdminsInfo")
