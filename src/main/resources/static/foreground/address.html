@@ -10,19 +10,56 @@
     <link rel="stylesheet" href="../css/address.css">
 </head>
 <body>
+    <div id="PersonalAddress" class="PersonalAddress">
+        <!--  地址添加表单  -->
+        <el-dialog
+                title="新增地址"
+                :visible.sync="addAddressVisible"
+                width="50%"
+        >
+            <el-form ref="form" :model="addAddress" label-width="80px">
+                <el-form-item label="商品名">
+                    <el-input v-model="addAddress.contacts"></el-input>
+                </el-form-item>
+                <el-form-item label="品牌名">
+                    <el-input v-model="addAddress.contactsPhone"></el-input>
+                </el-form-item>
+                <el-form-item label="收货地址">
+                    <el-cascader
+                            v-model="addAddress.prefixAddress"
+                            :options="pcaTextArr"
+                            :props="{ expandTrigger: 'hover' }"
+                            style="width: 40%"
+                            @change="handleChange"
+                    ></el-cascader>
+                    <el-input
+                            v-model="addAddress.detailAddress"
+                            placeholder="请输入详细地址"
+                            style="width: 59.6%"
+                            @blur="detailAddressChange"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="简单描述">
+                    <el-input type="textarea" v-model="addAddress.simpleDescription"></el-input>
+                </el-form-item>
+                <el-form-item label="详细描述">
+                    <el-input type="textarea" v-model="addAddress.detailedDescription"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="add">确定添加</el-button>
+                    <el-button @click="cancelAdd">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <!--  地址编辑表单  -->
 
-<!--  地址添加表单  -->
-
-<!--  地址编辑表单  -->
-
-<!--  个人中心之地址管理界面  -->
-        <el-container id="PersonalAddress" class="PersonalAddress" >
+        <!--  个人中心之地址管理界面  -->
+        <el-container>
             <!--表头-->
             <el-header
                     style="text-align: center;
                     background-color: rgb(252,239,230);
-                    margin-bottom: 5%"
-            >
+                    margin-bottom: 5%">
                 <h1>收货地址</h1>
             </el-header>
             <!--侧边导航栏+主要内容-->
@@ -30,8 +67,7 @@
                 <!--侧边导航栏-->
                 <el-aside
                         border
-                        style="width: 10%;background-color: rgb(252,239,230);"
-                >
+                        style="width: 10%;background-color: rgb(252,239,230);">
                     <el-row>
 
                     </el-row>
@@ -43,17 +79,13 @@
                             round
                             style="
                                 width: 10%;
-                                height: 5%;
+                                height: 10%;
                                 margin: 0 0 1% 90%"
-                            @click="addPersonalAddress">添加新地址</el-button>
+                            @click="handleAdd">添加新地址</el-button>
                     <el-table
                             :data="tableData"
                             border
                             style="width: 100%">
-                        <el-table-column
-                                type="selection"
-                                width="55">
-                        </el-table-column>
                         <el-table-column
                                 prop="name"
                                 label="联系人"
@@ -80,8 +112,8 @@
                                 min-width="25%">
                         </el-table-column>
                         <el-table-column
-                                prop="zip"
-                                label="邮编"
+                                prop="tag"
+                                label="标签"
                                 min-width="5%">
                         </el-table-column>
                         <el-table-column
@@ -121,99 +153,130 @@
                 </el-main>
             </el-container>
         </el-container>
-
-        <script>
-            new Vue({
-                el:"#PersonalAddress",
-
-                methods: {
-
-                    handleCurrentChange(val) {
-                        this.pagination.current = val
-                        this.selectByPage()
-                    },
-
-                    handleSizeChange(val) {
-                        this.pagination.pageSize = val
-                        this.selectByPage()
-                    },
-                    //添加地址
-                    addPersonalAddress() {
-
-                    },
-                    //查找要修改的地址
-                    searchUpdateAddress(row) {
-
-                    },
-                    //删除地址
-                    deletelAddress(row) {
-
-                    },
+    </div>
+    <script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
+    <script>
+        new Vue({
+            el:"#PersonalAddress",
+            methods: {
+                //分页管理
+                handleCurrentChange(val) {
+                    this.pagination.current = val
+                    this.selectByPage()
                 },
-
-                data() {
-                    return {
-                        pagination: {
-                            current: 1,
-                            pageSize: 10,
-                            total: 0,
-                        },
-
-                        tableData: [{
-                            date: '2016-05-03',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                       }, {
-                            date: '2016-05-02',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }, {
-                            date: '2016-05-04',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }, {
-                            date: '2016-05-01',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }, {
-                            date: '2016-05-08',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }, {
-                            date: '2016-05-06',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }, {
-                            date: '2016-05-07',
-                            name: '王小虎',
-                            province: '上海',
-                            city: '普陀区',
-                            address: '上海市普陀区金沙江路 1518 弄',
-                            zip: 200333
-                        }]
+                handleSizeChange(val) {
+                    this.pagination.pageSize = val
+                    this.selectByPage()
+                },
+                //省市区信息发生变化 触发
+                handleChange () {
+                    console.log(this.addAddress.prefixAddress)
+                },
+                //详细地址发生变化 触发
+                detailAddressChange() {
+                    var prefixAddress = ""
+                    if(this.addAddress.prefixAddress.at(1) == "市辖区")
+                        this.addAddress.detailAddress = this.addAddress.prefixAddress.at(0) + this.addAddress.prefixAddress.at(2) +this.addAddress.detailAddress
+                    else{
+                        for (var i = 0;i<=2;i++){
+                            prefixAddress += this.addAddress.prefixAddress.at(i);
+                        }
+                        this.addAddress.detailAddress = prefixAddress +  this.addAddress.detailAddress
                     }
+                    console.log(this.addAddress.detailAddress)
                 },
-            })
-        </script>
+                //添加按钮弹出表格
+                handleAdd() {
+                    this.addAddressVisible = true
+                    this.resetAddForm()
+                },
+                //重置添加表单
+                resetAddForm(){
+                    this.addAddress = {}
+                },
+                //添加地址
+                addPersonalAddress() {
+                },
+                //查找要修改的地址
+                searchUpdateAddress(row) {
+                },
+                //删除地址
+                deletelAddress(row) {
+                },
+            },
+            data() {
+                return {
+                    //添加地址弹窗默认不可见
+                    addAddressVisible: false,
+                    //省市区
+                    codeToText: elementChinaAreaData.codeToText,
+                    pcaTextArr: elementChinaAreaData.pcaTextArr,
 
-
+                    addAddress: {
+                        contacts: '',
+                        contactsPhone: '',
+                        prefixAddress: [],
+                        detailAddress: ''
+                    },
+                    //分页管理数据
+                    pagination: {
+                        current: 1,
+                        pageSize: 10,
+                        total: 0,
+                    },
+                    tableData: [{
+                        date: '2016-05-03',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-02',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-04',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-01',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-08',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-06',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }, {
+                        date: '2016-05-07',
+                        name: '王小虎',
+                        province: '上海',
+                        city: '普陀区',
+                        address: '上海市普陀区金沙江路 1518 弄',
+                        zip: 200333
+                    }]
+                }
+            },
+        })
+    </script>
 </body>
 </html>
