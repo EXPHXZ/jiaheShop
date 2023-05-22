@@ -206,7 +206,7 @@
     <script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
     <script>
         let detailAddressFormat = /^[a-zA-Z0-9_\u4e00-\u9fa5]$/
-
+        let locationFormat = /^.*?区$/
         new Vue({
             el:"#PersonalAddress",
 
@@ -219,7 +219,7 @@
                 },
                 //省市区信息发生变化 触发
                 prefixAddressChange () {
-                    console.log(this.addAddressForm.prefixAddress.join(""))
+                    console.log(this.addAddressForm.prefixAddress.join("，").split("，"))
                 },
                 //详细地址发生变化 触发
                 detailAddressChange() {
@@ -231,9 +231,35 @@
                     this.resetForm()
                 },
                 //管理编辑按钮
-                handleUpdate() {
+                handleUpdate(row) {
+                    axios.get("/usersAddress/searchUpdateAddress" + row.location).then((res) => {
+                        this.updateAddressForm = res.data.data
+                        //地址拆分为详细地址和详细地址
+                        if(res.data.data.location.split("，").at(1) != "市辖区"){
+                            this.updateAddressForm.prefixAddress[0] = res.data.data.location.split("，").at(0)
+                            this.updateAddressForm.prefixAddress[1] = "市辖区"
+                            this.updateAddressForm.prefixAddress[2] = res.data.data.location.split("，").at(1)
+                            this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(2)
+                        }
+                        else{
+                            for(var i=0;i<=2;i++)
+                                this.updateAddressForm.prefixAddress[i] = res.data.data.location.split("，").at(i)
+                            this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(3)
+                        }
+                        //tag 回显格式标准化
+                        if (resp.data.data.tag === 0)
+                            this.updateForm.tag = "0"
+                    else if (resp.data.data.tag === 1)
+                            this.updateForm.tag = "1"
+                        else if (resp.data.data.tag === 2)
+                            this.updateForm.tag = "2"
+                        //是否为默认 回显格式标准化
+                        if (resp.data.data.default=== 0)
+                            this.updateForm.default = "0"
+                        else if (resp.data.data.default === 1)
+                            this.updateForm.default = "1"
+                    })
                     this.searchAddressVisible = true
-                    this.resetForm()
                 },
                 //管理表单中的取消按钮
                 handleCancel() {
@@ -272,14 +298,26 @@
                         this.pagination.total = res.data.data.total
                     })
                 },
+                //通用方法
+                generics() {
+                    this.addAddressForm.userId = this.user.id
+                    this.updateAddressForm.userId = this.user.id
+                    //添加表单地址连串
+                    if (this.addAddressForm.prefixAddress.at(1) === "市辖区")
+                        this.addAddressForm.location = this.addAddressForm.prefixAddress.at(0) + "，" + this.addAddressForm.prefixAddress.at(2) + "，" + this.addAddressForm.detailAddress
+                    else{
+                        this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + this.addAddressForm.detailAddress
+                    }
+                    //编辑表单地址连串
+                    if (this.updateAddressForm.prefixAddress.at(1) === "市辖区")
+                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
+                    else{
+                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
+                    }
+                },
                 //添加地址
                 addAddress() {
-                    if (this.prefixAddress.at(1) === "市辖区")
-                        this.addAddressForm.location = this.prefixAddress.at(0) + this.prefixAddress.at(2) + this.detailAddress
-                    else{
-                        this.addAddressForm.location = this.addAddressForm.prefixAddress.join("") + this.detailAddress
-                    }
-                    this.addAddressForm.userId = this.user.id;
+                    this.generics()
                     axios.post("/usersAddress/addPersonalAddress",this.addAddressForm).then((res) => {
                         if (res.data.code == 20011){
                             this.addAddressVisible = false;
@@ -295,10 +333,23 @@
                 },
                 //修改地址
                 upadteAddress() {
-
+                    this.generics()
+                    axios.put("/usersAddress/updatePersonalAddress,this.addAddressForm",this.updateAddressForm).then((res) => {
+                        if (res.data.code == 20011){
+                            this.addAddressVisible = false;
+                            this.$message.success(res.data.msg)
+                        }
+                        else if (res.data.code == 20012)
+                            this.$message.error(res.data.msg)
+                    }).finally(
+                        ()=>{
+                            this.selectByPage()
+                        }
+                    )
                 },
                 //删除地址
                 deletelAddress(row) {
+                    row.location
                 },
             },
 

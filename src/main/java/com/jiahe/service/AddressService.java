@@ -10,4 +10,6 @@ public interface AddressService {
     public IPage<Address> selectByPage(Integer userId,Integer current, Integer size);
 
     public Boolean addPersonalAddress(Address address);
+
+    public Address searchUpdateAddress(String location);
 }

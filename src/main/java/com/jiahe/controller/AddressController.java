@@ -31,7 +31,12 @@ public class AddressController {
         if(flag)
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
-            return new Result(null,Code.ADD_FAIL,"添加失败");
+            return new Result(null,Code.ADD_FAIL,"添加失败，已有设置为默认的地址");
     }
 
+//    根据地址搜索要修改的回显信息
+    @GetMapping("/searchUpdateAddress")
+    public Result searchUpdateAddress(@RequestBody String location){
+            return new Result(Code.SELECT_SUCCESS,addressService.searchUpdateAddress(location));
+    }
 }
