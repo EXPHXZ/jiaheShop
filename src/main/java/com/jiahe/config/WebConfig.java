@@ -18,14 +18,18 @@ public class WebConfig implements WebMvcConfigurer {
         //配置可放行路径
         registration.excludePathPatterns(
                 "/foreground/*",
+                "/usersAddress/**",
                 "/background/adminsLogin.html",
                 "/adminsManagement/login",
                 "/usersManagement/login",
+                "/usersManagement/getLoginUser",
+                "/usersManagement/logout",
                 "/usersManagement/loginByCode",
                 "/usersManagement/getValidateCode",
                 "/usersManagement/updatePassword",
                 "/usersManagement/checkPhone",
                 "/usersManagement/register",
+                "/usersManagement/checkUsername",
                 "/css/*",
                 "/js/*",
                 "/element-ui/**",

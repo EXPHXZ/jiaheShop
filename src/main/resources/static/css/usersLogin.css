@@ -30,7 +30,7 @@ form {
     overflow: hidden;
 }
 
-.left {
+.right {
     margin-left: 110px;
     color: #666666;
     text-decoration: none;
@@ -46,4 +46,3 @@ form {
     color: #359cec;
     text-decoration: underline;
 }
-

@@ -50,7 +50,6 @@
                         else {
                             axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
                                 if (resp.data.code === 20051) {
-                                    window.localStorage.setItem("adminInfo", JSON.stringify(resp.data.data))
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                     window.location.href = "personalInformation.html"
                                 }

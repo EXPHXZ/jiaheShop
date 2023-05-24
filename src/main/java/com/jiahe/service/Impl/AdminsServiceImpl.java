@@ -30,9 +30,7 @@ public class AdminsServiceImpl implements AdminsService {
     public Boolean checkAccount(String account) {
         LambdaQueryWrapper<Admins> lqw = new LambdaQueryWrapper<Admins>();
         lqw.eq(Admins::getAccount, account);
-        if (adminsDao.selectOne(lqw) != null)
-            return true;
-        return false;
+        return adminsDao.selectOne(lqw) != null;
     }
 
     @Override
@@ -63,8 +61,6 @@ public class AdminsServiceImpl implements AdminsService {
 
     @Override
     public Boolean updateAdmins(Admins admins) {
-        if (checkAccount(admins.getAccount()))
-            return false;
         return adminsDao.updateById(admins) > 0;
     }
 

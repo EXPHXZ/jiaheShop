@@ -133,9 +133,6 @@
 
             <el-dialog title = "管理员修改" :visible.sync = "updateAdminVisible" width = "50%">
                 <el-form ref = "updateForm" :model = "updateForm" label-width = "80px" :rules = "rules">
-                    <el-form-item label = "账号" prop = "account">
-                        <el-input v-model = "updateForm.account" placeholder = "请输入修改后的账号"></el-input>
-                    </el-form-item>
                     <el-form-item label = "密码" prop = "password">
                         <el-input v-model = "updateForm.password" placeholder = "请输入修改后的密码"></el-input>
                     </el-form-item>
@@ -171,7 +168,7 @@
 
                 methods: {
                     refresh() {
-                        window.location.reload(true)
+                        window.location.reload()
                     },
 
                     handleCurrentChange(val) {
@@ -259,22 +256,26 @@
                     },
 
                     deleteBatchAdmins() {
-                        this.$confirm("此操作将批量删除管理员, 是否继续?", "提示", {
-                            confirmButtonText: "确定",
-                            cancelButtonText: "取消",
-                            type: "warning"
-                        }).then(() => {
-                            axios.post("/adminsManagement/deleteBatchAdmins", this.multipleSelection).then((resp) => {
-                                if (resp.data.code === 20021)
-                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                else if (resp.data.code === 20022)
-                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                                else
-                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                            }).finally(() => {
-                                this.selectByPage()
+                        if (this.multipleSelection.length === 0)
+                            this.$message({showClose: true, message: "请先选中要删除的管理员", type: "warning"})
+                        else {
+                            this.$confirm("此操作将批量删除管理员, 是否继续?", "提示", {
+                                confirmButtonText: "确定",
+                                cancelButtonText: "取消",
+                                type: "warning"
+                            }).then(() => {
+                                axios.post("/adminsManagement/deleteBatchAdmins", this.multipleSelection).then((resp) => {
+                                    if (resp.data.code === 20021)
+                                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                    else if (resp.data.code === 20022)
+                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                    else
+                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                }).finally(() => {
+                                    this.selectByPage()
+                                })
                             })
-                        })
+                        }
                     },
 
                     searchAdmins() {
@@ -348,7 +349,6 @@
                         },
 
                         updateForm: {
-                            account: "",
                             password: "",
                             identity: ""
                         },
@@ -408,7 +408,10 @@
                 },
 
                 mounted() {
-                    this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
+                    axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
+                        if (resp.data.code === 20031)
+                            this.admin = resp.data.data
+                    })
                 },
 
                 methods: {

@@ -69,21 +69,21 @@
                         <el-button type = "warning" plain @click = "logout">退出登录</el-button>
                     </template>
                     <el-descriptions-item>
-                        <template slot = "label"><i class = "el-icon-user"></i>姓名</template>{{nameShow}}
+                        <template slot = "label"><i class = "el-icon-user"></i>姓名</template>{{infoShow.name}}
                     </el-descriptions-item>
                     <el-descriptions-item>
-                        <template slot = "label"><i class = "el-icon-mobile-phone"></i>手机号</template>{{phoneShow}}
+                        <template slot = "label"><i class = "el-icon-mobile-phone"></i>手机号</template>{{infoShow.phone}}
                     </el-descriptions-item>
                     <el-descriptions-item>
                         <template slot = "label"><i class = "el-icon-s-custom"></i>身份权限</template>
-                        <el-tag size = "medium" type = "warning">{{identityShow}}</el-tag>
+                        <el-tag size = "medium" type = "warning">{{infoShow.identity}}</el-tag>
                     </el-descriptions-item>
                     <el-descriptions-item>
                         <template slot = "label"><i class = "el-icon-male"></i>/<i class = "el-icon-female"></i>性别</template>
-                        <el-tag size = "medium">{{sexShow}}</el-tag>
+                        <el-tag size = "medium">{{infoShow.sex}}</el-tag>
                     </el-descriptions-item>
                     <el-descriptions-item>
-                        <template slot = "label"><i class = "el-icon-message"></i>电子邮箱</template>{{emailShow}}
+                        <template slot = "label"><i class = "el-icon-message"></i>电子邮箱</template>{{infoShow.email}}
                     </el-descriptions-item>
                 </el-descriptions>
             </template>
@@ -159,32 +159,32 @@
                 el: "#information",
 
                 methods: {
-                    showInfo() {
-                        this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
-                        this.searchInfo()
-                    },
-
                     searchInfo() {
-                        axios.get("/adminsManagement/search/" + this.admin.id).then((resp) => {
-                            this.adminInfo = resp.data.data
-                            if (resp.data.code === 20031 && this.adminInfo.name !== null) {
-                                this.nameShow = this.adminInfo.name
-                                this.sexShow = this.adminInfo.sex
-                                this.phoneShow = this.adminInfo.phone
-                                this.emailShow = this.adminInfo.email
-                                if (this.adminInfo.identity === 0)
-                                    this.identityShow = "总管理员"
-                                else if (this.adminInfo.identity === 1)
-                                    this.identityShow = "订单管理员"
-                                else if (this.adminInfo.identity === 2)
-                                    this.identityShow = "商品管理员"
-                                else if (this.adminInfo.identity === 3)
-                                    this.identityShow = "售后管理员"
-                                else if (this.adminInfo.identity === 4)
-                                    this.identityShow = "用户账号管理员"
-                                this.getDateTime()
-                                this.infoIsEmpty = false
-                            }
+                        axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
+                            if (resp.data.code === 20031)
+                                this.adminId = resp.data.data.id
+                            axios.get("/adminsManagement/search/" + this.adminId).then((resp) => {
+                                if (resp.data.code === 20031)
+                                    this.admin = resp.data.data
+                                if (this.admin.name !== null) {
+                                    this.infoShow.name = this.admin.name
+                                    this.infoShow.sex = this.admin.sex
+                                    this.infoShow.phone = this.admin.phone
+                                    this.infoShow.email = this.admin.email
+                                    if (this.admin.identity === 0)
+                                        this.infoShow.identity = "总管理员"
+                                    else if (this.admin.identity === 1)
+                                        this.infoShow.identity = "订单管理员"
+                                    else if (this.admin.identity === 2)
+                                        this.infoShow.identity = "商品管理员"
+                                    else if (this.admin.identity === 3)
+                                        this.infoShow.identity = "售后管理员"
+                                    else if (this.admin.identity === 4)
+                                        this.infoShow.identity = "用户账号管理员"
+                                    this.getDateTime()
+                                    this.infoIsEmpty = false
+                                }
+                            })
                         })
                     },
 
@@ -192,15 +192,15 @@
                         let today = new Date()
                         this.dateTime = today.toLocaleString()
                         if (today.getHours() < 9)
-                            this.greeting = "早安！" + this.nameShow + "！"
+                            this.greeting = "早安！" + this.infoShow.name + "！"
                         else if (today.getHours() < 11)
-                            this.greeting = "上午好！" + this.nameShow + "！"
+                            this.greeting = "上午好！" + this.infoShow.name + "！"
                         else if (today.getHours() < 13)
-                            this.greeting = "午安！" + this.nameShow + "！"
+                            this.greeting = "午安！" + this.infoShow.name + "！"
                         else if (today.getHours() < 17)
-                            this.greeting = "下午好！" + this.nameShow + "！"
+                            this.greeting = "下午好！" + this.infoShow.name + "！"
                         else
-                            this.greeting = "晚上好！" + this.nameShow + "！"
+                            this.greeting = "晚上好！" + this.infoShow.name + "！"
                         this.handleTime = setTimeout(this.getDateTime, 1000)
                     },
 
@@ -208,7 +208,6 @@
                         axios.get("/adminsManagement/logout").then((resp) => {
                             if (resp.data.code === 20061) {
                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                window.localStorage.removeItem("adminInfo")
                                 window.location.href = "adminsLogin.html"
                             }
                             else if (resp.data.code === 20062)
@@ -248,12 +247,12 @@
 
                     addInfo() {
                         if (this.checkInfo(this.addForm)) {
-                            this.adminInfo.name = this.addForm.name
-                            this.adminInfo.sex = this.addForm.sex
-                            this.adminInfo.phone = this.addForm.phone
-                            this.adminInfo.email = this.addForm.email
+                            this.admin.name = this.addForm.name
+                            this.admin.sex = this.addForm.sex
+                            this.admin.phone = this.addForm.phone
+                            this.admin.email = this.addForm.email
                             this.addVisible = false
-                            axios.put("/adminsManagement/updateAdminsInfo", this.adminInfo).then((resp) => {
+                            axios.put("/adminsManagement/updateAdminsInfo", this.admin).then((resp) => {
                                 if (resp.data.code === 20041) {
                                     this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                     this.searchInfo()
@@ -267,7 +266,7 @@
                     },
 
                     showUpdateForm() {
-                        this.updateForm = this.adminInfo
+                        this.updateForm = this.admin
                         this.updateVisible = true
                     },
 
@@ -293,7 +292,6 @@
                             if (resp.data.code === 20021) {
                                 this.$message({showClose: true, message: resp.data.msg, type: "success"})
                                 clearTimeout(this.handleTime)
-                                window.localStorage.removeItem("adminInfo")
                                 window.location.href = "adminsLogin.html"
                             }
                             else if (resp.data.code === 20022)
@@ -305,25 +303,18 @@
                 },
 
                 mounted() {
-                    this.showInfo()
+                    this.searchInfo()
                 },
 
                 data() {
                     return {
                         admin: {
                         },
-                        adminInfo: {
-                        },
+                        adminId: "",
 
                         dateTime: "",
                         greeting: "",
                         handleTime: "",
-
-                        nameShow: "",
-                        sexShow: "",
-                        phoneShow: "",
-                        emailShow: "",
-                        identityShow: "",
 
                         infoIsEmpty: true,
                         addVisible: false,
@@ -342,6 +333,14 @@
                             sex: "",
                             phone: "",
                             email: ""
+                        },
+
+                        infoShow: {
+                            name: "",
+                            sex: "",
+                            phone: "",
+                            email: "",
+                            identity: ""
                         },
 
                         rules: {
@@ -391,7 +390,10 @@
                 },
 
                 mounted() {
-                    this.admin = JSON.parse(window.localStorage.getItem("adminInfo"))
+                    axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
+                        if (resp.data.code === 20031)
+                            this.admin = resp.data.data
+                    })
                 },
 
                 methods: {

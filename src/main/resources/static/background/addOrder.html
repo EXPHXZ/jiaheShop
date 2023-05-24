@@ -256,10 +256,10 @@
         },
 
         created() {
-          const adminInfo = window.localStorage.getItem('adminInfo')
-          if (adminInfo) {
-            this.admin = JSON.parse(admin)
-          }
+          axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
+            if (resp.data.code === 20031)
+              this.admin = resp.data.data
+          })
           this.selectCommodityList()
         },
 

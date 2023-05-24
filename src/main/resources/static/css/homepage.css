@@ -156,6 +156,7 @@ float: right;
 .users {
     float: right;
     color: #ffffff;
+    cursor: pointer;
 }
 .discount-w{
     color: #e1251b;
