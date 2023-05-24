@@ -20,3 +20,9 @@ a {
     cursor: pointer;
 }
 
+.users-right {
+    float: right;
+    color: #ffffff;
+    cursor: pointer;
+    margin-left: 12px;
+}
