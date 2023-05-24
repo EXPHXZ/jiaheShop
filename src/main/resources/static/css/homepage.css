@@ -158,6 +158,13 @@ float: right;
     color: #ffffff;
     cursor: pointer;
 }
+.users-right {
+    float: right;
+    color: #ffffff;
+    cursor: pointer;
+    margin-left: 12px;
+}
+
 .discount-w{
     color: #e1251b;
     text-align: left;
