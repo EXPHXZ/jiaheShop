@@ -40,13 +40,11 @@ public class AddressController {
         else
             return new Result(null,Code.ADD_FAIL,"添加失败，已有设置为默认的地址");
     }
-
-//    根据地址搜索要修改的回显信息
-    @GetMapping("/searchUpdateAddress")
-    public Result searchUpdateAddress(@RequestBody String location){
-            return new Result(Code.SELECT_SUCCESS,addressService.searchUpdateAddress(location));
+//    搜索要修改的回显地址信息
+    @GetMapping("/searchUpdateAddress/{id}")
+    public Result searchUpdateAddress(@PathVariable Integer id){
+            return new Result(Code.SELECT_SUCCESS,addressService.searchUpdateAddress(id));
     }
-
 //    修改地址
     @PutMapping("/updatePersonalAddress")
     public Result updatePersonalAddress(@RequestBody Address address){
@@ -55,5 +53,14 @@ public class AddressController {
             return new Result(null,Code.UPDATE_SUCCESS,"修改成功");
         else
             return new Result(null,Code.UPDATE_FAIL,"修改失败，已有设置为默认的地址");
+    }
+//    删除地址
+    @DeleteMapping("/deletePersonalAddress/{id}")
+    public Result deletePersonalAddress(@PathVariable Integer id){
+        Boolean flag = addressService.deletePersonalAddress(id);
+        if(flag)
+            return new Result(null,Code.DELETE_SUCCESS,"删除成功");
+        else
+            return new Result(null,Code.DELETE_FAIL,"删除失败");
     }
 }

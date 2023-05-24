@@ -13,8 +13,11 @@ public interface AddressService {
 //    添加地址
     public Boolean addPersonalAddress(Address address);
 
-//    查询要修改的个人地址
-    public Address searchUpdateAddress(String location);
-
+//    搜索要修改的回显地址信息
+    public Address searchUpdateAddress(Integer id);
+//    修改地址
     public Boolean updatePersonalAddress(Address address);
+
+//    删除地址
+    public Boolean deletePersonalAddress(Integer id);
 }
