@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <meta http-equiv = "X-UA-Compatible" content = "IE=edge">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <title>嘉禾商城首页</title>
+    <link rel = "stylesheet" href = "../css/commodityDetail.css">
+</head>
+
+<body>
+<div id = "app">
+    <el-container>
+        <el-header>
+            <el-menu class = "el-menu-demo" mode = "horizontal" :default-active = "activeIndex" background-color = "#202124"
+                     text-color = "#fff" active-text-color = "#ffd04b">
+                <el-menu-item index = "1">
+                    <i class = "el-icon-s-goods"></i>
+                    <a href = "./homepage.html" target = "_blank">首页</a>
+                </el-menu-item>
+                <el-menu-item index = "2">
+                    <i class = "el-icon-s-release"></i>
+                    <a href = "https://www.ele.me" target = "_blank">售后服务</a>
+                </el-menu-item>
+                <el-menu-item index = "3">
+                    <i class = "el-icon-s-order"></i>
+                    <a href = "https://www.ele.me" target = "_blank">个人订单</a>
+                </el-menu-item>
+                <el-menu-item index = "4">
+                    <i class = "el-icon-shopping-cart-2"></i>
+                    <a href = "https://www.ele.me" target = "_blank">购物车</a>
+                </el-menu-item>
+                <a v-if = "!isLogin" class = "users" href = "usersLogin.html">登录</a>
+                <a v-if = "isLogin" class = "users" href = "usersHome.html">登录</a>
+            </el-menu>
+        </el-header>
+        <el-container>
+            <el-container>
+                <el-main>
+                    <div class = "main-top">
+                        <img src = "../images/logo.png">
+                        <el-form :inline = "true" :model = "searchForm" class = "demo-form-inline">
+                            <el-form-item class = "input-search">
+                                <el-col :span = "8">
+                                    <el-input v-model = "searchForm.search" placeholder = "搜索"></el-input>
+                                </el-col>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button icon = "el-icon-search" @click = "search">搜索</el-button>
+                            </el-form-item>
+                        </el-form>
+
+                    </div>
+                    <el-breadcrumb separator="/">
+                        <el-breadcrumb-item><a href="#">首页</a></el-breadcrumb-item>
+                        <el-breadcrumb-item><a href="#">商品详情</a></el-breadcrumb-item>
+                    </el-breadcrumb>
+                    <div class="main-button">
+                        <div class="main-left">
+                            <img :src = "getImage(commodity.image)"
+                                 class = "image">
+                        </div>
+                        <div class="main-right">
+                            <div class="font" v-text="commodity.detailedDescription">
+                            </div>
+                            <div class="price">
+                                <div class="priceFont">
+                                    <div class="inner">价格：</div>
+                                    <div class="inner-left" v-text="commodity.price"></div>
+
+                                </div>
+                                <div class="priceFont">
+                                    <div class="inner">折扣：</div>
+                                    <div class="inner-left" v-text="commodity.discountText"></div>
+                                </div>
+                                <div class="priceFont">
+                                    <div class="inner">折后价：</div>
+                                    <div class="inner-left" v-text="commodity.afterPrice"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="inner">配送至 </div>
+                                <div class="inner-left">
+                                    <el-select v-model="select" placeholder="请选择">
+                                        <el-option
+                                                v-for="item in options"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+
+                            </div>
+                            <div>
+                                <div class="transportFee">
+                                    退货包运费 全场包邮 七天无理由退货
+                                </div>
+
+                            </div>
+                            <div class="button">
+                                <div class="inner">选择规格： </div>
+                                <div>
+                                    <el-radio v-model="radio1" label="1" border>大</el-radio>
+                                    <el-radio v-model="radio1" label="2" border>中</el-radio>
+                                    <el-radio v-model="radio1" label="3" border>小</el-radio>
+                                </div>
+                            </div>
+
+                            <div class="count-num">
+                                <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                            </div>
+
+                            <div class="button">
+                                <el-row>
+                                    <el-button size="medium" type="warning">购买</el-button>
+                                    <el-button size="medium" type="danger">加入购物车</el-button>
+                                </el-row>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </el-container>
+</div>
+
+<script src = "../js/vue.js"></script>
+<script src = "../element-ui/lib/index.js"></script>
+<script src = "../js/axios-0.18.0.js"></script>
+<link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
+
+<script>
+    new Vue({
+        el: "#app",
+
+        data() {
+            return {
+                orderDetail:"",
+                searchForm: {
+                },
+                activeIndex: '1',
+                radio1:"",
+                num: 1,
+                commodity:"",
+                user:{
+                },
+
+                isLogin: false,
+
+                options: [{
+                    value: '选项1',
+                    label: '黄金糕'
+                }, {
+                    value: '选项2',
+                    label: '双皮奶'
+                }, {
+                    value: '选项3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '选项4',
+                    label: '龙须面'
+                }, {
+                    value: '选项5',
+                    label: '北京烤鸭'
+                }],
+                select: '选项1'  // 选取默认值在里面就可以了，比如：  select:"选项1"；
+            }
+        },
+
+        methods: {
+            search() {
+                console.log('search!');
+            },
+
+            handleChange(value) {
+                console.log(value);
+            },
+
+            getImage(image){
+                return `/common/download?name=${image}`
+            },
+
+            getCommodity(id){
+                axios.get("/commodity/"+id).then((res) => {
+                    this.commodity = res.data.data;
+                    if(this.commodity.discount < 1){
+                        this.commodity.discountText = (this.commodity.discount*10)+"折"
+                    }else if (this.commodity.discount === 1){
+                        this.commodity.discountText= "暂无折扣"
+                    }
+                    this.commodity.afterPrice=(this.commodity.price*this.commodity.discount).toFixed(2)
+
+                })
+            },
+
+        },
+
+        mounted(){
+            //获取用户信息
+            this.user = JSON.parse(window.localStorage.getItem("userInfo"))
+            if (this.user !== null)
+                this.isLogin = true
+            const params = window.location.search
+            const id = params.split("=")[1]
+            this.getCommodity(id)
+
+
+        }
+    })
+</script>
+</body>
+</html>

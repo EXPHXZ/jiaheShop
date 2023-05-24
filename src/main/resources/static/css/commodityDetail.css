@@ -6,7 +6,6 @@ body {
 
 a {
     text-decoration: none; /* 移除链接下划线 */
-    /*color: #666666;*/
 }
 
 .el-header, .el-footer {
@@ -43,7 +42,7 @@ body > .el-container {
     color: #475669;
     font-size: 14px;
     opacity: 0.75;
-    line-height: 200px;
+    line-height: 150px;
     margin: 0;
 }
 
@@ -69,22 +68,6 @@ ul>li {
     cursor: pointer;
 }
 
-.main-left {
-    float: left;
-    width: 200px;
-    background-color: #fefefe;
-}
-
-.main-left li a {
-    color: #000;
-    font-size: 18px;
-}
-.main-left li:hover{
-    background-color: #d9d9d9;
-}
-.main-left li a:hover{
-    text-decoration: underline;
-}
 
 .main-top {
     height: 150px;
@@ -100,39 +83,12 @@ ul>li {
     height: 100px;
 }
 
-.discount {
-    background-color: #ffffff;
-    margin-top: 30px;
-}
-
-.discount-h {
-    padding-top: 20px;
-    height: 20px;
-    line-height: 20px;
-}
-.discount-w {
-    height: 50px;
-}
-
-.time {
-    font-size: 13px;
-    color: #999;
-  }
-  
-.bottom {
-margin-top: 13px;
-line-height: 12px;
-}
-
-.button {
-padding: 0;
-float: right;
-}
 
 .image {
-    width: 100%;
-    display: block;
-    cursor: pointer;
+width: 400px;
+height: 400px;
+display: block;
+    z-index: 2;
 }
 
 .clearfix:before,
@@ -156,25 +112,75 @@ float: right;
 .users {
     float: right;
     color: #ffffff;
-    cursor: pointer;
 }
-.discount-w{
-    color: #e1251b;
+
+.main-left {
+    padding-left: 120px;
+    padding-top: 50px;
+    margin: 0;
+    float: left;
+
+}
+
+.el-breadcrumb {
+    font-size: 14px;
+    line-height: 3 !important;
+}
+
+.font {
+    font: 700 18px Arial,"microsoft yahei";
+    color: #666;
+    padding-top: 50px;
+    line-height: 28px;
+    margin-bottom: 5px;
+}
+
+.priceFont {
+    font: 700 20px Arial,"microsoft yahei";
+    color: #e4393c;
+    line-height: 28px;
+    line-height: 28px;
+    margin-bottom: 5px;
+}
+
+.main-right {
+    width: 500px;
+    height: 500px;
+    float: left;
+    margin-left: 20px;
+}
+
+.main-button {
+    background-color: #ffffff;
+    height: 100%;
     text-align: left;
 }
 
-.el-card {
-    height: 370px;
+.price {
+    background-color: #f3f3f3;
 }
 
-.el-image__inner{
-    width: 800px;
+.transportFee{
+    font-size: 14px;
+    display: inline;
+    color: #999999;
+    margin-left: 55px;
+}
+.inner {
+    font-size: 14px;
+    display: inline;
+    color: #999999;
+}
+.inner-left{
+    display: inline;
+    margin-left: 10px;
+}
+.count-num{
+    margin-top: 80px;
+}
+.button {
+    margin-top: 20px;
 }
 
-.discount-w a{
-    color: #666666;
-    font-size: 15px;
-}
-.discount-w a:hover{
-    color: #6b9eff;
-}
+
+
