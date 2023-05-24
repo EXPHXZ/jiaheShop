@@ -23,7 +23,14 @@ public class AddressController {
         IPage<Address> page = addressService.selectByPage(id,current,size);
         return new Result(Code.SELECT_SUCCESS,page);
     }
-
+//    查询全部地址
+    @GetMapping("/searchPersonalAll/{id}")
+    public Result searchAll(@PathVariable Integer id){
+        if(addressService.searchPersonalAll(id) != null)
+            return new Result(addressService.searchPersonalAll(id),Code.SELECT_SUCCESS,"查询成功");
+        else
+            return new Result(null,Code.SELECT_FAIL,"查询失败");
+    }
 //    用户增加个人地址
     @PostMapping("/addPersonalAddress")
     public Result addPersonalAddress(@RequestBody Address address){
@@ -38,5 +45,15 @@ public class AddressController {
     @GetMapping("/searchUpdateAddress")
     public Result searchUpdateAddress(@RequestBody String location){
             return new Result(Code.SELECT_SUCCESS,addressService.searchUpdateAddress(location));
+    }
+
+//    修改地址
+    @PutMapping("/updatePersonalAddress")
+    public Result updatePersonalAddress(@RequestBody Address address){
+        Boolean flag = addressService.updatePersonalAddress(address);
+        if(flag)
+            return new Result(null,Code.UPDATE_SUCCESS,"修改成功");
+        else
+            return new Result(null,Code.UPDATE_FAIL,"修改失败，已有设置为默认的地址");
     }
 }

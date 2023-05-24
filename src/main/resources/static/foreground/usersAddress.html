@@ -232,7 +232,7 @@
                 },
                 //管理编辑按钮
                 handleUpdate(row) {
-                    axios.get("/usersAddress/searchUpdateAddress" + row.location).then((res) => {
+                    axios.get("/usersAddress/searchUpdateAddress" + row.id).then((res) => {
                         this.updateAddressForm = res.data.data
                         //地址拆分为详细地址和详细地址
                         if(res.data.data.location.split("，").at(1) != "市辖区"){
@@ -249,7 +249,7 @@
                         //tag 回显格式标准化
                         if (resp.data.data.tag === 0)
                             this.updateForm.tag = "0"
-                    else if (resp.data.data.tag === 1)
+                        else if (resp.data.data.tag === 1)
                             this.updateForm.tag = "1"
                         else if (resp.data.data.tag === 2)
                             this.updateForm.tag = "2"
@@ -334,12 +334,12 @@
                 //修改地址
                 upadteAddress() {
                     this.generics()
-                    axios.put("/usersAddress/updatePersonalAddress,this.addAddressForm",this.updateAddressForm).then((res) => {
-                        if (res.data.code == 20011){
+                    axios.put("/usersAddress/updatePersonalAddress",this.updateAddressForm).then((res) => {
+                        if (res.data.code === 20041){
                             this.addAddressVisible = false;
                             this.$message.success(res.data.msg)
                         }
-                        else if (res.data.code == 20012)
+                        else if (res.data.code === 20042)
                             this.$message.error(res.data.msg)
                     }).finally(
                         ()=>{
@@ -392,6 +392,7 @@
                     },
                     //修改表单数据
                     updateAddressForm: {
+                        id: '',
                         userId: '',
                         contacts: '',
                         contactsPhone: '',
