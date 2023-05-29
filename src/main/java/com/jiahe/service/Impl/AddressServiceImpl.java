@@ -48,19 +48,24 @@ public class AddressServiceImpl implements AddressService {
         else
             return addressDao.insert(address) > 0;
     }
-
+//  搜索要修改的回显地址信息
     @Override
-    public Address searchUpdateAddress(String location) {
+    public Address searchUpdateAddress(Integer id) {
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Address::getLocation,location);
+        lqw.eq(Address::getId,id);
         return addressDao.selectOne(lqw);
     }
-
+//    修改地址
     @Override
     public Boolean updatePersonalAddress(Address address) {
         if (checkDefault() != null)
             return false;
         else
             return addressDao.insert(address) > 0;
+    }
+//    删除地址
+    @Override
+    public Boolean deletePersonalAddress(Integer id) {
+        return addressDao.deleteById(id) > 0;
     }
 }
