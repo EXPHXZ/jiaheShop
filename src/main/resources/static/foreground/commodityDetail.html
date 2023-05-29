@@ -82,7 +82,7 @@
                             <div>
                                 <div class="inner">配送至 </div>
                                 <div class="inner-left">
-                                    <el-select v-model="select" placeholder="请选择">
+                                    <el-select v-model="select" placeholder="请选择" style="width: 450px">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -102,9 +102,16 @@
                             <div class="button">
                                 <div class="inner">选择规格： </div>
                                 <div>
-                                    <el-radio v-model="radio1" label="1" border>大</el-radio>
-                                    <el-radio v-model="radio1" label="2" border>中</el-radio>
-                                    <el-radio v-model="radio1" label="3" border>小</el-radio>
+                                    <div class="inner-left" v-for="item in allSize">
+                                        <el-radio-group v-model="orderDetail.size">
+                                            <el-radio-button
+                                                :label="item.size"
+                                                border>{{item.size}}
+                                            </el-radio-button>
+                                        </el-radio-group>
+
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -118,8 +125,6 @@
                                     <el-button size="medium" type="danger">加入购物车</el-button>
                                 </el-row>
                             </div>
-
-
                         </div>
                     </div>
                 </el-main>
@@ -143,31 +148,20 @@
                 searchForm: {
                 },
                 activeIndex: '1',
+                orderDetail:{},
                 radio1:"",
                 num: 1,
                 commodity:"",
                 user:{
+                    id: 1
                 },
 
                 isLogin: false,
 
-                options: [{
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶'
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }],
-                select: '选项1'  // 选取默认值在里面就可以了，比如：  select:"选项1"；
+                allSize:[],
+
+                options: [],
+                select: ''  // 选取默认值在里面就可以了，比如：  select:"选项1"；
             }
         },
 
@@ -193,9 +187,34 @@
                         this.commodity.discountText= "暂无折扣"
                     }
                     this.commodity.afterPrice=(this.commodity.price*this.commodity.discount).toFixed(2)
-
+                    this.getSize()
                 })
             },
+
+            getSize(){
+                console.log(this.commodity)
+                axios.post("/commodity/size",this.commodity).then((res) => {
+                    this.allSize = res.data.data
+                })
+            },
+
+            getAddress(id){
+                axios.get("/usersAddress/searchPersonalAll/"+id).then((res) => {
+                    res.data.data.forEach((item) => {
+                        if (item.isDefault == 0){
+                            this.select=item.id
+                        }
+                        this.options.push(
+                            {
+                                label:item.contacts+"\t"+item.location,
+                                value:item.id
+                            }
+                        )
+                    })
+                    console.log(this.options)
+                    console.log(this.select)
+                })
+            }
 
         },
 
@@ -207,7 +226,7 @@
             const params = window.location.search
             const id = params.split("=")[1]
             this.getCommodity(id)
-
+            this.getAddress(1)
 
         }
     })

@@ -171,7 +171,7 @@ float: right;
 }
 
 .el-card {
-    height: 370px;
+    height: 380px;
 }
 
 .el-image__inner{
@@ -181,6 +181,7 @@ float: right;
 .discount-w a{
     color: #666666;
     font-size: 15px;
+    cursor: pointer;
 }
 .discount-w a:hover{
     color: #6b9eff;

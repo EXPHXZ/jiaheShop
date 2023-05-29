@@ -2,6 +2,7 @@ package com.jiahe.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiahe.dto.CommodityDto;
@@ -84,8 +85,13 @@ public class CommodityController {
         Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Commodity::getStatus,0);
+        queryWrapper.eq(Commodity::getDiscount,1);
 
-        commodityService.page(commodityPage,queryWrapper);
+        //去重
+        commodityService.page(commodityPage, queryWrapper);
+        List<Commodity> records1 = commodityPage.getRecords();
+        List<Commodity> commodities = commodityService.doSelect(records1);
+        commodityPage.setRecords(commodities);
 
         BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
 
@@ -114,20 +120,24 @@ public class CommodityController {
     }
 
     /**
-     * 分页查询所有上架了的商品数据
+     * 分页查询所有上架了分类对应的商品数据
      * @param current 当前页码
      * @param pageSize 每页条数
      * @return
      */
-    @GetMapping("/discount/{current}/{pageSize}")
-    public Result selectAllDiscount(@PathVariable int current, @PathVariable int pageSize){
+    @GetMapping("/category/{current}/{pageSize}/{id}")
+    public Result selectCategoryCommodity(@PathVariable int current, @PathVariable int pageSize,@PathVariable int id){
         Page<Commodity> commodityPage = new Page<>(current,pageSize);
         Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Commodity::getStatus,0);
-        queryWrapper.lt(Commodity::getDiscount,1);
+        queryWrapper.eq(Commodity::getCategoryId,id);
 
-        commodityService.page(commodityPage,queryWrapper);
+        //去重
+        commodityService.page(commodityPage, queryWrapper);
+        List<Commodity> records1 = commodityPage.getRecords();
+        List<Commodity> commodities = commodityService.doSelect(records1);
+        commodityPage.setRecords(commodities);
 
         BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
 
@@ -153,6 +163,61 @@ public class CommodityController {
 
         return new Result(Code.SELECT_SUCCESS,commodityDtoPage);
 
+    }
+
+    /**
+     * 分页查询所有上架了的折扣商品数据
+     * @param current 当前页码
+     * @param pageSize 每页条数
+     * @return
+     */
+    @GetMapping("/discount/{current}/{pageSize}")
+    public Result selectAllDiscount(@PathVariable int current, @PathVariable int pageSize){
+        Page<Commodity> commodityPage = new Page<>(current,pageSize);
+        Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Commodity::getStatus,0);
+        queryWrapper.lt(Commodity::getDiscount,1);
+
+        //去重
+        commodityService.page(commodityPage, queryWrapper);
+        List<Commodity> records1 = commodityPage.getRecords();
+        List<Commodity> commodities = commodityService.doSelect(records1);
+        commodityPage.setRecords(commodities);
+
+        BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
+
+        List<Commodity> records = commodityPage.getRecords();
+
+        List<CommodityDto> list = records.stream().map((item) -> {
+            CommodityDto commodityDto = new CommodityDto();
+            BeanUtils.copyProperties(item, commodityDto);
+            int categoryId = commodityDto.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            if (category != null) {
+                commodityDto.setCategoryName(category.getCategoryName());
+            }
+            return commodityDto;
+        }).collect(Collectors.toList());
+
+        commodityDtoPage.setRecords(list);
+
+        //当删除到页数发生变化的时候
+        if (current > commodityDtoPage.getPages()){
+            commodityDtoPage.setCurrent(commodityDtoPage.getPages());
+        }
+
+        return new Result(Code.SELECT_SUCCESS,commodityDtoPage);
+
+    }
+
+    @PostMapping("/size")
+    public Result selectCommodity(@RequestBody Commodity commodity){
+        LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Commodity::getCommodityName,commodity.getCommodityName());
+        wrapper.eq(Commodity::getBrandName,commodity.getBrandName());
+        List<Commodity> commodities = commodityService.list(wrapper);
+        return new Result(Code.SELECT_SUCCESS,commodities);
     }
 
     @PostMapping
