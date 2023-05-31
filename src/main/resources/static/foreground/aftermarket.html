@@ -110,7 +110,18 @@
         },
         methods: {
             onSubmit() {
-                console.log('submit!');
+                axios.post("/aftermarket/add").then((res)=>{
+                    if(res.data.Code == 20021){
+                        this.from = res.data.data;
+                        this.$message.success(res.data.msg)
+                    }
+                    else
+                        this.$message.fail(res.data.msg)
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
             },
             getAddFileName(response){
                 console.log(response)

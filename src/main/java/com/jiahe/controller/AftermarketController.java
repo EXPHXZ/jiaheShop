@@ -118,8 +118,14 @@ public Result update(@RequestBody Aftermarket aftermarket)
 其中 Code 属性为 UPDATE_FAIL，表示请求失败，同时返回一个字符串，表示修改失败的内容。
     *
     * */
-
-
+    @PostMapping("/add")
+    public Result add(@RequestBody Aftermarket aftermarket){
+        Boolean flag = aftermarketService.addAftermarket(aftermarket);
+        if(flag)
+            return new Result(null,Code.ADD_SUCCESS,"添加成功");
+        else
+            return new Result(null,Code.ADD_FAIL,"添加失败");
+    }
 
 
 
@@ -158,3 +164,4 @@ public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket)
 并使用 orderService.searchOrder(orderId) 方法查询订单，并更新订单详情和订单状态。
 最后，使用 aftermarketService.removeById(id) 方法删除退货信息，并返回一个 Result 对象，
 其中 Code 属性为 DELETE_SUCCESS 或 DELETE_FAIL，表示请求成功或失败，同时返回处理退货成功的字符串提示信息*/
+
