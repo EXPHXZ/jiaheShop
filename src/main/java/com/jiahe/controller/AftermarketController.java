@@ -108,8 +108,14 @@ public Result update(@RequestBody Aftermarket aftermarket)
 其中 Code 属性为 UPDATE_FAIL，表示请求失败，同时返回一个字符串，表示修改失败的内容。
     *
     * */
-
-
+    @PostMapping("/add")
+    public Result add(@RequestBody Aftermarket aftermarket){
+        Boolean flag = aftermarketService.addAftermarket(aftermarket);
+        if(flag)
+            return new Result(null,Code.ADD_SUCCESS,"添加成功");
+        else
+            return new Result(null,Code.ADD_FAIL,"添加失败");
+    }
 
 
 
