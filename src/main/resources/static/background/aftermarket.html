@@ -97,36 +97,47 @@
                     prop="id"
                     label="售后id"
                     align="center"
+                    width="80"
             >
             </el-table-column>
             <el-table-column
                     prop="orderId"
                     label="订单id"
-                    align="center">
+                    align="center"
+                    width="80"
+            >
             </el-table-column>
             <el-table-column
                     prop="orderCommodityId"
                     label="订单项id"
-                    align="center">
+                    align="center"
+                    width="80"
+            >
             </el-table-column>
             <el-table-column
                     prop="type"
                     label="售后类型"
-                    align="center">
+                    align="center"
+                    width="80">
             </el-table-column>
             <el-table-column
                     prop="cause"
                     label="售后原因"
-                    align="center">
+                    align="center"
+                    width="80"
+
+            >
             </el-table-column>
             <el-table-column
                     prop="description"
                     label="问题描述"
-                    align="center">
+                    align="center"
+                    width="300"
+            >
             </el-table-column>
             <el-table-column prop="image" label="图片" align="center">
                 <template slot-scope="{ row }">
-                    <el-image style="width: 100px; height: 100px; border:none;cursor: pointer;"
+                    <el-image style="width: 150px; height: 150px; border:none;cursor: pointer;"
                               :src="getImage(row.image)">
                     </el-image>
                 </template>
@@ -134,15 +145,19 @@
             <el-table-column
                     prop="statusText"
                     label="状态"
-                    align="center">
+                    align="center"
+                    width="100"
+            >
             </el-table-column>
             <el-table-column
                     label="操作"
-                    align="center">
+                    align="center"
+                    width="250"
+            >
                 <template slot-scope="scope">
                     <el-row>
-                        <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
-                        <el-button type="danger" @click="handleReturn(scope.row)">处理退货</el-button>
+                        <el-button type="warning" @click="handleReturn(scope.row)">处理退货</el-button>
+                        <el-button type="danger" @click="searchUpdate(scope.row)" round>删除信息</el-button>
                     </el-row>
                 </template>
             </el-table-column>
@@ -164,16 +179,15 @@
             //查询所有数据
             selectAll(){
                 axios.get("/aftermarket/getAll").then((res) => {
-                    res.data.data.forEach((item => {
-                            if (item.status === 1){
-                                item.statusText = "退货中"
-                            }else if (item.status === 2){
+                    res.data.data.forEach((item) => {
+                            if (item.status === 0){
+                                item.statusText = "未处理"
+                            }else if (item.status === 1){
                                 item.statusText ="已处理"
                             }
                         }
-                    ))
+                    )
                     this.marketList = res.data.data;
-
                 })
             },
             /*//点击添加按钮然后弹出添加框
@@ -208,7 +222,7 @@
             //删除单条数据
             handleReturn(row) {
                 this.returnList = row
-                axios.post("/aftermarket/delete",this.returnList).then((res) => {
+                axios.post("/aftermarket/return",this.returnList).then((res) => {
                     if(res.data.code == 20021){//成功
                         this.$message.success(res.data.msg)
                     }else if (res.data.code == 20022){//失败

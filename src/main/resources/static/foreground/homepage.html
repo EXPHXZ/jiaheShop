@@ -35,7 +35,7 @@
                                 <el-form :inline = "true" :model = "formInline" class = "demo-form-inline">
                                     <el-form-item class = "input-search">
                                         <el-col :span = "8">
-                                            <el-input v-model = "searchForm.search" placeholder = "搜索"></el-input>
+                                            <el-input v-model = "description" placeholder = "搜索"></el-input>
                                         </el-col>
                                     </el-form-item>
                                     <el-form-item>
@@ -142,9 +142,6 @@
                         activeIndex: '1',
                         RotatedCommodity:[
                         ],
-                        searchForm: {
-                        },
-
                         //分页所需数据
                         pagination: {
                             current: 1,
@@ -164,7 +161,9 @@
 
                         isLogin: false,
 
-                        categoryList:{}
+                        categoryList:{},
+
+                        description:"",
                     }
                 },
 
@@ -184,7 +183,9 @@
 
                     },
                     search() {
-                        console.log('search!');
+                        //加码
+                        this.description = escape(this.description)
+                        window.location.href="searchPage.html?description="+this.description
                     },
                     //分页换页
                     handleCurrentChange(val) {

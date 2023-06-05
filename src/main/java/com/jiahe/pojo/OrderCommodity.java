@@ -9,6 +9,7 @@ public class OrderCommodity {
     private Integer orderId;
     private Integer commodityId;
     private Integer count;
+    private BigDecimal originalPrice;
     private BigDecimal price;
     private BigDecimal priceSum;
     private Integer status;

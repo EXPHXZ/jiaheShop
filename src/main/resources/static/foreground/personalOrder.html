@@ -46,7 +46,7 @@
                             <div class = "discount">
                                 <h3 class = "discount-h">
                                     <i class = "el-icon-sell"></i>
-                                    分类专区
+                                    搜索专区
                                 </h3>
                                 <el-row style="height: 800px">
                                     <el-col :span = "4" v-for = "item in commodities" :offset = "index > 0 ? 1 : 0">
@@ -107,7 +107,7 @@
 
                         isLogin: false,
 
-                        description:"",
+                        description:""
 
                     }
                 },
@@ -117,9 +117,7 @@
                         window.location.href="commodityDetail.html?id="+id
                     },
                     search() {
-                        //加码
-                        this.description = escape(this.description)
-                        window.location.href="searchPage.html?description="+this.description
+                        this.getCommodities()
                     },
                     //分页换页
                     handleCurrentChange(val) {
@@ -130,9 +128,9 @@
                     },
 
 
-                    //查询所有上架了分类下的的商品
-                    getCommodities(id){
-                        axios.get("/commodity/category/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+id).then((res) => {
+                    //查询搜索到的商品
+                    getCommodities(){
+                        axios.get("/commodity/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+this.description).then((res) => {
                             this.commodities = res.data.data.records;
                             this.pagination.total = res.data.data.total;
                             this.pagination.pageSize = res.data.data.size;
@@ -171,10 +169,12 @@
                         if (this.user !== null)
                             this.isLogin = true
                     })
+
                     const params = window.location.search
-                    const id = params.split("=")[1]
-                    console.log(id)
-                    this.getCommodities(id)
+                    this.description = params.split("=")[1]
+                    this.description = unescape(this.description)
+                    this.getCommodities()
+
                 }
             })
         </script>

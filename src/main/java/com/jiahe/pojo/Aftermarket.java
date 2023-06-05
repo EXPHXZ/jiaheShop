@@ -26,7 +26,6 @@ public class Aftermarket implements Serializable {
     private String cause;
     private String description;
     private String image;
-    @TableField(exist = false)
     private int status;
     private Integer orderId;
     private Integer orderCommodityId;

@@ -2,15 +2,18 @@ package com.jiahe.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.OrderDto;
-import com.jiahe.pojo.Aftermarket;
-import com.jiahe.pojo.OrderCommodity;
-import com.jiahe.service.AftermarketService;
-import com.jiahe.service.OrderService;
+import com.jiahe.pojo.*;
+import com.jiahe.service.*;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -21,6 +24,15 @@ public class OrderController {
 
     @Autowired
     private AftermarketService aftermarketService;
+
+    @Autowired
+    private CommodityService commodityService;
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private OrderCommodityService orderCommodityService;
 
     /**
      * 查询所有订单
@@ -95,5 +107,43 @@ public class OrderController {
     public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId){
         Boolean flag = orderService.insertOrderCommodities(userId, orderCommodities);
         return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
+    }
+
+
+
+    //传入一个订单DTO对象来进行添加
+    @PostMapping("/submitOrder")
+    public Result submitOrder(@RequestBody OrderDto order){
+        System.out.println(order);
+        Users users = usersService.searchUser(order.getUserId());
+        order.setUsername(users.getUsername());
+        List<OrderCommodityDto> orderCommodityList = order.getOrderCommodityList();
+        BigDecimal originalPrice = new BigDecimal(0); //计算订单原价
+        BigDecimal price = new BigDecimal(0); //计算订单的优惠价
+        for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+            orderCommodityDto.setStatus(0);
+            Commodity commodity = commodityService.getById(orderCommodityDto.getCommodityId());
+            orderCommodityDto.setCommodityName(commodity.getCommodityName());
+            price=price.add(orderCommodityDto.getPriceSum());
+            originalPrice=originalPrice.add(orderCommodityDto.getOriginalPrice().multiply(new BigDecimal(orderCommodityDto.getCount())));
+            Integer count = order.getCount();
+            order.setCount(count+1);
+            Integer sum = order.getSum();
+            order.setSum(sum+orderCommodityDto.getCount());
+        }
+        order.setOriginalPrice(originalPrice);
+        order.setPrice(price);
+        boolean flag = orderService.save(order);
+        if (flag){
+            for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+                orderCommodityDto.setOrderId(order.getId());
+                boolean flag1 = orderCommodityService.save(orderCommodityDto);
+                if (flag1 != true) {
+                    return new Result(null,Code.ADD_FAIL,"购买失败");
+                }
+            }
+        }
+        return new Result(null,Code.ADD_SUCCESS,"购买成功");
+
     }
 }

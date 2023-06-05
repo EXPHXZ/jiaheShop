@@ -262,6 +262,25 @@ public class CommodityController {
         return new Result(Code.SELECT_SUCCESS,commodityDto);
     }
 
+    /**
+     * 售后用来返回一个只有一条数据的列表
+     * 根据id查询商品数据来回显数据
+     * @param id
+     * @return
+     */
+    @GetMapping("/aftermarket/{id}")
+    public Result searchCommodities(@PathVariable Integer id){
+        CommodityDto commodityDto = new CommodityDto();
+        Commodity commodity = commodityService.searchCommodity(id);
+        BeanUtils.copyProperties(commodity,commodityDto);
+        Category categoryServiceById = categoryService.getById(commodity.getCategoryId());
+        String categoryName = categoryServiceById.getCategoryName();
+        commodityDto.setCategoryName(categoryName);
+        List<CommodityDto> commodityDtos = new ArrayList<>();
+        commodityDtos.add(commodityDto);
+        return new Result(Code.SELECT_SUCCESS,commodityDtos);
+    }
+
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
         Boolean addFlag = commodityService.checkAdd(commodity);
@@ -317,4 +336,44 @@ public class CommodityController {
         List<Commodity> commodities = commodityService.list(queryWrapper);
         return new Result(Code.SELECT_SUCCESS,commodities);
     }
+
+    @GetMapping("/search/{current}/{pageSize}/{description}")
+    public Result searchCommodities(@PathVariable int current, @PathVariable int pageSize,@PathVariable String description){
+        Page<Commodity> commodityPage = new Page<>(current,pageSize);
+        Page<CommodityDto> commodityDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Commodity::getStatus,0);
+        queryWrapper.like(Commodity::getSimpleDescription,description);
+        //去重
+        commodityService.page(commodityPage, queryWrapper);
+        List<Commodity> records1 = commodityPage.getRecords();
+        List<Commodity> commodities = commodityService.doSelect(records1);
+        commodityPage.setRecords(commodities);
+
+        BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
+
+        List<Commodity> records = commodityPage.getRecords();
+
+        List<CommodityDto> list = records.stream().map((item) -> {
+            CommodityDto commodityDto = new CommodityDto();
+            BeanUtils.copyProperties(item, commodityDto);
+            int categoryId = commodityDto.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            if (category != null) {
+                commodityDto.setCategoryName(category.getCategoryName());
+            }
+            return commodityDto;
+        }).collect(Collectors.toList());
+
+        commodityDtoPage.setRecords(list);
+
+        //当删除到页数发生变化的时候
+        if (current > commodityDtoPage.getPages()){
+            commodityDtoPage.setCurrent(commodityDtoPage.getPages());
+        }
+
+        return new Result(Code.SELECT_SUCCESS,commodityDtoPage);
+
+    }
+
 }
