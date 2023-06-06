@@ -39,7 +39,8 @@ public class WebConfig implements WebMvcConfigurer {
                 "/common/*",
                 "/error",
                 "/aftermarket/*",
-                "/order/*"
+                "/order/*",
+                "/order/**"
         );
     }
 

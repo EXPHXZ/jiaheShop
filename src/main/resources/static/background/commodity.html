@@ -88,14 +88,11 @@
                     <img width="100%" :src="dialogImageUrl" alt="">
                 </el-dialog>
             </el-form-item>
+
             <el-form-item label="规格">
-                <el-select v-model="addCommodity.size" placeholder="请选择规格">
-                    <el-option label="小" value="小"></el-option>
-                    <el-option label="中" value="中"></el-option>
-                    <el-option label="大" value="大"></el-option>
-                </el-select>
+                <el-input v-model="addCommodity.size"></el-input>
             </el-form-item>
-            c
+
             <el-form-item label="分类">
                 <el-select v-model="addCommodity.categoryId" placeholder="请选择规格">
                     <el-option v-for="category in categoryList"
@@ -174,11 +171,7 @@
                 </el-dialog>
             </el-form-item>
             <el-form-item label="规格">
-                <el-select v-model="updateCommodity.size" placeholder="请选择规格">
-                    <el-option label="小" value="小"></el-option>
-                    <el-option label="中" value="中"></el-option>
-                    <el-option label="大" value="大"></el-option>
-                </el-select>
+                <el-input v-model="updateCommodity.size"></el-input>
             </el-form-item>
 
             <el-form-item label="折扣">

@@ -68,4 +68,11 @@ public class AddressServiceImpl implements AddressService {
     public Boolean deletePersonalAddress(Integer id) {
         return addressDao.deleteById(id) > 0;
     }
+
+    @Override
+    public Address searchAddress(Integer id) {
+        LambdaQueryWrapper<Address> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Address::getId,id);
+        return addressDao.selectOne(queryWrapper);
+    }
 }

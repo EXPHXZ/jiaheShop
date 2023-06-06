@@ -20,4 +20,6 @@ public interface AddressService {
 
 //    删除地址
     public Boolean deletePersonalAddress(Integer id);
+    //根据订单id查询地址
+    public Address searchAddress(Integer id);
 }

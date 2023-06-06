@@ -43,27 +43,99 @@
                                     </el-form-item>
                                 </el-form>
                             </div>
-                            <div class = "discount">
+                            <div class = "order">
                                 <h3 class = "discount-h">
                                     <i class = "el-icon-sell"></i>
-                                    搜索专区
+                                    我的订单
                                 </h3>
-                                <el-row style="height: 800px">
-                                    <el-col :span = "4" v-for = "item in commodities" :offset = "index > 0 ? 1 : 0">
-                                        <el-card :body-style = "{ padding: '5px' }">
-                                            <a @click="gotoDetail(item.id)">
-                                                <img :src = "getImage(item.image)"
-                                                     class = "image">
-                                            </a>
-                                            <div class = "discount-w" style = "padding: 14px;">
-                                                <div>
-                                                    <a @click="gotoDetail(item.id)" target="_blank" v-text="item.simpleDescription"></a>
-                                                    <h3>￥{{item.price}}</h3>
-                                                </div>
-                                            </div>
-                                        </el-card>
-                                    </el-col>
-                                </el-row>
+
+                                <div class="orderSearch">
+                                    <ul>
+                                        <li>
+                                            <a href="" class="status">全部订单</a>
+                                        </li>
+                                        <li>
+                                            <a href="">未付款</a>
+                                        </li>
+                                        <li>
+                                            <a href="">待发货</a>
+                                        </li>
+                                        <li>
+                                            <a href="">待收货</a>
+                                        </li>
+                                    </ul>
+
+                                    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+                                        <el-form-item>
+                                            <el-input v-model="searchText" placeholder="订单id/商品名"></el-input>
+                                        </el-form-item>
+                                        <el-form-item>
+                                            <el-button icon="el-icon-search" @click="searchOrder">搜索</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <el-table
+                                        ref="multipleTable"
+                                        :data="orders"
+                                        tooltip-effect="dark"
+                                        style="width: 100%"
+                                        @selection-change="handleSelectionChange">
+                                    <el-table-column
+                                            type="selection"
+                                            width="55">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="id"
+                                            label="订单ID"
+                                            width="120">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="detail"
+                                            label="订单详情"
+                                            width="300">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="username"
+                                            label="下单用户"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="address.location"
+                                            label="收货地址"
+                                            width="300"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="address.contacts"
+                                            label="收货人"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="address.contactsPhone"
+                                            label="联系电话"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="price"
+                                            label="金额"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="statusText"
+                                            label="状态"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            label="操作"
+                                    >
+                                    <template slot-scope="scope">
+                                        <el-row>
+                                            <el-button type="primary" @click="searchUpdate(scope.row)" round>查看详情</el-button>
+                                            <el-button type="danger" @click="deleteCommodity(scope.row)">删除记录</el-button>
+                                        </el-row>
+                                    </template>
+                                    </el-table-column>
+                                </el-table>
                             </div>
 
                             <div class = "block">
@@ -89,6 +161,11 @@
 
                 data() {
                     return {
+
+                        orders:[],
+
+                        multipleSelection: [],
+
                         activeIndex: '1',
 
                         searchForm: {
@@ -113,6 +190,13 @@
                 },
 
                 methods: {
+                    searchOrder(){
+
+                    },
+                    handleSelectionChange(val) {
+                        this.multipleSelection = val;
+                    },
+
                     gotoDetail(id){
                         window.location.href="commodityDetail.html?id="+id
                     },
@@ -129,12 +213,31 @@
 
 
                     //查询搜索到的商品
-                    getCommodities(){
-                        axios.get("/commodity/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+this.description).then((res) => {
-                            this.commodities = res.data.data.records;
+                    getAllOrders(){
+                        axios.get("/order/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/1").then((res) => {
+                            this.orders = res.data.data.records;
+                            this.orders.forEach((item) => {
+                                item.detail = ""
+                                if (item.status == 0){
+                                    item.statusText = "未支付"
+                                }else if (item.status == 1){
+                                    item.statusText = "已支付未发货"
+                                }else if (item.status == 2){
+                                    item.statusText = "已发货"
+                                }else if (item.status == 3){
+                                    item.statusText = "订单退货中"
+                                }else if (item.status == 4){
+                                    item.statusText = "订单已受理"
+                                }
+                                item.orderCommodityList.forEach((value) => {
+                                    item.detail = item.detail+"\t"+(value.commodityName)+"*"+(value.count)+"\n";
+                                });
+                            })
+
                             this.pagination.total = res.data.data.total;
                             this.pagination.pageSize = res.data.data.size;
                             this.pagination.current = res.data.data.current;
+                            console.log(this.orders)
                         })
                     },
 
@@ -169,11 +272,7 @@
                         if (this.user !== null)
                             this.isLogin = true
                     })
-
-                    const params = window.location.search
-                    this.description = params.split("=")[1]
-                    this.description = unescape(this.description)
-                    this.getCommodities()
+                    this.getAllOrders()
 
                 }
             })
