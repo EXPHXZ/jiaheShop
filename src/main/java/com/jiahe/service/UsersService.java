@@ -26,7 +26,7 @@ public interface UsersService {
 
     public Boolean updatePassword(Users users);
 
-    public Boolean updateUsersInfo(Users users);
+    public Boolean updateUsersPhone(Users users);
 
     public List<Users> searchUsers(Users users);
 
