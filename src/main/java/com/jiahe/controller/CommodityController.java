@@ -329,6 +329,12 @@ public class CommodityController {
         return new Result(Code.SELECT_SUCCESS,categories);
     }
 
+    @PutMapping("/category")
+    public Result updateCategory(@RequestBody Category category){
+        boolean flag = categoryService.updateById(category);
+        return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"更新成功":"更新失败");
+    }
+
     @GetMapping("/rotated")
     public Result getRotated(){
         LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();

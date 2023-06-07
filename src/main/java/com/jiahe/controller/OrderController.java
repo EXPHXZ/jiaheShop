@@ -161,12 +161,17 @@ public class OrderController {
         }
         return new Result(null,Code.ADD_SUCCESS,"购买成功");
     }
-    @GetMapping("/search/{current}/{pageSize}/{userId}")
-    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId){
+    @GetMapping("/search/{current}/{pageSize}/{userId}/{status}")
+    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer status){
         //先查询当前用户下的订单
         Page<Order> orderPage = new Page<>(current,pageSize);
         Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        if (status == 3){
+            wrapper.eq(Order::getStatus,3).or().eq(Order::getStatus,4);
+        }else if(status < 3 && status >= 0){
+            wrapper.eq(Order::getStatus,status);
+        }
         wrapper.eq(Order::getUserId,userId);
         orderService.page(orderPage, wrapper);
         BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
@@ -181,7 +186,6 @@ public class OrderController {
             Address address = addressService.searchAddress(addressId);
             orderDto.setAddress(address);
             Integer id = item.getId();
-            System.out.println("订单id= " + id);
             LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(OrderCommodity::getOrderId, id);
             List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
@@ -208,6 +212,68 @@ public class OrderController {
 
         return new Result(Code.SELECT_SUCCESS,orderDtoPage);
 
+    }
+
+    @GetMapping("/searchOrder/{current}/{pageSize}/{userId}/{orderId}")
+    public Result getSearchOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer orderId){
+        //先查询当前用户下的订单
+        Page<Order> orderPage = new Page<>(current,pageSize);
+        Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getUserId,userId);
+        wrapper.eq(Order::getId,orderId);
+        orderService.page(orderPage, wrapper);
+        BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
+        List<Order> records = orderPage.getRecords();
+        List<OrderDto> orderDtos = records.stream().map((item) -> {
+            OrderDto orderDto = new OrderDto();
+            BeanUtils.copyProperties(item, orderDto);
+            Integer userId1 = item.getUserId();
+            Users users = usersService.searchUser(userId1);
+            orderDto.setUsername(users.getUsername());
+            Integer addressId = item.getAddressId();
+            Address address = addressService.searchAddress(addressId);
+            orderDto.setAddress(address);
+            Integer id = item.getId();
+            LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(OrderCommodity::getOrderId, id);
+            List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
+            List<OrderCommodityDto> orderCommodityDtos = new ArrayList<>();
+            for (OrderCommodity orderCommodity : orderCommodities) {
+                OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
+                BeanUtils.copyProperties(orderCommodity, orderCommodityDto);
+                Integer commodityId = orderCommodity.getCommodityId();
+                Commodity commodity = commodityService.getById(commodityId);
+                orderCommodityDto.setCommodityName(commodity.getCommodityName());
+                orderCommodityDtos.add(orderCommodityDto);
+            }
+            orderDto.setOrderCommodityList(orderCommodityDtos);
+            return orderDto;
+        }).collect(Collectors.toList());
+        orderDtoPage.setRecords(orderDtos);
+
+        System.out.println(orderDtoPage);
+
+        //当删除到页数发生变化的时候
+        if (current > orderDtoPage.getPages()){
+            orderDtoPage.setCurrent(orderDtoPage.getPages());
+        }
+
+        return new Result(Code.SELECT_SUCCESS,orderDtoPage);
+    }
+
+    @DeleteMapping("/{id}")
+    public Result removeOrder(@PathVariable Integer id){
+        LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderCommodity::getOrderId,id);
+        boolean flag = orderCommodityService.remove(queryWrapper);
+        if (flag){
+            boolean flag1 = orderService.removeById(id);
+            if (flag1){
+                return new Result(null,Code.DELETE_SUCCESS,"删除订单信息成功");
+            }
+        }
+        return new Result(null,Code.DELETE_FAIL,"删除订单信息失败");
     }
 
 

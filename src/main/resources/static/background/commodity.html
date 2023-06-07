@@ -94,7 +94,7 @@
             </el-form-item>
 
             <el-form-item label="分类">
-                <el-select v-model="addCommodity.categoryId" placeholder="请选择规格">
+                <el-select v-model="addCommodity.categoryId" placeholder="请选择分类">
                     <el-option v-for="category in categoryList"
                                :key="category.categoryName"
                                :value="category.id"
@@ -185,7 +185,7 @@
             </el-form-item>
 
             <el-form-item label="分类">
-                <el-select v-model="updateCommodity.categoryId" placeholder="请选择规格">
+                <el-select v-model="updateCommodity.categoryId" placeholder="请选择分类">
                     <el-option v-for="category in categoryList"
                                :key="category.categoryName"
                                :value="category.id"
@@ -209,6 +209,33 @@
             <el-form-item>
                 <el-button type="primary" @click="update">确定修改</el-button>
                 <el-button @click="cancelUpdate">取消</el-button>
+            </el-form-item>
+        </el-form>
+        </span>
+    </el-dialog>
+
+    <el-dialog
+            title="分类管理"
+            :visible.sync="dialogVisible2"
+            width="50%"
+    >
+        <el-form ref="form" :model="category" label-width="80px">
+            <el-form-item label="分类">
+                <el-select v-model="category.id" placeholder="请选择分类">
+                    <el-option v-for="category in categoryList"
+                               :key="category.categoryName"
+                               :value="category.id"
+                               :label="category.categoryName"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="修改后的分类名">
+                <el-input v-model="category.categoryName"></el-input>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="updateCategory">确定修改</el-button>
+                <el-button @click="cancelUpdateCategory">取消</el-button>
             </el-form-item>
         </el-form>
         </span>
@@ -360,6 +387,7 @@
         <el-row>
             <el-button type="danger" @click="deleteCommodities">批量删除</el-button>
             <el-button type="primary" @click="handleAdd">添加</el-button>
+            <el-button type="primary" @click="handleCategory">分类管理</el-button>
             <div class="block">
                 <el-pagination
                         @current-change="handleCurrentChange"
@@ -444,6 +472,31 @@
                 this.addCommodity = {}
             },
 
+            resetCategory(){
+                this.category = {}
+            },
+
+            handleCategory(){
+                this.dialogVisible2 = true
+                this.resetCategory()
+            },
+            updateCategory(){
+                axios.put("/commodity/category",this.category).then((res) => {
+                    if(res.data.code == 20041){
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20042){
+                        this.$message.error(res.data.msg)
+                    }else {
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+                this.dialogVisible2 = false;
+            },
+
             cancelAdd(){
                 this.dialogVisible = false;
                 this.innerVisible = false;
@@ -451,6 +504,10 @@
             cancelUpdate(){
                 this.dialogVisible1 = false;
                 this.innerVisible = false;
+            },
+
+            cancelUpdateCategory(){
+                this.dialogVisible2 = false;
             },
 
             //添加表单确定添加后执行的办法
@@ -589,9 +646,13 @@
                 //修改弹窗默认不可见
                 dialogVisible1: false,
 
+                dialogVisible2:false,
+
                 innerVisible: false,
 
                 dialogImageUrl: '',
+
+                category:"",
 
                 categoryList:[],
 

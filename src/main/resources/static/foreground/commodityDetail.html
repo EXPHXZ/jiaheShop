@@ -4,7 +4,7 @@
     <meta charset = "UTF-8">
     <meta http-equiv = "X-UA-Compatible" content = "IE=edge">
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-    <title>嘉禾商城首页</title>
+    <title>商品详情页面</title>
     <link rel = "stylesheet" href = "../css/commodityDetail.css">
 </head>
 
@@ -96,10 +96,13 @@
                                 <div class="inner">选择规格： </div>
                                 <div>
                                     <div class="inner-left" v-for="item in allSize">
-                                        <el-radio-group v-model="commodity.size">
+                                        <el-radio-group
+                                                v-model="commodity.size"
+                                                input="onChange">
                                             <el-radio-button
                                                 :label="item.size"
-                                                border>{{item.size}}
+                                                border
+                                            >{{item.size}}
                                             </el-radio-button>
                                         </el-radio-group>
 
@@ -191,6 +194,10 @@
                 axios.post("/order/submitOrder",this.order).then((res) => {
 
                 })
+            },
+
+            onChange() {
+                console.log(this.commodity.size)
             },
 
             search() {
