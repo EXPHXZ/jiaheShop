@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <meta http-equiv = "X-UA-Compatible" content = "IE=edge">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+        <title>购物车</title>
+        <link rel = "stylesheet" href = "../css/homepage.css">
+        <link rel="stylesheet" href="../css/shoppingCart.css" />
+    </head>
+
+    <body>
+      <div id = "app">
+        <el-container>
+          <el-header>
+                    <el-menu class = "el-menu-demo" mode = "horizontal" :default-active = "activeIndex" background-color = "#202124"
+                        text-color = "#fff" active-text-color = "#ffd04b">
+                        <el-menu-item index = "1">
+                            <i class = "el-icon-s-goods"></i>
+                            <a href = "./homepage.html" target = "_blank">首页</a>
+                        </el-menu-item>
+                        <el-menu-item index = "2">
+                            <i class = "el-icon-shopping-cart-2"></i>
+                            <a href = "./shoppingCart.html" target = "_blank">购物车</a>
+                        </el-menu-item>
+                        <a v-if = "!isLogin" class = "users">登录</a>
+                        <a v-if = "isLogin" class = "users-right">退出登录</a>
+                        <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
+                    </el-menu>
+                </el-header>
+          <el-main>
+            <div class="shop_card">
+              <div class="card_head">
+                <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+              </div>
+              <div class="card_item">
+                  <el-checkbox style="padding-right: 30px;" v-model="checked1"></el-checkbox>
+                  <div style="padding-top: 15px; padding-right: 70px;">
+                      <el-image
+                      style="width: 170px; height: 170px"
+                      src="6255e53e-32c5-4bc5-8817-4703308e4042.jpeg"
+                      fit="fill"></el-image>
+                  </div>
+                  <div class="shop-text">
+                      <div style="line-height: 120px; font-weight: bold; font-size: 22px">商品名称1</div>
+                      <div style="line-height: 30px">规格</div>
+                  </div>
+                  <div class="shop-num">
+                      <el-input-number v-model="num" @change="handleNumChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                      <el-button style="margin-left: 50px" type="danger" plain>删除</el-button>
+                  </div>
+              </div>
+              <div class="card_item">
+                  <el-checkbox style="padding-right: 30px;" v-model="checked2"></el-checkbox>
+                  <div style="padding-top: 15px; padding-right: 70px;">
+                      <el-image
+                      style="width: 170px; height: 170px"
+                      src="6255e53e-32c5-4bc5-8817-4703308e4042.jpeg"
+                      fit="fill"></el-image>
+                  </div>
+                  <div class="shop-text">
+                      <div style="line-height: 120px; font-weight: bold; font-size: 22px">商品名称1</div>
+                      <div style="line-height: 30px">规格</div>
+                  </div>
+                  <div class="shop-num">
+                      <el-input-number v-model="num" @change="handleNumChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                      <el-button style="margin-left: 50px" type="danger" plain>删除</el-button>
+                  </div>
+              </div>
+              <div class="card_item">
+                  <el-checkbox style="padding-right: 30px;" v-model="checked1"></el-checkbox>
+                  <div style="padding-top: 15px; padding-right: 70px;">
+                      <el-image
+                      style="width: 170px; height: 170px"
+                      src="6255e53e-32c5-4bc5-8817-4703308e4042.jpeg"
+                      fit="fill"></el-image>
+                  </div>
+                  <div class="shop-text">
+                      <div style="line-height: 120px; font-weight: bold; font-size: 22px">商品名称1</div>
+                      <div style="line-height: 30px">规格</div>
+                  </div>
+                  <div class="shop-num">
+                      <el-input-number v-model="num" @change="handleNumChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                      <el-button style="margin-left: 50px" type="danger" plain>删除</el-button>
+                  </div>
+              </div>
+              <div class="card_item">
+                  <el-checkbox style="padding-right: 30px;" v-model="checked1"></el-checkbox>
+                  <div style="padding-top: 15px; padding-right: 70px;">
+                      <el-image
+                      style="width: 170px; height: 170px"
+                      src="6255e53e-32c5-4bc5-8817-4703308e4042.jpeg"
+                      fit="fill"></el-image>
+                  </div>
+                  <div class="shop-text">
+                      <div style="line-height: 120px; font-weight: bold; font-size: 22px">商品名称1</div>
+                      <div style="line-height: 30px">规格</div>
+                  </div>
+                  <div class="shop-num">
+                      <el-input-number v-model="num" @change="handleNumChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                      <el-button style="margin-left: 50px" type="danger" plain>删除</el-button>
+                  </div>
+              </div>
+            </div>
+          </el-main>
+        </el-container>
+      </div>
+
+        <script src = "../js/vue.js"></script>
+        <script src = "../element-ui/lib/index.js"></script>
+        <script src = "../js/axios-0.18.0.js"></script>
+        <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
+
+        <script>
+            new Vue({
+                el: "#app",
+
+                data() {
+                    return {
+                        checked1: false,
+                        checked2: false,
+                        checkAll: false,
+                        activeIndex: '2',
+                        isLogin: false,
+                        num: 1,
+
+                    }
+                },
+
+                methods: {
+                    handleCheckAllChange(val) {
+                        console.log(val);
+                        this.checked1 = val;
+                        this.checked2 = val;
+                    },
+                    handleChange(value) {
+                        console.log(value);
+                    }
+                },
+
+                mounted(){
+                    //获取用户信息
+                    axios.get("/usersManagement/getLoginUser").then((resp) => {
+                        if (resp.data.code === 20031)
+                            this.user = resp.data.data
+                        if (this.user !== null)
+                            this.isLogin = true
+                        else this.isLogin = false
+                    })
+                }
+            })
+        </script>
+    </body>
+</html>

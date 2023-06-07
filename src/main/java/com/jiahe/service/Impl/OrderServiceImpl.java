@@ -4,16 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jiahe.dao.OrderCommodityDao;
-import com.jiahe.dao.OrderDao;
-import com.jiahe.dao.CommodityDao;
-import com.jiahe.dao.UsersDao;
+import com.jiahe.dao.*;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.OrderCommodityDto;
-import com.jiahe.pojo.Commodity;
-import com.jiahe.pojo.Order;
-import com.jiahe.pojo.OrderCommodity;
-import com.jiahe.pojo.Users;
+import com.jiahe.dto.ShoppingCartDto;
+import com.jiahe.pojo.*;
 import com.jiahe.service.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +31,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
     private CommodityDao commodityDao;
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private ShoppingCartDao shoppingCartDao;
+
+    @Override
+    public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count) {
+        ShoppingCart shoppingCartItem = new ShoppingCart();
+        shoppingCartItem.setCommodityId(commodityId);
+        shoppingCartItem.setUserId(userId);
+        shoppingCartItem.setCount(count);
+
+        shoppingCartDao.insert(shoppingCartItem);
+        return true;
+    }
+
+    @Override
+    public ShoppingCartDto selectShoppingCart(Integer userId) {
+        System.out.println("userId =         " + userId);
+        // 根据用户id查询购物车列表，再根据商品id查询商品信息
+        LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ShoppingCart::getUserId,userId);
+        List<ShoppingCart> shoppingCarts = shoppingCartDao.selectList(wrapper);
+        System.out.println("shoppingCarts =   " + shoppingCarts);
+        // 再根据商品id查询商品信息
+        List<Commodity> orderCommodityDtos = new ArrayList<>();
+        for (ShoppingCart shoppingCart : shoppingCarts) {
+            System.out.println("shoppingCart = " + shoppingCart);
+            Commodity orderCommodityDto = new Commodity();
+            // 查询商品信息
+            Commodity commodity = commodityDao.selectById(shoppingCart.getCommodityId());
+            // 复制商品信息到dto中
+            BeanUtils.copyProperties(commodity,orderCommodityDto);
+            // 复制购物车信息到dto中
+            BeanUtils.copyProperties(shoppingCart,orderCommodityDto);
+            orderCommodityDtos.add(orderCommodityDto);
+            System.out.println("orderCommodityDtos = " + orderCommodityDtos);
+        }
+        // 将购物车列表封装到dto中
+        ShoppingCartDto shoppingCartDto = new ShoppingCartDto();
+        shoppingCartDto.setCommodity(orderCommodityDtos);
+        return null;
+    }
 
     @Override
     public IPage<OrderDto> selectAllOrder(Integer page, Integer size, Integer desc) {
@@ -62,6 +99,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             wrapper.eq(Users::getId,order.getUserId());
             Users user = usersDao.selectOne(wrapper);
             orderDto.setUsername(user.getUsername());
+            orderDto.setUsername("begonia");
 
             orderDtos.add(orderDto);
         }

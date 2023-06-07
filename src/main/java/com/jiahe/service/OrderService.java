@@ -3,13 +3,31 @@ package com.jiahe.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jiahe.dto.OrderDto;
+import com.jiahe.dto.ShoppingCartDto;
 import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import com.jiahe.pojo.ShoppingCart;
 import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface OrderService extends IService<Order> {
+
+    /**
+     * 将商品加入购物车
+     * @param commodityId
+     * @param userId
+     * @param count
+     * @return
+     */
+    public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count);
+
+    /**
+     * 查询购物车
+     * @param userId
+     * @return
+     */
+    public ShoppingCartDto selectShoppingCart(Integer userId);
 
     /**
      * 查询所有订单

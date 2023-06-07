@@ -118,7 +118,7 @@
                             <div class="button">
                                 <el-row>
                                     <el-button size="medium" type="warning" @click="submit">购买</el-button>
-                                    <el-button size="medium" type="danger">加入购物车</el-button>
+                                    <el-button size="medium" type="danger" @click="addShoppingCart">加入购物车</el-button>
                                 </el-row>
                             </div>
                         </div>
@@ -198,6 +198,34 @@
 
             onChange() {
                 console.log(this.commodity.size)
+            },
+            // 加入购物车
+            addShoppingCart () {
+                console.log('this.commodity.id', this.commodity.id)
+                console.log('this.user.id', this.user.id)
+                console.log('this.num', this.num)
+                axios({
+              url: '/order/addShoppingCart',
+              params: {
+                commodityId: this.commodity.id,
+                userId: this.user.id,
+                count: this.num,
+              },
+              method: 'post',
+            }).then((res) => {
+                console.log('res', res)
+                if (res.data.code === 20021) {
+                  this.$message({
+                    message: '加入购物车成功',
+                    type: 'success',
+                  })
+                } else {
+                  this.$message({
+                    message: '加入购物车失败',
+                    type: 'error',
+                  })
+                }
+                })
             },
 
             search() {
