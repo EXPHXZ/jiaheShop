@@ -86,15 +86,15 @@ public class UsersController {
             return new Result(0, Code.DELETE_FAIL, "删除失败，不存在此用户");
     }
 
-//    @DeleteMapping("/deleteBySelf/{id}")
-//    public Result deleteUserBySelf(@PathVariable Integer id, HttpServletRequest request) {
-//        if (usersService.deleteUsers(id)) {
-//            request.getSession().removeAttribute("user");
-//            return new Result(1, Code.DELETE_SUCCESS, "删除成功");
-//        }
-//        else
-//            return new Result(0, Code.DELETE_FAIL, "删除失败");
-//    }
+    @DeleteMapping("/deleteBySelf/{id}")
+    public Result deleteUserBySelf(@PathVariable Integer id, HttpServletRequest request) {
+        if (usersService.deleteUsers(id)) {
+            request.getSession().removeAttribute("user");
+            return new Result(1, Code.DELETE_SUCCESS, "删除成功");
+        }
+        else
+            return new Result(0, Code.DELETE_FAIL, "删除失败");
+    }
 
     @PutMapping("/updateUsers")
     public Result updateUsers(@RequestBody Users users) {
@@ -120,13 +120,21 @@ public class UsersController {
             return new Result(0, Code.UPDATE_FAIL, "重置密码失败");
     }
 
-//    @PutMapping("/updateUsersInfo")
-//    public Result updateUsersInfo(@RequestBody Users users) {
-//        if (usersService.updateUsers(users))
-//            return new Result(1, Code.UPDATE_SUCCESS, "添加/修改个人信息成功");
-//        else
-//            return new Result(0, Code.UPDATE_FAIL, "添加/修改个人信息失败(可能的原因为手机号已存在)");
-//    }
+    @PutMapping("/updateUsersInfo")
+    public Result updateUsersInfo(@RequestBody Users users) {
+        if (usersService.updateUsers(users))
+            return new Result(1, Code.UPDATE_SUCCESS, "修改个人信息成功");
+        else
+            return new Result(0, Code.UPDATE_FAIL, "修改个人信息失败");
+    }
+
+    @PutMapping("/updateUsersPhone")
+    public Result updateUsersPhone(@RequestBody Users users) {
+        if (usersService.updateUsersPhone(users))
+            return new Result(1, Code.UPDATE_SUCCESS, "修改手机号成功");
+        else
+            return new Result(0, Code.UPDATE_FAIL, "修改手机号失败");
+    }
 
     @PostMapping("/search")
     public Result searchUsers(@RequestBody Users user) {

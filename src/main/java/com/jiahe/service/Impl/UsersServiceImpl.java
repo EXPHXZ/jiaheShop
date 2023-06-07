@@ -88,7 +88,7 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Boolean updateUsersInfo(Users users) {
+    public Boolean updateUsersPhone(Users users) {
         if (checkPhone(users.getPhone()))
             return false;
         return usersDao.updateById(users) > 0;

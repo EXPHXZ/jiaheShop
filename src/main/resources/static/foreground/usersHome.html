@@ -20,12 +20,79 @@
                             <i class = "el-icon-shopping-cart-2"></i>
                             <a href = "https://www.ele.me" target = "_blank">购物车</a>
                         </el-menu-item>
-                        <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
-                        <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
-                        <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
+                        <a class = "users-right" @click = "logout">退出登录</a>
+                        <a class = "users" href = "usersHome.html">个人中心</a>
                     </el-menu>
                 </el-header>
             </el-container>
+
+            <div id = "info" class = "info">
+                <el-image :src = "getAvatar(infoShow.avatar)" style = "width: 100px; height: 100px; border:none;"></el-image>
+                <template>
+                    <el-descriptions class = "margin-top" title = "个人基本信息" :column = "3" size = "large" border>
+                        <template slot = "extra">
+                            <el-button type = "primary" icon = "el-icon-edit" circle @click = "showUpdateForm"></el-button>
+                            <el-button type = "danger" icon = "el-icon-delete" circle @click = "deleteVisible = true"></el-button>
+                        </template>
+                        <el-descriptions-item>
+                            <template slot = "label"><i class = "el-icon-user"></i>姓名</template>{{infoShow.name}}
+                        </el-descriptions-item>
+                        <el-descriptions-item>
+                            <template slot = "label"><i class = "el-icon-mobile-phone"></i>手机号</template>{{infoShow.phone}}
+                        </el-descriptions-item>
+                        <el-descriptions-item>
+                            <template slot = "label"><i class = "el-icon-male"></i>/<i class = "el-icon-female"></i>性别</template>
+                            <el-tag size = "medium">{{infoShow.sex}}</el-tag>
+                        </el-descriptions-item>
+                    </el-descriptions>
+                </template>
+            </div>
+
+            <el-dialog title = "修改个人信息" :visible.sync = "updateVisible" width = "50%">
+                <el-form ref = "updateForm" :model = "updateForm" label-width = "80px">
+                    <el-form-item v-if = "!updatePhone" label = "姓名">
+                        <el-input v-model = "updateForm.name" placeholder = "请输入姓名"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if = "!updatePhone" label = "性别">
+                        <el-radio-group v-model = "updateForm.sex">
+                            <el-radio label = "男"></el-radio>
+                            <el-radio label = "女"></el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item v-if = "!updatePhone" label = "头像">
+                        <el-upload
+                                class = "avatar-uploader"
+                                action = "/common/upload"
+                                :show-file-list = "false"
+                                :on-success = "handleAvatarSuccess">
+                            <img v-if = "imageUrl" :src = "imageUrl" class = "avatar">
+                            <i v-else class = "el-icon-plus avatar-uploader-icon"></i>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item v-if = "updatePhone" label = "新手机号">
+                        <el-input v-model = "updateForm.phone" placeholder = "请输入新手机号"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if = "updatePhone" label = "验证码">
+                        <el-input v-model = "updateForm.validateCode" placeholder = "请输入验证码" style = "width: 70%"></el-input>
+                        <el-button round type = "primary" @click = "getValidateCode" :loading = "isLoading">{{getCode}}</el-button>
+                    </el-form-item>
+                </el-form>
+                <a v-if = "!updatePhone" class = "changePhone" @click = "updatePhone = true">点此修改手机号</a>
+                <div slot = "footer" class = "dialog-footer">
+                    <el-button v-if = "!updatePhone" type = "primary" plain @click = "updateInfo">确 认</el-button>
+                    <el-button v-if = "!updatePhone" plain @click = "updateVisible = false">取 消</el-button>
+                    <el-button v-if = "updatePhone" type = "primary" plain @click = "changePhone">确 认</el-button>
+                    <el-button v-if = "updatePhone" plain @click = "updatePhone = false">返 回</el-button>
+                </div>
+            </el-dialog>
+
+            <el-dialog title = "注意" :visible.sync = "deleteVisible" width = "30%">
+                <span>此操作为删除您的账号，是否继续？</span>
+                <span slot = "footer" class = "dialog-footer">
+                    <el-button type = "danger" plain @click = "deleteUserBySelf">确 定</el-button>
+                    <el-button plain @click = "deleteVisible = false">取 消</el-button>
+                </span>
+            </el-dialog>
         </div>
 
         <script src = "../js/vue.js"></script>
@@ -34,13 +101,41 @@
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
+            let phoneFormat = /^[0-9]{11}$/
+
             new Vue({
                 el: "#app",
 
                 methods: {
-                    login() {
-                        window.localStorage.setItem("prePage", window.location.href)
-                        window.location.href = "usersLogin.html"
+                    showInfo() {
+                        axios.get("/usersManagement/getLoginUser").then((resp) => {
+                            if (resp.data.code === 20031)
+                                this.userId = resp.data.data.id
+                            axios.get("/usersManagement/search/" + this.userId).then((resp) => {
+                                if (resp.data.code === 20031) {
+                                    this.user = resp.data.data
+                                    this.originalName = this.user.name
+                                    this.originalSex = this.user.sex
+                                    this.originalPhone = this.user.phone
+                                    this.originalAvatar = this.user.avatar
+                                }
+                                this.infoShow.phone = this.user.phone
+                                if (this.user.name !== null && this.user.name === "")
+                                    this.infoShow.name = "暂无信息"
+                                else if (this.user.name !== null && this.user.name !== "")
+                                    this.infoShow.name = this.user.name
+                                if (this.user.sex !== null && this.user.sex === "")
+                                    this.infoShow.sex = "暂无信息"
+                                else if (this.user.sex !== null && this.user.sex !== "")
+                                    this.infoShow.sex = this.user.sex
+                                if (this.user.avatar !== null)
+                                    this.infoShow.avatar = `/common/download?name=${this.user.avatar}`
+                            })
+                        })
+                    },
+
+                    getAvatar(url) {
+                        return url
                     },
 
                     logout() {
@@ -54,24 +149,159 @@
                             else
                                 this.$message({showClose: true, message: resp.data.msg, type: "error"})
                         })
+                    },
+
+                    showUpdateForm() {
+                        this.updateForm = this.user
+                        this.updateForm.phone = ""
+                        this.updateVisible = true
+                    },
+
+                    updateInfo() {
+                        this.updateForm.phone = this.originalPhone
+                        this.updateVisible = false
+                        axios.put("/usersManagement/updateUsersInfo", this.updateForm).then((resp) => {
+                            if (resp.data.code === 20041) {
+                                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                this.showInfo()
+                            }
+                            else if (resp.data.code === 20042)
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            else
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                        })
+                    },
+
+                    handleAvatarSuccess(resp, file) {
+                        this.imageUrl = URL.createObjectURL(file.raw);
+                        this.updateForm.avatar = resp
+                    },
+
+                    changePhone() {
+                        if (this.updateForm.phone === "")
+                            this.$message({showClose: true, message: "手机号不能为空", type: "warning"})
+                        else if (!phoneFormat.test(this.updateForm.phone))
+                            this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
+                        else if (this.updateForm.validateCode === "")
+                            this.$message({showClose: true, message: "请输入验证码", type: "warning"})
+                        else if (this.updateForm.validateCode !== this.code || this.updateForm.phone !== this.sendCodePhone)
+                            this.$message({showClose: true, message: "验证码错误", type: "error"})
+                        else {
+                            this.updateForm.name = this.originalName
+                            this.updateForm.sex = this.originalSex
+                            axios.put("/usersManagement/updateUsersPhone", this.updateForm).then((resp) => {
+                                if (resp.data.code === 20041) {
+                                    this.updateVisible = false
+                                    this.updatePhone = false
+                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                    this.showInfo()
+                                }
+                                else if (resp.data.code === 20042)
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            })
+                        }
+                    },
+
+                    getValidateCode() {
+                        if (this.updateForm.phone === "")
+                            this.$message({showClose: true, message: "请先输入手机号", type: "warning"})
+                        else if (!phoneFormat.test(this.updateForm.phone))
+                            this.$message({showClose: true, message: "请输入正确的手机号", type: "warning"})
+                        else if (this.updateForm.phone === this.originalPhone)
+                            this.$message({showClose: true, message: "手机号没有变化", type: "warning"})
+                        else {
+                            axios.post("/usersManagement/checkPhone", this.updateForm).then((resp) => {
+                                if (resp.data.code === 20031)
+                                    this.$message({showClose: true, message: "此手机号已有绑定的用户", type: "warning"})
+                                else if (resp.data.code === 20032) {
+                                    this.sendCodePhone = this.updateForm.phone
+                                    this.setLoading()
+                                    axios.get("/usersManagement/getValidateCode").then((resp) => {
+                                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                        this.code = resp.data.data
+                                    })
+                                }
+                                else
+                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            })
+                        }
+                    },
+
+                    setLoading() {
+                        if (this.time === 10)
+                            this.isLoading = true
+                        if (this.time-- === 0) {
+                            clearTimeout(this.handleLoading)
+                            this.isLoading = false
+                            this.time = 10
+                            this.getCode = "获取验证码"
+                        }
+                        else {
+                            this.getCode = this.time + "s后可重新获取"
+                            this.handleLoading = setTimeout(this.setLoading, 1000)
+                        }
+                    },
+
+                    deleteUserBySelf() {
+                        this.deleteVisible = false
+                        axios.delete("/usersManagement/deleteBySelf/" + this.userId).then((resp) => {
+                            if (resp.data.code === 20021) {
+                                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                window.location.href = "homepage.html"
+                            }
+                            else if (resp.data.code === 20022)
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            else
+                                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                        })
                     }
                 },
 
                 mounted() {
-                    axios.get("/usersManagement/getLoginUser").then((resp) => {
-                        if (resp.data.code === 20031)
-                            this.user = resp.data.data
-                        if (this.user !== null)
-                            this.isLogin = true
-                    })
+                    this.showInfo()
                 },
 
                 data() {
                     return {
                         user:{
                         },
+                        userId: "",
 
-                        isLogin: false
+                        activeIndex: "1",
+
+                        updateVisible: false,
+                        deleteVisible: false,
+                        updatePhone: false,
+                        isLoading: false,
+
+                        originalName: "",
+                        originalSex: "",
+                        originalPhone: "",
+
+                        imageUrl: "",
+
+                        handleLoading: "",
+                        time: 10,
+                        getCode: "获取验证码",
+                        code: "",
+                        sendCodePhone: "",
+
+                        infoShow: {
+                            name: "暂无信息",
+                            sex: "暂无信息",
+                            phone: "",
+                            avatar: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png"
+                        },
+
+                        updateForm: {
+                            name: "",
+                            sex: "",
+                            avatar: "",
+                            phone: "",
+                            validateCode: ""
+                        }
                     }
                 }
             })
