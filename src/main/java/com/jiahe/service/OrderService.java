@@ -11,6 +11,8 @@ import com.jiahe.pojo.ShoppingCart;
 import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 public interface OrderService extends IService<Order> {
 
     /**
@@ -27,7 +29,7 @@ public interface OrderService extends IService<Order> {
      * @param userId
      * @return
      */
-    public ShoppingCartDto selectShoppingCart(Integer userId);
+    public List<ShoppingCartDto> selectShoppingCart(Integer userId);
 
     /**
      * 查询所有订单
@@ -53,7 +55,7 @@ public interface OrderService extends IService<Order> {
      * @param orderCommodities
      * @return
      */
-    public Boolean insertOrderCommodities(Integer userId, OrderCommodity[] orderCommodities);
+    public Boolean insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities);
 
     /**
      * 删除订单

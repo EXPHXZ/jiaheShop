@@ -12,6 +12,7 @@ import java.util.List;
 public class ShoppingCartDto extends ShoppingCart {
 
     private String brandName;
+    private Integer commodityId;
     private String commodityName;
     private String image;
     private BigDecimal price;
@@ -22,6 +23,7 @@ public class ShoppingCartDto extends ShoppingCart {
     @Override
     public String toString() {
         return super.toString()+"ShoppingCartDto{" +
+                "commodityId='" + commodityId + '\'' +
                 "brandName='" + brandName + '\'' +
                 ", commodityName='" + commodityName + '\'' +
                 ", image='" + image + '\'' +

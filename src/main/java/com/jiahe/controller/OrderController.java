@@ -64,7 +64,8 @@ public class OrderController {
      */
     @GetMapping("/selectShoppingCart")
     public Result selectShoppingCart(@RequestParam Integer userId){
-        List<ShoppingCartDto> data = (List<ShoppingCartDto>) orderService.selectShoppingCart(userId);
+        List<ShoppingCartDto> data = orderService.selectShoppingCart(userId);
+        System.out.println(data);
         Boolean flag = data != null;
         return new Result(data,flag? Code.SELECT_SUCCESS:Code.SELECT_FAIL,flag?"查询成功":"查询失败");
     }
@@ -140,8 +141,8 @@ public class OrderController {
      * @param orderCommodities
      */
     @PostMapping("/insertOrderCommodity")
-    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId){
-        Boolean flag = orderService.insertOrderCommodities(userId, orderCommodities);
+    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId, @RequestParam Integer addressId){
+        Boolean flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
         return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
 
