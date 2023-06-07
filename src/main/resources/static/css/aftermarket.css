@@ -1,6 +1,165 @@
 body {
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
+}
+
+a {
+    text-decoration: none; /* 移除链接下划线 */
+}
+
+.el-header, .el-footer {
+    background-color: #202124;
+    text-align: center;
+    line-height: 60px;
+}
+
+.el-aside {
+    text-align: center;
+    line-height: 200px;
+}
+
+.el-main {
+    text-align: left;
+    background-color: #ffffff;
+    /*line-height: 160px;*/
+}
+
+body > .el-container {
+    margin-bottom: 40px;
+}
+
+ul,li {
+    list-style: none;
+    margin:0;
+    padding:0;
+}
+
+ul>li {
+    height: 40px;
+    line-height: 40px;
+    padding-left:10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+.main-top {
+    height: 150px;
+    width: 95%;
+    background-color: #ffffff;
+    padding-top: 50px;
+    padding-left: 50px;
+}
+
+.main-top img {
+    float: left;
+    width: 100px;
+    height: 100px;
+}
+
+
+.image {
+    width: 400px;
+    height: 400px;
+    display: block;
+    z-index: 2;
+}
+
+.clearfix:before,
+
+.clearfix:after {
+    display: table;
+    content: "";
+}
+
+.clearfix:after {
+    clear: both
+}
+
+.demo-form-inline {
+.el-form-item {
+.el-input {
+    width: 600px;
+}
+}
+}
+
+.users {
+    float: right;
+    color: #ffffff;
+}
+
+.main-left {
+    padding-left: 120px;
+    padding-top: 50px;
+    margin: 0;
+    float: left;
+
+}
+
+.el-breadcrumb {
+    font-size: 14px;
+    line-height: 3 !important;
+}
+
+.font {
+    font: 700 18px Arial,"microsoft yahei";
+    color: #666;
+    padding-top: 50px;
+    line-height: 28px;
+    margin-bottom: 5px;
+}
+
+.priceFont {
+    font: 700 20px Arial,"microsoft yahei";
+    color: #e4393c;
+    line-height: 28px;
+    line-height: 28px;
+    margin-bottom: 5px;
+}
+
+.main-right {
+    width: 500px;
+    height: 500px;
+    float: left;
+    margin-left: 20px;
+}
+
+.main-button {
+    background-color: #ffffff;
+    height: 100%;
+    text-align: left;
+}
+
+.price {
+    background-color: #f3f3f3;
+}
+
+.transportFee{
+    font-size: 14px;
+    display: inline;
+    color: #999999;
+    margin-left: 55px;
+}
+.inner {
+    font-size: 14px;
+    display: inline;
+    color: #999999;
+}
+.inner-left{
+    display: inline;
+    margin-left: 10px;
+}
+.count-num{
+    margin-top: 80px;
+}
+.button {
+    margin-top: 20px;
+}
+
+.selection {
+    width: 400px;
 }
 
 .blankDiv {

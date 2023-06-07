@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Service
 public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> implements CommodityService {
@@ -61,13 +64,27 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> im
     }
 
 
-//    判断添加的商品的名字和规格都相同的商品是否已经存在于数据库中
+//    判断添加的商品的名字和品牌名和规格都相同的商品是否已经存在于数据库中
     @Override
     public Boolean checkAdd(Commodity commodity) {
         LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Commodity::getCommodityName,commodity.getCommodityName());
         wrapper.eq(Commodity::getBrandName,commodity.getBrandName());
+        wrapper.eq(Commodity::getSize,commodity.getSize());
         Commodity commodity1 = commodityDao.selectOne(wrapper);
         return commodity1 != null;
+    }
+
+
+    public List<Commodity> doSelect(List<Commodity> list){
+        ArrayList<Commodity> list1 = list.stream().collect(
+                Collectors.collectingAndThen(Collectors.toCollection(
+                        () -> new TreeSet<>(Comparator.comparing(
+                                item -> item.getCommodityName() + ";" + item.getBrandName())
+                        )), ArrayList::new
+                ));
+
+        return list1;
+
     }
 }

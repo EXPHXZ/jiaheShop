@@ -43,64 +43,14 @@
                                     </el-form-item>
                                 </el-form>
                             </div>
-
-                            <div class = "main-left">
-                                <ul>
-                                    <li v-for = "category in categoryList">
-                                        <a @click = "gotoCategory(category.id)">{{category.categoryName}}</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class = "block">
-                                <el-carousel :interval="4000" type="card" height="370px" indicator-position="none">
-                                    <el-carousel-item v-for = "item in RotatedCommodity">
-                                        <a href = "#">
-                                            <el-image style = "width: 100%; height: 100%" :src = "getImage(item.image)"
-                                                      :fit = "contain">
-                                            </el-image>
-                                        </a>
-                                    </el-carousel-item>
-                                </el-carousel>
-                            </div>
-
                             <div class = "discount">
                                 <h3 class = "discount-h">
                                     <i class = "el-icon-sell"></i>
-                                    降价专区
+                                    分类专区
                                 </h3>
-                                <el-row style="height: 400px">
-                                    <el-col :span = "4" v-for = "item in discountCommodity" :offset = "index > 0 ? 1 : 0">
+                                <el-row style="height: 800px">
+                                    <el-col :span = "4" v-for = "item in commodities" :offset = "index > 0 ? 1 : 0">
                                         <el-card :body-style = "{ padding: '5px' }">
-                                            <a @click="gotoDetail(item.id)">
-                                                <img :src = "getImage(item.image)"
-                                                     class = "image">
-                                            </a>
-                                            <div class = "discount-w" style = "padding: 14px;">
-                                                <div>
-                                                    <a @click="gotoDetail(item.id)" target="_blank" v-text="item.simpleDescription"></a>
-                                                    <h3>￥{{item.price}}</h3>
-                                                </div>
-                                            </div>
-                                        </el-card>
-                                    </el-col>
-                                </el-row>
-                            </div>
-                            <div class = "block">
-                                <el-pagination @current-change = "handleCurrentChange1" :current-page.sync = "pagination1.current"
-                                               :page-size = "pagination1.pageSize" layout = "total, prev, pager, next"
-                                               :total = "pagination1.total">
-                                </el-pagination>
-                            </div>
-
-                            <div class = "discount">
-                                <h3 class = "discount-h">
-                                    <i class = "el-icon-sell"></i>
-                                    推荐专区
-                                </h3>
-                                <el-row style="height: 400px">
-                                    <el-col :span = "4" v-for = "item in commodities">
-                                        <el-card :body-style = "{ padding: '10px' }">
                                             <a @click="gotoDetail(item.id)">
                                                 <img :src = "getImage(item.image)"
                                                      class = "image">
@@ -140,16 +90,14 @@
                 data() {
                     return {
                         activeIndex: '1',
-                        RotatedCommodity:[
-                        ],
+
+                        searchForm: {
+                        },
+
                         //分页所需数据
                         pagination: {
                             current: 1,
                             pageSize: 16,
-                        },
-                        pagination1: {
-                            current: 1,
-                            pageSize: 5,
                         },
 
                         user:{
@@ -157,30 +105,16 @@
 
                         commodities:[],
 
-                        discountCommodity:[],
-
                         isLogin: false,
 
-                        categoryList:{},
-
                         description:"",
+
                     }
                 },
 
                 methods: {
-
-                    gotoCategory(id){
-                        window.location.href="categoryPage.html?id="+id
-                    },
-
                     gotoDetail(id){
-                        console.log(this.isLogin)
-                        if(this.isLogin){
-                            window.location.href="commodityDetail.html?id="+id
-                        }else {
-                            window.location.href="usersLogin.html"
-                        }
-
+                        window.location.href="commodityDetail.html?id="+id
                     },
                     search() {
                         //加码
@@ -195,50 +129,20 @@
                         this.getCommodities()
                     },
 
-                    handleCurrentChange1(val) {
-                        console.log(`当前页: ${val}`);
-                        this.pagination1.current = val;
-                        // 查询下一页折扣商品
-                        this.getDiscountCommodities()
-                    },
 
-
-                    //查询所有上架了的商品
-                    getCommodities(){
-                        axios.get("/commodity/grounding/" + this.pagination.current + "/"+this.pagination.pageSize).then((res) => {
+                    //查询所有上架了分类下的的商品
+                    getCommodities(id){
+                        axios.get("/commodity/category/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+id).then((res) => {
                             this.commodities = res.data.data.records;
                             this.pagination.total = res.data.data.total;
                             this.pagination.pageSize = res.data.data.size;
                             this.pagination.current = res.data.data.current;
                         })
                     },
-                    //查询所有上架而且有折扣了的商品
-                    getDiscountCommodities(){
-                        axios.get("/commodity/discount/" + this.pagination1.current + "/"+this.pagination1.pageSize).then((res) => {
-                            this.discountCommodity = res.data.data.records;
-                            this.pagination1.total = res.data.data.total;
-                            this.pagination1.pageSize = res.data.data.size;
-                            this.pagination1.current = res.data.data.current;
-                        })
-                    },
-                    getAllCategory(){
-                        axios.get("/commodity/category").then((res) => {
-                            this.categoryList=res.data.data;
-                        })
-                    },
-                    getRotatedCommodity(){
-                        axios.get("/commodity/rotated").then((res) => {
-                            this.RotatedCommodity=res.data.data;
-                        })
-                    },
+
                     getImage(image){
                         console.log("/common/download?name=${image}")
                         return `/common/download?name=${image}`
-                    },
-                    getRotatedCommodity(){
-                        axios.get("/commodity/rotated").then((res) => {
-                            this.RotatedCommodity=res.data.data;
-                        })
                     },
                     login() {
                         window.localStorage.setItem("prePage", window.location.href)
@@ -267,10 +171,10 @@
                         if (this.user !== null)
                             this.isLogin = true
                     })
-                    this.getAllCategory();
-                    this.getRotatedCommodity();
-                    this.getDiscountCommodities();
-                    this.getCommodities();
+                    const params = window.location.search
+                    const id = params.split("=")[1]
+                    console.log(id)
+                    this.getCommodities(id)
                 }
             })
         </script>

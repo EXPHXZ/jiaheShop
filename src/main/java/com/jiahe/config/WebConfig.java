@@ -41,7 +41,10 @@ public class WebConfig implements WebMvcConfigurer {
                 "/favicon.ico",
                 "/commodity/**",
                 "/common/*",
-                "/error"
+                "/error",
+                "/aftermarket/*",
+                "/order/*",
+                "/order/**"
         );
     }
 

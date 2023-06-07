@@ -1,16 +1,25 @@
 package com.jiahe.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.OrderDto;
-import com.jiahe.pojo.Aftermarket;
-import com.jiahe.pojo.OrderCommodity;
-import com.jiahe.service.AftermarketService;
-import com.jiahe.service.OrderService;
+import com.jiahe.pojo.*;
+import com.jiahe.service.*;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order")
@@ -21,6 +30,18 @@ public class OrderController {
 
     @Autowired
     private AftermarketService aftermarketService;
+
+    @Autowired
+    private CommodityService commodityService;
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private OrderCommodityService orderCommodityService;
+
+    @Autowired
+    private AddressService addressService;
 
     /**
      * 查询所有订单
@@ -96,4 +117,98 @@ public class OrderController {
         Boolean flag = orderService.insertOrderCommodities(userId, orderCommodities);
         return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
+
+
+    /*
+    分隔，前台和后台分界线
+     */
+
+    /**
+     * 前台的购买业务
+     * @param order
+     * @return
+     */
+    @PostMapping("/submitOrder")
+    public Result submitOrder(@RequestBody OrderDto order){
+        System.out.println(order);
+        Users users = usersService.searchUser(order.getUserId());
+        order.setUsername(users.getUsername());
+        List<OrderCommodityDto> orderCommodityList = order.getOrderCommodityList();
+        BigDecimal originalPrice = new BigDecimal(0); //计算订单原价
+        BigDecimal price = new BigDecimal(0); //计算订单的优惠价
+        for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+            orderCommodityDto.setStatus(0);
+            Commodity commodity = commodityService.getById(orderCommodityDto.getCommodityId());
+            orderCommodityDto.setCommodityName(commodity.getCommodityName());
+            price=price.add(orderCommodityDto.getPriceSum());
+            originalPrice=originalPrice.add(orderCommodityDto.getOriginalPrice().multiply(new BigDecimal(orderCommodityDto.getCount())));
+            Integer count = order.getCount();
+            order.setCount(count+1);
+            Integer sum = order.getSum();
+            order.setSum(sum+orderCommodityDto.getCount());
+        }
+        order.setOriginalPrice(originalPrice);
+        order.setPrice(price);
+        boolean flag = orderService.save(order);
+        if (flag){
+            for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+                orderCommodityDto.setOrderId(order.getId());
+                boolean flag1 = orderCommodityService.save(orderCommodityDto);
+                if (flag1 != true) {
+                    return new Result(null,Code.ADD_FAIL,"购买失败");
+                }
+            }
+        }
+        return new Result(null,Code.ADD_SUCCESS,"购买成功");
+    }
+    @GetMapping("/search/{current}/{pageSize}/{userId}")
+    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId){
+        //先查询当前用户下的订单
+        Page<Order> orderPage = new Page<>(current,pageSize);
+        Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getUserId,userId);
+        orderService.page(orderPage, wrapper);
+        BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
+        List<Order> records = orderPage.getRecords();
+        List<OrderDto> orderDtos = records.stream().map((item) -> {
+            OrderDto orderDto = new OrderDto();
+            BeanUtils.copyProperties(item, orderDto);
+            Integer userId1 = item.getUserId();
+            Users users = usersService.searchUser(userId1);
+            orderDto.setUsername(users.getUsername());
+            Integer addressId = item.getAddressId();
+            Address address = addressService.searchAddress(addressId);
+            orderDto.setAddress(address);
+            Integer id = item.getId();
+            System.out.println("订单id= " + id);
+            LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(OrderCommodity::getOrderId, id);
+            List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
+            List<OrderCommodityDto> orderCommodityDtos = new ArrayList<>();
+            for (OrderCommodity orderCommodity : orderCommodities) {
+                OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
+                BeanUtils.copyProperties(orderCommodity, orderCommodityDto);
+                Integer commodityId = orderCommodity.getCommodityId();
+                Commodity commodity = commodityService.getById(commodityId);
+                orderCommodityDto.setCommodityName(commodity.getCommodityName());
+                orderCommodityDtos.add(orderCommodityDto);
+            }
+            orderDto.setOrderCommodityList(orderCommodityDtos);
+            return orderDto;
+        }).collect(Collectors.toList());
+        orderDtoPage.setRecords(orderDtos);
+
+        System.out.println(orderDtoPage);
+
+        //当删除到页数发生变化的时候
+        if (current > orderDtoPage.getPages()){
+            orderDtoPage.setCurrent(orderDtoPage.getPages());
+        }
+
+        return new Result(Code.SELECT_SUCCESS,orderDtoPage);
+
+    }
+
+
 }

@@ -3,6 +3,7 @@ package com.jiahe.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiahe.dao.OrderCommodityDao;
 import com.jiahe.dao.OrderDao;
 import com.jiahe.dao.CommodityDao;
@@ -25,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements OrderService {
 
     @Autowired
     private OrderDao orderDao;
@@ -219,24 +220,23 @@ public class OrderServiceImpl implements OrderService {
 
     //处理售后订单对应的状态，将订单状态为1(退货中)的订单改为0(正常)
     @Override
-    public Boolean updateOrderForAftermarket(Order order) {
+    public Boolean updateOrderForAftermarket(Integer orderId) {
+        Order order = orderDao.selectById(orderId);
         order.setStatus(2);
         return orderDao.updateById(order) > 0;
     }
 
     //将订单对应的订单项的状态也处理一下，改为2
     @Override
-    public Boolean updateOrderDetailForAftermarket(Integer orderId) {
+    public Boolean updateOrderDetailForAftermarket(Integer orderCommodityId) {
         LambdaQueryWrapper<OrderCommodity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(OrderCommodity::getOrderId,orderId);
+        wrapper.eq(OrderCommodity::getId,orderCommodityId);
         wrapper.eq(OrderCommodity::getStatus,1);
-        List<OrderCommodity> orderCommodities = orderCommodityDao.selectList(wrapper);
-
-        for(OrderCommodity orderCommodity:orderCommodities){
-            orderCommodity.setStatus(2);
-            orderCommodityDao.updateById(orderCommodity);
+        OrderCommodity orderCommodity = orderCommodityDao.selectOne(wrapper);
+        if (orderCommodity == null){
+            return false;
         }
-
+        orderCommodity.setStatus(2);
         return true;
     }
 

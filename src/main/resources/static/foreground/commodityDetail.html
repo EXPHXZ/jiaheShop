@@ -19,19 +19,12 @@
                     <a href = "./homepage.html" target = "_blank">首页</a>
                 </el-menu-item>
                 <el-menu-item index = "2">
-                    <i class = "el-icon-s-release"></i>
-                    <a href = "https://www.ele.me" target = "_blank">售后服务</a>
-                </el-menu-item>
-                <el-menu-item index = "3">
-                    <i class = "el-icon-s-order"></i>
-                    <a href = "https://www.ele.me" target = "_blank">个人订单</a>
-                </el-menu-item>
-                <el-menu-item index = "4">
                     <i class = "el-icon-shopping-cart-2"></i>
                     <a href = "https://www.ele.me" target = "_blank">购物车</a>
                 </el-menu-item>
-                <a v-if = "!isLogin" class = "users" href = "usersLogin.html">登录</a>
-                <a v-if = "isLogin" class = "users" href = "usersHome.html">登录</a>
+                <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
+                <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
+                <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
             </el-menu>
         </el-header>
         <el-container>
@@ -42,7 +35,7 @@
                         <el-form :inline = "true" :model = "searchForm" class = "demo-form-inline">
                             <el-form-item class = "input-search">
                                 <el-col :span = "8">
-                                    <el-input v-model = "searchForm.search" placeholder = "搜索"></el-input>
+                                    <el-input v-model = "description" placeholder = "搜索"></el-input>
                                 </el-col>
                             </el-form-item>
                             <el-form-item>
@@ -82,7 +75,7 @@
                             <div>
                                 <div class="inner">配送至 </div>
                                 <div class="inner-left">
-                                    <el-select v-model="select" placeholder="请选择">
+                                    <el-select v-model="order.addressId" placeholder="请选择" style="width: 450px">
                                         <el-option
                                                 v-for="item in options"
                                                 :key="item.value"
@@ -102,24 +95,29 @@
                             <div class="button">
                                 <div class="inner">选择规格： </div>
                                 <div>
-                                    <el-radio v-model="radio1" label="1" border>大</el-radio>
-                                    <el-radio v-model="radio1" label="2" border>中</el-radio>
-                                    <el-radio v-model="radio1" label="3" border>小</el-radio>
+                                    <div class="inner-left" v-for="item in allSize">
+                                        <el-radio-group v-model="commodity.size">
+                                            <el-radio-button
+                                                :label="item.size"
+                                                border>{{item.size}}
+                                            </el-radio-button>
+                                        </el-radio-group>
+
+                                    </div>
+
                                 </div>
                             </div>
 
                             <div class="count-num">
-                                <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
+                                <el-input-number v-model="num" :min="1" :max="10" label="描述文字"></el-input-number>
                             </div>
 
                             <div class="button">
                                 <el-row>
-                                    <el-button size="medium" type="warning">购买</el-button>
+                                    <el-button size="medium" type="warning" @click="submit">购买</el-button>
                                     <el-button size="medium" type="danger">加入购物车</el-button>
                                 </el-row>
                             </div>
-
-
                         </div>
                     </div>
                 </el-main>
@@ -139,45 +137,66 @@
 
         data() {
             return {
-                orderDetail:"",
+                orderDetail:{
+                    status:0,
+                },
+                order:{
+                    status:0,
+                    orderCommodityList:[]
+                },
                 searchForm: {
                 },
+                num:1,
+
                 activeIndex: '1',
+
+                orderDetail:{},
+
                 radio1:"",
-                num: 1,
+
                 commodity:"",
+
                 user:{
                 },
 
                 isLogin: false,
 
-                options: [{
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶'
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }],
-                select: '选项1'  // 选取默认值在里面就可以了，比如：  select:"选项1"；
+                allSize:[],
+
+                options: [],
+
+                description:"",
             }
         },
 
         methods: {
-            search() {
-                console.log('search!');
+            submit(){
+                this.allSize.forEach((item) => {
+                    if (this.commodity.size == item.size){
+                        this.orderDetail.commodityId = item.id
+                        console.log(this.commodity)
+                    }
+                })
+                this.orderDetail.count = this.num
+                this.orderDetail.originalPrice= this.commodity.price
+                this.orderDetail.price=this.commodity.afterPrice
+                this.orderDetail.priceSum=this.commodity.afterPrice*this.num.toFixed(2)
+                this.order.orderCommodityList.push(this.orderDetail)
+                this.order.userId = this.user.id
+                this.order.count=0
+                this.order.sum=0
+                console.log(this.order)
+
+
+                axios.post("/order/submitOrder",this.order).then((res) => {
+
+                })
             },
 
-            handleChange(value) {
-                console.log(value);
+            search() {
+                //加码
+                this.description = escape(this.description)
+                window.location.href="searchPage.html?description="+this.description
             },
 
             getImage(image){
@@ -193,22 +212,66 @@
                         this.commodity.discountText= "暂无折扣"
                     }
                     this.commodity.afterPrice=(this.commodity.price*this.commodity.discount).toFixed(2)
-
+                    this.getSize()
                 })
             },
+
+            getSize(){
+                console.log(this.commodity)
+                axios.post("/commodity/size",this.commodity).then((res) => {
+                    this.allSize = res.data.data
+                })
+            },
+
+            getAddress(id){
+                axios.get("/usersAddress/searchPersonalAll/"+id).then((res) => {
+                    res.data.data.forEach((item) => {
+                        if (item.isDefault == 0){
+                            this.order.addressId=item.id
+                        }
+                        this.options.push(
+                            {
+                                label:item.contacts+"\t"+item.location,
+                                value:item.id
+                            }
+                        )
+                    })
+                })
+            },
+
+            login() {
+                window.localStorage.setItem("prePage", window.location.href)
+                window.location.href = "usersLogin.html"
+            },
+
+            logout() {
+                axios.get("/usersManagement/logout").then((resp) => {
+                    if (resp.data.code === 20061) {
+                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                        window.location.href = "homepage.html"
+                    }
+                    else if (resp.data.code === 20062)
+                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                    else
+                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                })
+            }
 
         },
 
         mounted(){
             //获取用户信息
-            this.user = JSON.parse(window.localStorage.getItem("userInfo"))
-            if (this.user !== null)
-                this.isLogin = true
+            axios.get("/usersManagement/getLoginUser").then((resp) => {
+                if (resp.data.code === 20031)
+                    this.user = resp.data.data
+                    this.getAddress(this.user.id)
+                    console.log(this.user)
+                if (this.user !== null)
+                    this.isLogin = true
+            })
             const params = window.location.search
             const id = params.split("=")[1]
             this.getCommodity(id)
-
-
         }
     })
 </script>

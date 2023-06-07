@@ -52,4 +52,6 @@ public interface CommodityService extends IService<Commodity> {
     public Boolean deleteCommodities(List<Commodity> commodities);
 
     public Boolean checkAdd(Commodity commodity);
+
+    public List<Commodity> doSelect(List<Commodity> commodities);
 }

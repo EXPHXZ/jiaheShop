@@ -171,7 +171,7 @@ float: right;
 }
 
 .el-card {
-    height: 370px;
+    height: 380px;
 }
 
 .el-image__inner{
@@ -181,7 +181,43 @@ float: right;
 .discount-w a{
     color: #666666;
     font-size: 15px;
+    cursor: pointer;
 }
 .discount-w a:hover{
     color: #6b9eff;
+}
+.orderSearch li {
+    float: left;
+    padding-left: 15px;
+}
+.orderSearch a {
+    color: #333333;
+}
+
+.orderSearch a:hover {
+    color: #b81919;
+}
+
+.orderSearch {
+    height: 100px;
+}
+
+.orderSearch .demo-form-inline {
+.el-form-item {
+.el-input {
+    margin-left: 400px;
+    width: 300px;
+}
+}
+}
+.orderSearch .demo-form-inline {
+.el-form-item {
+    float: left;
+}
+}
+
+.status {
+    color: #b81919 !important;
+    font-weight: bold;
+    text-decoration: underline;
 }

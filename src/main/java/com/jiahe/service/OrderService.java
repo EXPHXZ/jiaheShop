@@ -1,12 +1,15 @@
 package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.jiahe.dto.OrderDto;
+import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public interface OrderService {
+public interface OrderService extends IService<Order> {
 
     /**
      * 查询所有订单
@@ -51,7 +54,7 @@ public interface OrderService {
 
     public Order searchOrder(Integer orderId);
 
-    public Boolean updateOrderForAftermarket(Order order);
+    public Boolean updateOrderForAftermarket(Integer orderId);
 
     public Boolean updateOrderDetailForAftermarket(Integer orderId);
 

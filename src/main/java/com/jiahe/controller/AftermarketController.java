@@ -56,17 +56,7 @@ public class AftermarketController {
 
     @GetMapping("/getAll")
     public Result getAll(){
-        //获取没有删除的订单列表
-        List<Aftermarket> list = aftermarketService.list(
-                new LambdaQueryWrapper<Aftermarket>().eq(Aftermarket::getIsDeleted,0));
-        //遍历售后信息根据订单id获取到的对应的订单状态
-        for(Aftermarket aftermarket:list){
-            Integer orderId = aftermarket.getOrderId();
-            //调用orderService写好的查询订单功能查询到对于的订单信息，拿到订单状态
-            Order order = orderService.searchOrder(orderId);
-            aftermarket.setStatus(order.getStatus());
-        }
-
+        List<Aftermarket> list = aftermarketService.list();
         return new Result(Code.SELECT_SUCCESS,list);
     }
 /*
@@ -118,26 +108,48 @@ public Result update(@RequestBody Aftermarket aftermarket)
 其中 Code 属性为 UPDATE_FAIL，表示请求失败，同时返回一个字符串，表示修改失败的内容。
     *
     * */
+    @PostMapping("/add")
+    public Result add(@RequestBody Aftermarket aftermarket){
+        Boolean flag = aftermarketService.addAftermarket(aftermarket);
+        if(flag)
+            return new Result(null,Code.ADD_SUCCESS,"添加成功");
+        else
+            return new Result(null,Code.ADD_FAIL,"添加失败");
+    }
 
 
 
 
 
-
-
-    @PostMapping("/delete")
+    @PostMapping("/return")
     public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket){
+        //获取售后id
         Integer id = aftermarket.getId();
+        //获取订单id
         Integer orderId = aftermarket.getOrderId();
+        //获取订单项id
+        Integer orderCommodityId = aftermarket.getOrderCommodityId();
         //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
-        Order order = orderService.searchOrder(orderId);
         //把订单下面需要退货的订单的状态改成2已退货
-        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderId);
+        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId);
         //把订单状态改成0-正常订单
-        Boolean flag1 = orderService.updateOrderForAftermarket(order);
-        //删除订单
-        Boolean flag = aftermarketService.removeById(id);
+        Boolean flag1 = orderService.updateOrderForAftermarket(orderId);
+        //把售后信息的状态也改一下
+        aftermarket.setStatus(1);
+        Boolean flag = aftermarketService.updateById(aftermarket);
         return new Result(null,flag&&flag1&&flag2? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
+    }
+
+    @PostMapping()
+    public Result addAfterMarket(@RequestBody Aftermarket aftermarket){
+        boolean flag = aftermarketService.save(aftermarket);
+        return new Result(null,flag?Code.ADD_SUCCESS:Code.ADD_FAIL,"添加成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result deleteAfterMarket(@PathVariable Integer id){
+        boolean flag = aftermarketService.removeById(id);
+        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,"删除成功");
     }
 
 }
@@ -158,3 +170,4 @@ public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket)
 并使用 orderService.searchOrder(orderId) 方法查询订单，并更新订单详情和订单状态。
 最后，使用 aftermarketService.removeById(id) 方法删除退货信息，并返回一个 Result 对象，
 其中 Code 属性为 DELETE_SUCCESS 或 DELETE_FAIL，表示请求成功或失败，同时返回处理退货成功的字符串提示信息*/
+

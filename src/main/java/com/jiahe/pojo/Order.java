@@ -12,10 +12,12 @@ import java.util.List;
 public class Order {
     private Integer id;
     private Integer userId;
+    private BigDecimal originalPrice;
     private BigDecimal price;
     private Integer count;
     private Integer sum;
     private Integer status;
+    private Integer addressId;
     private Timestamp submitTime;
     private Integer isDeleted;
 }
