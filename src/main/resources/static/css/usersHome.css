@@ -6,6 +6,7 @@ body {
 
 a {
     text-decoration: none;
+    cursor: pointer;
 }
 
 .el-header, .el-footer {
@@ -32,6 +33,7 @@ a {
     margin-left: 100px;
     width: 600px;
     height: 300px;
+    float: left;
 }
 
 .changePhone {
@@ -68,4 +70,51 @@ a {
     width: 150px;
     height: 150px;
     display: block;
+}
+
+.addressDiv{
+    margin-top: 170px;
+    width: 600px;
+    float: left;
+    padding-left: 5px;
+}
+
+.orderDiv {
+    width: 100%;
+    float: left;
+    display: flex;
+    padding-left: 100px;
+}
+
+.innerDiv {
+    width: 150px;
+    height: 250px;
+    background-color: #ffffff;
+}
+.innerDiv-head {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 30px;
+    font-size: 18px;
+    border-bottom: solid #eeeeee;
+}
+.innerDiv-body {
+
+}
+
+.innerDiv a div:hover{
+    color: #cf9236;
+}
+
+.innerDiv-icon {
+    padding-top: 20px;
+    padding-left: 30px;
+    font-size: 80px;
+    color: black;
+}
+.text {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    padding-left: 40px;
 }
