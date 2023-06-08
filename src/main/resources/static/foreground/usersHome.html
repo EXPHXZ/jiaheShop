@@ -47,7 +47,9 @@
                     </el-descriptions>
                 </template>
             </div>
-
+            <div>
+                <a href="usersAddress.html">地址管理</a>
+            </div>
             <el-dialog title = "修改个人信息" :visible.sync = "updateVisible" width = "50%">
                 <el-form ref = "updateForm" :model = "updateForm" label-width = "80px">
                     <el-form-item v-if = "!updatePhone" label = "姓名">
