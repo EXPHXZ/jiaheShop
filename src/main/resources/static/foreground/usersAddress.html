@@ -3,420 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <title>个人收货地址</title>
-    <script src = "../js/vue.js"></script>
-    <script src = "../element-ui/lib/index.js"></script>
-    <script src = "../js/axios-0.18.0.js"></script>
-    <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
+    <script src="../js/vue.js"></script>
+    <script src="../element-ui/lib/index.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+    <link rel="stylesheet" href="../element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../css/usersAddress.css">
     <link rel="stylesheet" href="../css/nav.css">
 </head>
 <body>
-    <div id="PersonalAddress" class="PersonalAddress">
-        <!--  地址添加表单  -->
-        <el-dialog
-                title="新增地址"
-                :visible.sync="addAddressVisible"
-                width="50%"
-        >
-            <el-form ref="form" :model="addAddressForm" label-width="80px">
-                <el-form-item label="联系人">
-                    <el-input v-model="addAddressForm.contacts"></el-input>
-                </el-form-item>
-                <el-form-item label=手机号码>
-                    <el-input v-model="addAddressForm.contactsPhone"></el-input>
-                </el-form-item>
-                <el-form-item label="收货地址">
-                    <el-cascader
-                            v-model="addAddressForm.prefixAddress"
-                            :options="pcaTextArr"
-                            :props="{ expandTrigger: 'hover' }"
-                            style="width: 40%"
-                            @change="prefixAddressChange">
-                    </el-cascader>
-                    <el-input
-                            v-model="addAddressForm.detailAddress"
-                            placeholder="请输入详细地址"
-                            style="width: 50%"
-                            @change="detailAddressChange">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="标签">
-                    <el-radio-group v-model="addAddressForm.tag" size="medium">
-                        <el-radio-button label="家"></el-radio-button>
-                        <el-radio-button label="学校"></el-radio-button>
-                        <el-radio-button label="公司"></el-radio-button>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="默认地址">
-                    <el-switch
-                            v-model="addAddressForm.default"
-                            active-text="是"
-                            active-value="0"
-                            inactive-text="否"
-                            inactive-value="1">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="addAddress">确定添加</el-button>
-                    <el-button @click="handleCancel">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-        <!--  地址编辑表单  -->
-        <el-dialog
-                title="编辑地址"
-                :visible.sync="searchAddressVisible"
-                width="50%"
-        >
-            <el-form ref="form" :model="updateAddressForm" label-width="80px">
-                <el-form-item label="联系人">
-                    <el-input v-model="updateAddressForm.contacts"></el-input>
-                </el-form-item>
-                <el-form-item label=手机号码>
-                    <el-input v-model="updateAddressForm.contactsPhone"></el-input>
-                </el-form-item>
-                <el-form-item label="收货地址">
-                    <el-cascader
-                            v-model="updateAddressForm.prefixAddress"
-                            :options="pcaTextArr"
-                            :props="{ expandTrigger: 'hover' }"
-                            style="width: 40%"
-                            @change="prefixAddressChange">
-                    </el-cascader>
-                    <el-input
-                            v-model="updateAddressForm.detailAddress"
-                            placeholder="请输入详细地址"
-                            style="width: 50%"
-                            @change="detailAddressChange">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="标签">
-                    <el-radio-group v-model="updateAddressForm.tag">
-                        <el-radio-button label="家"></el-radio-button>
-                        <el-radio-button label="学校"></el-radio-button>
-                        <el-radio-button label="公司"></el-radio-button>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="默认地址">
-                    <el-switch
-                            v-model="updateAddressForm.default"
-                            active-text="是"
-                            active-value="0"
-                            inactive-text="否"
-                            inactive-value="1">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="upadteAddress">确定修改</el-button>
-                    <el-button @click="handleCancel">取消</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
-        <!--  个人中心之地址管理界面  -->
+<div id="PersonalAddress" class="PersonalAddress">
+    <!--  地址添加表单  -->
+    <el-dialog
+            title="新增地址"
+            :visible.sync="addAddressVisible"
+            width="50%"
+    >
+        <el-form ref="form" :model="addAddressForm" label-width="80px">
+            <el-form-item label="联系人">
+                <el-input v-model="addAddressForm.contacts"></el-input>
+            </el-form-item>
+            <el-form-item label=手机号码>
+                <el-input v-model="addAddressForm.contactsPhone"></el-input>
+            </el-form-item>
+            <el-form-item label="收货地址">
+                <el-cascader
+                        v-model="addAddressForm.prefixAddress"
+                        :options="pcaTextArr"
+                        :props="{ expandTrigger: 'hover' }"
+                        style="width: 40%"
+                        @change="prefixAddressChange">
+                </el-cascader>
+                <el-input
+                        v-model="addAddressForm.detailAddress"
+                        placeholder="请输入详细地址"
+                        style="width: 50%"
+                        @change="detailAddressChange">
+                </el-input>
+            </el-form-item>
+            <el-form-item label="标签">
+                <el-radio-group v-model="addAddressForm.tag" size="medium">
+                    <el-radio-button label="家"></el-radio-button>
+                    <el-radio-button label="学校"></el-radio-button>
+                    <el-radio-button label="公司"></el-radio-button>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="默认地址">
+                <el-switch
+                        v-model="addAddressForm.isDefault"
+                        active-text="是"
+                        active-value="0"
+                        inactive-text="否"
+                        inactive-value="1">
+                </el-switch>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="addAddress">确定添加</el-button>
+                <el-button @click="handleCancel">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+    <!--  地址编辑表单  -->
+    <el-dialog
+            title="编辑地址"
+            :visible.sync="searchAddressVisible"
+            width="50%"
+    >
+        <el-form ref="form" :model="updateAddressForm" label-width="80px">
+            <el-form-item label="联系人">
+                <el-input v-model="updateAddressForm.contacts"></el-input>
+            </el-form-item>
+            <el-form-item label=手机号码>
+                <el-input v-model="updateAddressForm.contactsPhone"></el-input>
+            </el-form-item>
+            <el-form-item label="收货地址">
+                <el-cascader
+                        v-model="updateAddressForm.prefixAddress"
+                        :options="pcaTextArr"
+                        :props="{ expandTrigger: 'hover' , checkStrictly: true}"
+                        style="width: 40%"
+                        @change="prefixAddressChange">
+                </el-cascader>
+                <el-input
+                        v-model="updateAddressForm.detailAddress"
+                        placeholder="请输入详细地址"
+                        style="width: 50%"
+                        @change="detailAddressChange">
+                </el-input>
+            </el-form-item>
+            <el-form-item label="标签">
+                <el-radio-group v-model="updateAddressForm.tag">
+                    <el-radio-button label="家"></el-radio-button>
+                    <el-radio-button label="学校"></el-radio-button>
+                    <el-radio-button label="公司"></el-radio-button>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="默认地址">
+                <el-switch
+                        v-model="updateAddressForm.isDefault"
+                        active-text="是"
+                        active-value="0"
+                        inactive-text="否"
+                        inactive-value="1">
+                </el-switch>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="updateAddress">确定修改</el-button>
+                <el-button @click="handleCancel">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
+    <!--  个人中心之地址管理界面  -->
+    <el-container>
+        <!--表头-->
+        <el-header class="nav">
+            <el-menu class="el-menu-demo" mode="horizontal" :default-active="activeIndex" background-color="#202124"
+                     text-color="#fff" active-text-color="#ffd04b">
+                <el-menu-item index="1">
+                    <i class="el-icon-s-goods"></i>
+                    <a href="./homepage.html" target="_blank">首页</a>
+                </el-menu-item>
+                <el-menu-item index="2">
+                    <i class="el-icon-shopping-cart-2"></i>
+                    <a href="https://www.ele.me" target="_blank">购物车</a>
+                </el-menu-item>
+                <a v-if="!isLogin" class="users" @click="login">登录</a>
+                <a v-if="isLogin" class="users-right" @click="logout">退出登录</a>
+                <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
+            </el-menu>
+        </el-header>
+        <!--主要内容-->
         <el-container>
-            <!--表头-->
-            <el-header class="nav">
-                <el-menu class = "el-menu-demo" mode = "horizontal" :default-active = "activeIndex" background-color = "#202124"
-                         text-color = "#fff" active-text-color = "#ffd04b">
-                    <el-menu-item index = "1">
-                        <i class = "el-icon-s-goods"></i>
-                        <a href = "./homepage.html" target = "_blank">首页</a>
-                    </el-menu-item>
-                    <el-menu-item index = "2">
-                        <i class = "el-icon-shopping-cart-2"></i>
-                        <a href = "https://www.ele.me" target = "_blank">购物车</a>
-                    </el-menu-item>
-                    <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
-                    <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
-                    <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
-                </el-menu>
+            <el-header>
+                <h1></h1>
             </el-header>
-            <!--主要内容-->
-            <el-container>
-                <el-header>
-                    <h1></h1>
-                </el-header>
-                <!--对应内容-->
-                <el-main class="AddressTable">
-                    <el-button
-                            type="primary"
-                            @click="handleAdd">
-                        新增收货地址
-                    </el-button>
-                    <el-table
-                            :data="tableData"
-                            style="width: 100%">
-                        <el-table-column
-                                prop="contacts"
-                                label="联系人"
-                                min-width="5%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="contactsPhone"
-                                label="手机号码"
-                                min-width="10%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="location"
-                                label="地址"
-                                min-width="30%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="tag"
-                                label="标签"
-                                min-width="10%">
-                        </el-table-column>
-                        <el-table-column
-                                prop="isDefault"
-                                label="是否为默认"
-                                min-width="10%"
-                                :formatter = "formatDefault">
-                        </el-table-column>
-                        <el-table-column
-                                label="操作"
-                                min-width="10%">
-                            <template slot-scope="scope">
-                                <el-button
-                                        type="primary"
-                                        icon="el-icon-edit"
-                                        circle
-                                        @click="handleUpdate(scope.row)">编辑</el-button>
-                                <el-button
-                                        type="danger"
-                                        icon="el-icon-delete"
-                                        circle
-                                        @click="deleteAddress(scope.row)">删除</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <el-pagination
-                            @current-change = "handleCurrentChange"
-                            @size-change = "handleSizeChange"
-                            :current-page = "pagination.current"
-                            :page-size = "pagination.pageSize"
-                            :background = "true"
-                            layout = "total, prev, pager, next"
-                            :total = "pagination.total">
-                    </el-pagination>
-                </el-main>
-            </el-container>
+            <!--对应内容-->
+            <el-main class="AddressTable">
+                <el-button
+                        type="primary"
+                        @click="handleAdd">
+                    新增收货地址
+                </el-button>
+                <el-table
+                        :data="tableData"
+                        style="width: 100%">
+                    <el-table-column
+                            prop="contacts"
+                            label="联系人"
+                            min-width="5%">
+                    </el-table-column>
+                    <el-table-column
+                            prop="contactsPhone"
+                            label="手机号码"
+                            min-width="10%">
+                    </el-table-column>
+                    <el-table-column
+                            prop="location"
+                            label="地址"
+                            min-width="30%">
+                    </el-table-column>
+                    <el-table-column
+                            prop="tag"
+                            label="标签"
+                            min-width="10%">
+                    </el-table-column>
+                    <el-table-column
+                            prop="isDefault"
+                            label="是否为默认"
+                            min-width="10%"
+                            :formatter="formatDefault">
+                    </el-table-column>
+                    <el-table-column
+                            label="操作"
+                            min-width="10%">
+                        <template slot-scope="scope">
+                            <el-button
+                                    type="primary"
+                                    icon="el-icon-edit"
+                                    circle
+                                    @click="handleUpdate(scope.row)">编辑
+                            </el-button>
+                            <el-button
+                                    type="danger"
+                                    icon="el-icon-delete"
+                                    circle
+                                    @click="deleteAddress(scope.row)">删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-pagination
+                        @current-change="handleCurrentChange"
+                        @size-change="handleSizeChange"
+                        :current-page="pagination.current"
+                        :page-size="pagination.pageSize"
+                        :background="true"
+                        layout="total, prev, pager, next"
+                        :total="pagination.total">
+                </el-pagination>
+            </el-main>
         </el-container>
-    </div>
-    <script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
-    <script>
-        let detailAddressFormat = /^[a-zA-Z0-9_\u4e00-\u9fa5]$/
-        let locationFormat = /^.*?区$/
-        new Vue({
-            el:"#PersonalAddress",
+    </el-container>
+</div>
+<script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
+<script>
+    let contactsFormat =  /^([a-zA-Z0-9\u4e00-\u9fa5]{1,10})$/
+    let contactsPhoneFormat = /^[0-9]{11}$/
+    new Vue({
+        el: "#PersonalAddress",
 
-            methods: {
-                //重置表单
-                resetForm(){
-                    this.addAddressForm = {}
-                    this.updateAddressForm = {}
-                },
-                //省市区信息发生变化 触发
-                prefixAddressChange () {
-                    console.log(this.addAddressForm.prefixAddress.join("，").split("，"))
-                },
-                //详细地址发生变化 触发
-                detailAddressChange() {
-                    console.log(this.addAddressForm.prefixAddress.join(""))
-                },
-                //管理添加按钮
-                handleAdd() {
-                    this.addAddressVisible = true
-                    this.resetForm()
-                },
-                //管理编辑按钮
-                handleUpdate(row) {
-                    axios.get("/usersAddress/searchUpdateAddress/" + row.id).then((res) => {
-                        this.updateAddressForm = res.data.data
-                        //地址拆分为详细地址和详细地址
-                        if(res.data.data.location.split("，").at(1) != "市辖区"){
-                            this.updateAddressForm.prefixAddress[0] = res.data.data.location.split("，").at(0)
-                            this.updateAddressForm.prefixAddress[1] = "市辖区"
-                            this.updateAddressForm.prefixAddress[2] = res.data.data.location.split("，").at(1)
-                            this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(2)
-                        }
-                        else{
-                            for(var i=0;i<=2;i++)
-                                this.updateAddressForm.prefixAddress[i] = res.data.data.location.split("，").at(i)
-                            this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(3)
-                        }
-                        //是否为默认 回显格式标准化
-                        if (resp.data.data.default=== 0)
-                            this.updateForm.default = "0"
-                        else if (resp.data.data.default === 1)
-                            this.updateForm.default = "1"
-                    })
-                    this.searchAddressVisible = true
-                },
-                //管理表单中的取消按钮
-                handleCancel() {
-                    this.addAddressVisible = false
-                    this.searchAddressVisible = false
-                },
-                //分页管理
-                handleCurrentChange(val) {
-                    this.pagination.current = val
-                    this.selectByPage()
-                },
-                handleSizeChange(val) {
-                    this.pagination.pageSize = val
-                    this.selectByPage()
-                },
-                //default列格式标准化
-                formatDefault(row, column, cellValue) {
-                    if (cellValue == 0)
-                        return "是"
-                    else if (cellValue == 1)
-                        return "否"
-                },
-                //分页查询
-                selectByPage() {
-                    axios.get("/usersAddress/" + this.user.id + "/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
-                        this.tableData = res.data.data.records
-                        this.pagination.total = res.data.data.total
-                    })
-                },
-                //添加地址
-                addAddress() {
-                    this.addAddressForm.userId = this.user.id
-                    //添加表单地址连串
-                    if (this.addAddressForm.prefixAddress.at(1) == "市辖区")
-                        this.addAddressForm.location = this.addAddressForm.prefixAddress.at(0) + "，" + this.addAddressForm.prefixAddress.at(2) + "，" + this.addAddressForm.detailAddress
-                    else{
-                        this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + this.addAddressForm.detailAddress
-                    }
-                    console.log(this.addAddressForm)
-                    axios.post("/usersAddress/addPersonalAddress",this.addAddressForm).then((res) => {
-                        if (res.data.code === 20011){
-                            this.addAddressVisible = false;
-                            this.$message.success(res.data.msg)
-                        }
-                        else if (res.data.code === 20012)
-                            this.$message.error(res.data.msg)
-                    }).finally(
-                        ()=>{
-                            this.selectByPage()
-                        }
-                    )
-                },
-                //修改地址
-                upadteAddress() {
-                    this.updateAddressForm.userId = this.user.id
-                    //编辑表单地址连串
-                    if (this.updateAddressForm.prefixAddress.at(1) == "市辖区")
-                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
-                    else{
-                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
-                    }
-                    axios.put("/usersAddress/updatePersonalAddress",this.updateAddressForm).then((res) => {
-                        if (res.data.code === 20041){
-                            this.addAddressVisible = false;
-                            this.$message.success(res.data.msg)
-                        }
-                        else if (res.data.code === 20042)
-                            this.$message.error(res.data.msg)
-                    }).finally(
-                        ()=>{
-                            this.selectByPage()
-                        }
-                    )
-                },
-                //删除地址
-                deletelAddress(row) {
-                    axios.delete("/usersAddress/deletePersonalAddress/"+row.id).then((res) => {
-                        if (res.data.code === 20021){
-                            this.$message.success(res.data.msg)
-                        }
-                        else if (res.data.code === 20022)
-                            this.$message.error(res.data.msg)
-                    }).finally(
-                        ()=>{
-                            this.selectByPage()
-                        }
-                    )
-                },
-
-                login() {
-                    window.localStorage.setItem("prePage", window.location.href)
-                    window.location.href = "usersLogin.html"
-                },
-
-                logout() {
-                    axios.get("/usersManagement/logout").then((resp) => {
-                        if (resp.data.code === 20061) {
-                            this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                            window.location.href = "homepage.html"
-                        }
-                        else if (resp.data.code === 20062)
-                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                        else
-                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                    })
-                }
+        methods: {
+            //重置表单
+            resetForm() {
+                this.addAddressForm = {}
+                this.updateAddressForm = {}
             },
+            //省市区信息发生变化 触发
+            prefixAddressChange() {
+                console.log(this.addAddressForm.prefixAddress.join("，").split("，"))
+            },
+            //详细地址发生变化 触发
+            detailAddressChange() {
+                console.log(this.addAddressForm.prefixAddress.join(""))
+            },
+            //管理添加按钮
+            handleAdd() {
+                this.addAddressVisible = true
+                this.resetForm()
+            },
+            //管理编辑按钮
+            handleUpdate(row) {
+                axios.get("/usersAddress/searchUpdateAddress/" + row.id).then((res) => {
+                    this.updateAddressForm = res.data.data
+                    let arr = new Array(3)
+                    //地址拆分为详细地址和详细地址
+                    for (var i = 0; i < 3; i++)
+                        arr[i] = res.data.data.location.split("，").at(i)
+                    this.updateAddressForm.prefixAddress = arr
+                    this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(3)
 
-            //钩子函数，进去页面就会执行查询所有
-            mounted() {
-                //获取当前用户
-                axios.get("/usersManagement/getLoginUser").then((resp) => {
-                    if (resp.data.code === 20031)
-                        this.user = resp.data.data
-                    if (this.user !== null)
-                        this.isLogin = true
+                    console.log(this.updateAddressForm.prefixAddress)
+                    console.log(this.updateAddressForm.detailAddress)
+                    //是否为默认 回显格式标准化
+                    if (res.data.data.isDefault == 0)
+                        this.updateAddressForm.isDefault = "0"
+                    else if (res.data.data.isDefault == 1)
+                        this.updateAddressForm.isDefault = "1"
                 })
-                this.selectByPage(this.user);
+                this.searchAddressVisible = true
             },
-
-            data() {
-                return {
-                    activeIndex: '1',
-                    isLogin: false,
-                    tableData: [],
-
-                    user:{},
-                    //添加、搜索表单弹窗默认不可见
-                    addAddressVisible: false,
-                    searchAddressVisible: false,
-                    //省市区
-                    codeToText: elementChinaAreaData.codeToText,
-                    pcaTextArr: elementChinaAreaData.pcaTextArr,
-
-                    //添加表单数据
-                    addAddressForm: {
-                        userId: '',
-                        contacts: '',
-                        contactsPhone: '',
-                        prefixAddress: [],
-                        detailAddress: '',
-                        location: '',
-                        tag: '',
-                        isDefault: ''
-                    },
-                    //修改表单数据
-                    updateAddressForm: {
-                        id: '',
-                        userId: '',
-                        contacts: '',
-                        contactsPhone: '',
-                        prefixAddress: [],
-                        detailAddress: '',
-                        location: '',
-                        tag: '',
-                        isDefault: ''
-                    },
-                    //分页管理数据
-                    pagination: {
-                        current: 1,
-                        pageSize: 6,
-                        total: 0,
-                    },
+            //管理表单中的取消按钮
+            handleCancel() {
+                this.addAddressVisible = false
+                this.searchAddressVisible = false
+            },
+            //分页管理
+            handleCurrentChange(val) {
+                this.pagination.current = val
+                this.selectByPage()
+            },
+            handleSizeChange(val) {
+                this.pagination.pageSize = val
+                this.selectByPage()
+            },
+            //default列格式标准化
+            formatDefault(row, column, cellValue) {
+                if (cellValue == 0)
+                    return "是"
+                else if (cellValue == 1)
+                    return "否"
+            },
+            //分页查询
+            selectByPage() {
+                console.log(this.user.id)
+                axios.get("/usersAddress/" + this.user.id + "/" + this.pagination.current + "/" + this.pagination.pageSize).then((res) => {
+                    this.tableData = res.data.data.records
+                    this.pagination.total = res.data.data.total
+                })
+            },
+            //添加地址
+            addAddress() {
+                this.addAddressForm.userId = this.user.id
+                //添加表单地址连串
+                this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + "，" + this.addAddressForm.detailAddress
+                if (!contactsFormat.test(this.addAddressForm.contacts))
+                    this.$message.error("请输入正确的姓名")
+                else if (!contactsPhoneFormat.test(this.addAddressForm.contactsPhone))
+                    this.$message.error("请输入正确的手机号码")
+                else
+                    axios.post("/usersAddress/addPersonalAddress", this.addAddressForm).then((res) => {
+                        if (res.data.code === 20011) {
+                            this.addAddressVisible = false;
+                            this.$message.success(res.data.msg)
+                        } else if (res.data.code === 20012)
+                            this.$message.error(res.data.msg)
+                    }).finally(
+                        () => {
+                            this.selectByPage()
+                        }
+                    )
+            },
+            //修改地址
+            updateAddress() {
+                this.updateAddressForm.userId = this.user.id
+                //编辑表单地址连串
+                if (this.updateAddressForm.prefixAddress.at(1) == "市辖区")
+                    this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
+                else {
+                    this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
                 }
+                axios.put("/usersAddress/updatePersonalAddress", this.updateAddressForm).then((res) => {
+                    if (res.data.code == 20041) {
+                        this.searchAddressVisible = false
+                        this.$message.success(res.data.msg)
+                    } else if (res.data.code == 20042)
+                        this.$message.error(res.data.msg)
+                }).finally(
+                    () => {
+                        this.selectByPage()
+                    }
+                )
             },
-        })
-    </script>
+            //删除地址
+            deleteAddress(row) {
+                axios.delete("/usersAddress/deletePersonalAddress/" + row.id).then((res) => {
+                    if (res.data.code == 20021) {
+                        this.$message.success(res.data.msg)
+                    } else if (res.data.code == 20022)
+                        this.$message.error(res.data.msg)
+                }).finally(
+                    () => {
+                        this.selectByPage()
+                    }
+                )
+            },
+
+            login() {
+                window.localStorage.setItem("prePage", window.location.href)
+                window.location.href = "usersLogin.html"
+            },
+
+            logout() {
+                axios.get("/usersManagement/logout").then((resp) => {
+                    if (resp.data.code == 20061) {
+                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                        window.location.href = "homepage.html"
+                    } else if (resp.data.code == 20062)
+                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                    else
+                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                })
+            }
+        },
+
+        //钩子函数，进去页面就会执行查询所有
+        mounted() {
+            //获取当前用户
+            axios.get("/usersManagement/getLoginUser").then((resp) => {
+                if (resp.data.code == 20031)
+                    this.user = resp.data.data
+                this.selectByPage();
+                if (this.user !== null)
+                    this.isLogin = true
+            })
+        },
+
+        data() {
+            return {
+                activeIndex: '1',
+                isLogin: false,
+                tableData: [],
+
+                user: {},
+                //添加、搜索表单弹窗默认不可见
+                addAddressVisible: false,
+                searchAddressVisible: false,
+                //省市区
+                codeToText: elementChinaAreaData.codeToText,
+                pcaTextArr: elementChinaAreaData.pcaTextArr,
+
+                //添加表单数据
+                addAddressForm: {
+                    userId: '',
+                    contacts: '',
+                    contactsPhone: '',
+                    prefixAddress: [],
+                    detailAddress: '',
+                    location: '',
+                    tag: '',
+                    isDefault: ''
+                },
+                //修改表单数据
+                updateAddressForm: {
+                    id: '',
+                    userId: '',
+                    contacts: '',
+                    contactsPhone: '',
+                    prefixAddress: [],
+                    detailAddress: '',
+                    location: '',
+                    tag: '',
+                    isDefault: ''
+                },
+                //分页管理数据
+                pagination: {
+                    current: 1,
+                    pageSize: 6,
+                    total: 0,
+                },
+            }
+        },
+    })
+</script>
 </body>
 </html>
