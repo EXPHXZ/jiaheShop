@@ -2,6 +2,7 @@ package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jiahe.dto.DelShopCartDto;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.ShoppingCartDto;
 import com.jiahe.pojo.Commodity;
@@ -23,6 +24,21 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count);
+
+    /**
+     * 更新购物车商品数量
+     * @param id
+     * @param count
+     * @return
+     */
+    public Boolean updateShoppingCart(Integer id, Integer count);
+
+    /**
+     * 删除购物车商品，传入购物车id数组
+     * @param shoppingCartIds
+     * @return
+     */
+    public Boolean deleteShoppingCart(DelShopCartDto shoppingCartIds);
 
     /**
      * 查询购物车
