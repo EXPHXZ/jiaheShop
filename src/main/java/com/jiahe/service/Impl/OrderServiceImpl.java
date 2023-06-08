@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jiahe.dao.*;
+import com.jiahe.dto.DelShopCartDto;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.ShoppingCartDto;
@@ -54,6 +55,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         shoppingCartItem.setCount(count);
 
         shoppingCartDao.insert(shoppingCartItem);
+        return true;
+    }
+
+    @Override
+    public Boolean updateShoppingCart(Integer id, Integer count) {
+        System.out.println("id = " + id);
+        System.out.println("count = " + count);
+        ShoppingCart shoppingCart = shoppingCartDao.selectById(id);
+        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(1));
+        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(2));
+        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(3));
+        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(4));
+        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(5));
+        System.out.println("shoppingCart = " + shoppingCart);
+        shoppingCart.setCount(count);
+        System.out.println("shoppingCart = " + shoppingCart);
+        shoppingCartDao.updateById(shoppingCart);
+        return true;
+    }
+
+    @Override
+    public Boolean deleteShoppingCart(DelShopCartDto shoppingCartIds) {
+        for (Integer shoppingCartId : shoppingCartIds.getShoppingCartIds()) {
+            shoppingCartDao.deleteById(shoppingCartId);
+        }
         return true;
     }
 
@@ -221,7 +247,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
     }
 
     @Override
-    public Boolean insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities) {
+    public Integer insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities) {
         // 创建订单且返回订单id
         Order order = new Order();
         order.setUserId(userId);
@@ -251,7 +277,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         order.setPrice(totalPrice);
         order.setOriginalPrice(totalOriginalPrice);
         orderDao.updateById(order);
-        return true;
+        return orderId;
     }
 
     @Override

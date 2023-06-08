@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jiahe.dto.DelShopCartDto;
 import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.ShoppingCartDto;
@@ -55,6 +56,29 @@ public class OrderController {
     public Result addShoppingCart(@RequestParam Integer commodityId, @RequestParam Integer userId, @RequestParam Integer count){
         Boolean flag = orderService.addShoppingCart(commodityId, userId, count);
         return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"添加成功":"添加失败");
+    }
+
+    /**
+     * 更新购物车商品数量
+     * @param id
+     * @param count
+     * @return
+     */
+    @PostMapping("/updateShoppingCart")
+    public Result updateShoppingCart(@RequestParam Integer id, @RequestParam Integer count){
+        Boolean flag = orderService.updateShoppingCart(id, count);
+        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"更新成功":"更新失败");
+    }
+
+    /**
+     * 删除购物车商品，传入购物车id数组
+     * @param shoppingCartIds
+     * @return
+     */
+    @PostMapping("/deleteShoppingCart")
+    public Result deleteShoppingCart(@RequestBody DelShopCartDto shoppingCartIds){
+        Boolean flag = orderService.deleteShoppingCart(shoppingCartIds);
+        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"删除成功":"删除失败");
     }
 
     /**
@@ -126,8 +150,8 @@ public class OrderController {
      */
     @PostMapping("/insertOrderCommodity")
     public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId, @RequestParam Integer addressId){
-        Boolean flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
-        return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
+        Integer flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
+        return new Result(flag,flag != null? Code.ADD_SUCCESS:Code.ADD_FAIL,flag != null?"添加成功":"添加失败");
     }
 
 
@@ -171,7 +195,7 @@ public class OrderController {
                 }
             }
         }
-        return new Result(null,Code.ADD_SUCCESS,"购买成功");
+        return new Result(order.getId(),Code.ADD_SUCCESS,"购买成功");
     }
 
     @GetMapping("/search/{current}/{pageSize}/{userId}/{status}")

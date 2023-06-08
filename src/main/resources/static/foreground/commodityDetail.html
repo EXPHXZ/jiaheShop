@@ -191,7 +191,17 @@
                 this.order.sum=0
                 console.log(this.order)
                 axios.post("/order/submitOrder",this.order).then((res) => {
-
+                    if (res.data.data == null){
+                        this.$message({
+                          type: 'error',
+                          message: '提交失败',
+                        })
+                    }
+                    this.$message({
+                      type: 'success',
+                      message: '提交成功',
+                    })
+                    window.location.href ="payment.html?id="+res.data.data
                 })
             },
 
