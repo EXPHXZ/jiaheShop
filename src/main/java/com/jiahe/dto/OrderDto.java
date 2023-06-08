@@ -17,7 +17,6 @@ public class OrderDto extends Order {
 
     private List<OrderCommodityDto> orderCommodityList;
 
-
     @Override
     public String toString() {
         return super.toString()+"OrderDto{" +

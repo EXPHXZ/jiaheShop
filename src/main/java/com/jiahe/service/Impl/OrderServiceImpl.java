@@ -4,16 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jiahe.dao.OrderCommodityDao;
-import com.jiahe.dao.OrderDao;
-import com.jiahe.dao.CommodityDao;
-import com.jiahe.dao.UsersDao;
+import com.jiahe.dao.*;
 import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.OrderCommodityDto;
-import com.jiahe.pojo.Commodity;
-import com.jiahe.pojo.Order;
-import com.jiahe.pojo.OrderCommodity;
-import com.jiahe.pojo.Users;
+import com.jiahe.dto.ShoppingCartDto;
+import com.jiahe.pojo.*;
 import com.jiahe.service.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +31,67 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
     private CommodityDao commodityDao;
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private ShoppingCartDao shoppingCartDao;
+
+    @Override
+    public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count) {
+        // 该用户是否已经添加过该商品
+        LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ShoppingCart::getUserId,userId);
+        wrapper.eq(ShoppingCart::getCommodityId,commodityId);
+        ShoppingCart shoppingCart = shoppingCartDao.selectOne(wrapper);
+        if (shoppingCart != null){
+            // 已经添加过该商品，更新数量
+            shoppingCart.setCount(count);
+            shoppingCartDao.updateById(shoppingCart);
+            return true;
+        }
+        ShoppingCart shoppingCartItem = new ShoppingCart();
+        shoppingCartItem.setCommodityId(commodityId);
+        shoppingCartItem.setUserId(userId);
+        shoppingCartItem.setCount(count);
+
+        shoppingCartDao.insert(shoppingCartItem);
+        return true;
+    }
+
+    @Override
+    public List<ShoppingCartDto> selectShoppingCart(Integer userId) {
+        System.out.println("userId =         " + userId);
+        // 根据用户id查询购物车列表，再根据商品id查询商品信息
+        LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ShoppingCart::getUserId,userId);
+        List<ShoppingCart> shoppingCarts = shoppingCartDao.selectList(wrapper);
+        System.out.println("shoppingCarts =   " + shoppingCarts);
+        // 遍历购物车列表，查询商品信息
+        List<ShoppingCartDto> shoppingCartDtos = new ArrayList<>();
+        for (ShoppingCart shoppingCart : shoppingCarts) {
+            LambdaQueryWrapper<Commodity> wrapper1 = new LambdaQueryWrapper<>();
+            wrapper1.eq(Commodity::getId,shoppingCart.getCommodityId());
+            Commodity commodity1 = commodityDao.selectOne(wrapper1);
+            System.out.println("shoppingCart =            " + shoppingCart);
+            System.out.println("commodity1 =            " + commodity1);
+            System.out.println();
+            // 将商品信息复制到购物车中
+            ShoppingCartDto shoppingCartDto = new ShoppingCartDto();
+            shoppingCartDto.setBrandName(commodity1.getBrandName());
+            shoppingCartDto.setCommodityId(commodity1.getId());
+            shoppingCartDto.setCommodityName(commodity1.getCommodityName());
+            shoppingCartDto.setImage(commodity1.getImage());
+            shoppingCartDto.setPrice(commodity1.getPrice());
+            shoppingCartDto.setDiscount(commodity1.getDiscount());
+            shoppingCartDto.setSize(commodity1.getSize());
+            shoppingCartDto.setCount(shoppingCart.getCount());
+            shoppingCartDto.setUserId(shoppingCart.getUserId());
+            shoppingCartDto.setId(shoppingCart.getId());
+            System.out.println("shoppingCartDto =                   " + shoppingCartDto);
+            shoppingCartDtos.add(shoppingCartDto);
+        }
+        System.out.println("最终结果 = " + shoppingCartDtos);
+        return shoppingCartDtos;
+    }
 
     @Override
     public IPage<OrderDto> selectAllOrder(Integer page, Integer size, Integer desc) {
@@ -62,6 +118,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             wrapper.eq(Users::getId,order.getUserId());
             Users user = usersDao.selectOne(wrapper);
             orderDto.setUsername(user.getUsername());
+            orderDto.setUsername("begonia");
 
             orderDtos.add(orderDto);
         }
@@ -164,16 +221,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
     }
 
     @Override
-    public Boolean insertOrderCommodities(Integer userId, OrderCommodity[] orderCommodities) {
+    public Boolean insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities) {
         // 创建订单且返回订单id
         Order order = new Order();
         order.setUserId(userId);
+        order.setAddressId(addressId);
         orderDao.insert(order);
         Integer orderId = order.getId();
 
         for (OrderCommodity orderCommodity : orderCommodities) {
             orderCommodity.setOrderId(orderId);
             orderCommodity.setPriceSum(orderCommodity.getPrice().multiply(new BigDecimal(orderCommodity.getCount())));
+            System.out.println("orderCommodity              " + orderCommodity);
             orderCommodityDao.insert(orderCommodity);
         }
 
@@ -182,12 +241,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         order.setCount(orderCommodities.length);
         Integer totalNum = 0;
         BigDecimal totalPrice = new BigDecimal(0);
+        BigDecimal totalOriginalPrice = new BigDecimal(0);
         for (OrderCommodity orderCommodity : orderCommodities) {
             totalNum += orderCommodity.getCount();
             totalPrice = totalPrice.add(orderCommodity.getPrice().multiply(new BigDecimal(orderCommodity.getCount())));
+            totalOriginalPrice = totalOriginalPrice.add(orderCommodity.getOriginalPrice().multiply(new BigDecimal(orderCommodity.getCount())));
         }
         order.setSum(totalNum);
         order.setPrice(totalPrice);
+        order.setOriginalPrice(totalOriginalPrice);
         orderDao.updateById(order);
         return true;
     }

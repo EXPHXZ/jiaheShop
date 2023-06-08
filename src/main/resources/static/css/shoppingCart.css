@@ -1,0 +1,48 @@
+.shop_card {
+    margin: auto;
+    width: 80%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+    padding: 15px 0;
+}
+
+.card_head {
+    display: flex;
+    justify-content: space-between;
+    line-height: 35px;
+    padding-left: 40px;
+    padding-bottom: 10px;
+    border-bottom: #ccc 1px solid;
+}
+.card_item {
+    display: flex;
+    justify-content: start;
+    padding-left: 40px;
+    height: 200px;
+    line-height: 200px;
+    margin: 10px;
+    border: #ccc 1px solid;
+    border-radius: 10px;
+    position: relative;
+}
+.shop-num {
+    padding-right: 100px;
+}
+.shop-text {
+    display: flex;
+    flex-direction: column;
+    padding-right: 120px;
+}
+.shop-price {
+    display: flex;
+    flex-direction: column;
+    padding-right: 80px;
+    line-height: 40px;
+    color: red;
+    font-size: 19px;
+}
+.shop-del {
+    position: absolute;
+    right: 80px;
+}
