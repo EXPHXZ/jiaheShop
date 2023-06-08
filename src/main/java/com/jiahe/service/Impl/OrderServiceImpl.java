@@ -247,7 +247,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
     }
 
     @Override
-    public Boolean insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities) {
+    public Integer insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities) {
         // 创建订单且返回订单id
         Order order = new Order();
         order.setUserId(userId);
@@ -277,7 +277,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         order.setPrice(totalPrice);
         order.setOriginalPrice(totalOriginalPrice);
         orderDao.updateById(order);
-        return true;
+        return orderId;
     }
 
     @Override

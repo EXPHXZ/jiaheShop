@@ -150,8 +150,8 @@ public class OrderController {
      */
     @PostMapping("/insertOrderCommodity")
     public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId, @RequestParam Integer addressId){
-        Boolean flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
-        return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
+        Integer flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
+        return new Result(flag,flag != null? Code.ADD_SUCCESS:Code.ADD_FAIL,flag != null?"添加成功":"添加失败");
     }
 
 
@@ -195,7 +195,7 @@ public class OrderController {
                 }
             }
         }
-        return new Result(null,Code.ADD_SUCCESS,"购买成功");
+        return new Result(order.getId(),Code.ADD_SUCCESS,"购买成功");
     }
     @GetMapping("/search/{current}/{pageSize}/{userId}")
     public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId){

@@ -71,7 +71,7 @@ public interface OrderService extends IService<Order> {
      * @param orderCommodities
      * @return
      */
-    public Boolean insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities);
+    public Integer insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities);
 
     /**
      * 删除订单
