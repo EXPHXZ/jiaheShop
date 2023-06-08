@@ -365,10 +365,11 @@
                 axios.get("/usersManagement/getLoginUser").then((resp) => {
                     if (resp.data.code === 20031)
                         this.user = resp.data.data
+                        this.selectByPage();
                     if (this.user !== null)
                         this.isLogin = true
                 })
-                this.selectByPage(this.user);
+
             },
 
             data() {

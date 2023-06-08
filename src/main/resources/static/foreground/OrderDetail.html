@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>购物车</title>
+    <link rel="stylesheet" href="../css/homepage.css" />
+    <link rel="stylesheet" href="../css/shoppingCart.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <el-container>
+        <el-header>
+          <el-menu
+            class="el-menu-demo"
+            mode="horizontal"
+            :default-active="activeIndex"
+            background-color="#202124"
+            text-color="#fff"
+            active-text-color="#ffd04b"
+          >
+            <el-menu-item index="1">
+              <i class="el-icon-s-goods"></i>
+              <a href="./homepage.html" target="_blank">首页</a>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-shopping-cart-2"></i>
+              <a href="./shoppingCart.html" target="_blank">购物车</a>
+            </el-menu-item>
+            <a v-if="!isLogin" class="users">登录</a>
+            <a v-if="isLogin" class="users-right">退出登录</a>
+            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
+          </el-menu>
+        </el-header>
+        <el-main>
+          <div class="shop_card">
+            <div v-for="item in orderCommodities" class="card_item">
+              <div style="padding-top: 15px; padding-right: 70px">
+                <img :src = "getImage(item.image)"
+                     style="width: 170px; height: 170px">
+              </div>
+              <div class="shop-text">
+                <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.simpledDescription }}</div>
+                <div style="line-height: 30px">品牌：{{ item.brandName }}</div>
+                <div style="line-height: 30px">规格：{{ item.size }}</div>
+                <div style="line-height: 30px">数量：x{{ item.count }}</div>
+              </div>
+              <div class="shop-price">
+                <div style="padding-top: 100px">原价：{{item.originalPrice }} 元</div>
+                <div>折后价：{{item.price}} 元</div>
+              </div>
+              <div class="shop-del">
+                <el-button type="danger" plain>申请售后</el-button>
+              </div>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../element-ui/lib/index.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+    <link rel="stylesheet" href="../element-ui/lib/theme-chalk/index.css" />
+
+    <script>
+      new Vue({
+        el: '#app',
+
+        data() {
+          return {
+            checkAll: false,
+            orderCommodities:[],
+            activeIndex: '1',
+            isLogin: false,
+            user: "",
+            order: {
+              addressId: null,
+            },
+            commodity:{},
+
+          }
+        },
+
+        methods: {
+            getOrderCommodities(orderId){
+              axios.get("/order/"+orderId).then((res) => {
+                this.orderCommodities = res.data.data
+                  this.orderCommodities.forEach((item) => {
+                    console.log(item)
+                    axios.get("/commodity/"+item.commodityId).then((resp) => {
+                      item.image = resp.data.data.image
+                      item.simpleDescription = resp.data.data.simpleDescription
+                      item.size = resp.data.data.size
+                      item.brandName=resp.data.data.brandName
+                    })
+                  });
+                console.log(this.orderCommodities)
+              })
+
+            },
+          getImage(image){
+              return `/common/download?name=${image}`
+          },
+        },
+
+        mounted() {
+          //获取用户信息
+          axios.get('/usersManagement/getLoginUser').then(resp => {
+            if (resp.data.code === 20031) this.user = resp.data.data
+            if (this.user !== null) this.isLogin = true
+            else this.isLogin = false
+          })
+          const params = window.location.search
+          const orderId = params.split("=")[1]
+          this.getOrderCommodities(orderId)
+          console.log(this.orderCommodities)
+        },
+      })
+    </script>
+  </body>
+</html>

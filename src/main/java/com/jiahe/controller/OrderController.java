@@ -173,13 +173,21 @@ public class OrderController {
         }
         return new Result(null,Code.ADD_SUCCESS,"购买成功");
     }
-    @GetMapping("/search/{current}/{pageSize}/{userId}")
-    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId){
+
+    @GetMapping("/search/{current}/{pageSize}/{userId}/{status}")
+    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer status){
         //先查询当前用户下的订单
         Page<Order> orderPage = new Page<>(current,pageSize);
         Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getUserId,userId);
+        if (status > 3){
+            return new Result(null,Code.SELECT_FAIL,"查询失败");
+        } else if (status == 3){
+            wrapper.eq(Order::getStatus,3).or().eq(Order::getStatus,4);
+        }else if (status >= 0 && status < 3){
+            wrapper.eq(Order::getStatus,status);
+        }
         orderService.page(orderPage, wrapper);
         BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
         List<Order> records = orderPage.getRecords();
@@ -193,7 +201,6 @@ public class OrderController {
             Address address = addressService.searchAddress(addressId);
             orderDto.setAddress(address);
             Integer id = item.getId();
-            System.out.println("订单id= " + id);
             LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(OrderCommodity::getOrderId, id);
             List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
@@ -210,16 +217,14 @@ public class OrderController {
             return orderDto;
         }).collect(Collectors.toList());
         orderDtoPage.setRecords(orderDtos);
-
         System.out.println(orderDtoPage);
-
         //当删除到页数发生变化的时候
         if (current > orderDtoPage.getPages()){
             orderDtoPage.setCurrent(orderDtoPage.getPages());
         }
-
         return new Result(Code.SELECT_SUCCESS,orderDtoPage);
     }
+
 
     @DeleteMapping("/{id}")
     public Result removeOrder(@PathVariable Integer id){
@@ -233,6 +238,14 @@ public class OrderController {
             }
         }
         return new Result(null,Code.DELETE_FAIL,"删除订单信息失败");
+    }
+
+    @GetMapping("/{orderId}")
+    public Result getOrderCommodities(@PathVariable Integer orderId){
+        LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderCommodity::getOrderId,orderId);
+        List<OrderCommodity> list = orderCommodityService.list(queryWrapper);
+        return new Result(Code.SELECT_SUCCESS,list);
     }
 
 }

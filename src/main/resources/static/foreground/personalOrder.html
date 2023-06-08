@@ -201,10 +201,6 @@
                         this.multipleSelection = val;
                     },
 
-                    gotoDetail(id){
-                        window.location.href="commodityDetail.html?id="+id
-                    },
-
                     search() {
                         this.getCommodities()
                     },
@@ -218,7 +214,7 @@
                     },
 
                     goToOrderDetail(val){
-                        window.location.href="personalOrderDetail.html?id="+val.id
+                        window.location.href="orderDetail.html?id="+val.id
                     },
 
                     deleteOrder(val){
@@ -242,7 +238,7 @@
                     //查询所有订单
                     getAllOrders(status){
                         this.status = status;
-                        axios.get("/order/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/1/"+status).then((res) => {
+                        axios.get("/order/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+this.user.id+"/"+status).then((res) => {
                             this.orders = res.data.data.records;
                             this.orders.forEach((item) => {
                                 item.detail = ""
@@ -326,12 +322,12 @@
                     axios.get("/usersManagement/getLoginUser").then((resp) => {
                         if (resp.data.code === 20031)
                             this.user = resp.data.data
+                            const params = window.location.search
+                            this.status = params.split("=")[1]
+                            this.getAllOrders(this.status)
                         if (this.user !== null)
                             this.isLogin = true
                     })
-                    const params = window.location.search
-                    this.status = params.split("=")[1]
-                    this.getAllOrders(this.status)
                 }
             })
         </script>
