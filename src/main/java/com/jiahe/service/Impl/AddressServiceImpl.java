@@ -18,10 +18,17 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressDao addressDao;
 //    检查默认是否有冲突
-    public List<Address> checkDefault(){
+    public Boolean updateCheckDefault(){
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Address::getIsDefault,1);
-        return addressDao.selectList(lqw);
+        lqw.eq(Address::getIsDefault,0);
+        Address address = addressDao.selectOne(lqw);
+        if(address != null){
+            address.setIsDefault(1);
+            addressDao.updateById(address);
+            return true;
+        }
+        else
+            return false;
     }
 //    分页查询
     @Override
@@ -40,10 +47,10 @@ public class AddressServiceImpl implements AddressService {
         lqw.eq(Address::getUserId,id);
         return addressDao.selectList(lqw);
     }
-
+//  新增收货地址
     @Override
     public Boolean addPersonalAddress(Address address) {
-        if (checkDefault() != null)
+        if (updateCheckDefault())
             return false;
         else
             return addressDao.insert(address) > 0;
@@ -58,7 +65,7 @@ public class AddressServiceImpl implements AddressService {
 //    修改地址
     @Override
     public Boolean updatePersonalAddress(Address address) {
-        if (checkDefault() != null)
+        if (updateCheckDefault())
             return false;
         else
             return addressDao.insert(address) > 0;

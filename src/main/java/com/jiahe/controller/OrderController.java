@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.OrderDto;
+import com.jiahe.dto.ShoppingCartDto;
 import com.jiahe.pojo.*;
 import com.jiahe.service.*;
 import com.jiahe.utils.Code;
@@ -44,6 +45,32 @@ public class OrderController {
     private AddressService addressService;
 
     /**
+     * 将商品加入购物车
+     * @param commodityId
+     * @param userId
+     * @param count
+     * @return
+     */
+    @PostMapping("/addShoppingCart")
+    public Result addShoppingCart(@RequestParam Integer commodityId, @RequestParam Integer userId, @RequestParam Integer count){
+        Boolean flag = orderService.addShoppingCart(commodityId, userId, count);
+        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"添加成功":"添加失败");
+    }
+
+    /**
+     * 查询购物车
+     * @param userId
+     * @return
+     */
+    @GetMapping("/selectShoppingCart")
+    public Result selectShoppingCart(@RequestParam Integer userId){
+        List<ShoppingCartDto> data = orderService.selectShoppingCart(userId);
+        System.out.println(data);
+        Boolean flag = data != null;
+        return new Result(data,flag? Code.SELECT_SUCCESS:Code.SELECT_FAIL,flag?"查询成功":"查询失败");
+    }
+
+    /**
      * 查询所有订单
      * @param page
      * @param size
@@ -53,6 +80,7 @@ public class OrderController {
     @GetMapping("/selectAllOrder")
     public Result selectAllOrder(@RequestParam Integer page, @RequestParam Integer size, Integer desc){
         IPage<OrderDto> data = orderService.selectAllOrder(page, size, desc);
+        System.out.println(data + "--------------------------------");
         Boolean flag = data != null;
         return new Result(data,flag? Code.SELECT_SUCCESS:Code.SELECT_FAIL,flag?"查询成功":"查询失败");
     }
@@ -97,8 +125,8 @@ public class OrderController {
      * @param orderCommodities
      */
     @PostMapping("/insertOrderCommodity")
-    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId){
-        Boolean flag = orderService.insertOrderCommodities(userId, orderCommodities);
+    public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId, @RequestParam Integer addressId){
+        Boolean flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
         return new Result(userId,flag? Code.ADD_SUCCESS:Code.ADD_FAIL,flag?"添加成功":"添加失败");
     }
 
@@ -116,7 +144,7 @@ public class OrderController {
     public Result submitOrder(@RequestBody OrderDto order){
         System.out.println(order);
         Users users = usersService.searchUser(order.getUserId());
-        order.setUsername(users.getUsername());
+        order.setUsername(users.getName());
         List<OrderCommodityDto> orderCommodityList = order.getOrderCommodityList();
         BigDecimal originalPrice = new BigDecimal(0); //计算订单原价
         BigDecimal price = new BigDecimal(0); //计算订单的优惠价
@@ -145,17 +173,12 @@ public class OrderController {
         }
         return new Result(null,Code.ADD_SUCCESS,"购买成功");
     }
-    @GetMapping("/search/{current}/{pageSize}/{userId}/{status}")
-    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer status){
+    @GetMapping("/search/{current}/{pageSize}/{userId}")
+    public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId){
         //先查询当前用户下的订单
         Page<Order> orderPage = new Page<>(current,pageSize);
         Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-        if (status == 3){
-            wrapper.eq(Order::getStatus,3).or().eq(Order::getStatus,4);
-        }else if(status < 3 && status >= 0){
-            wrapper.eq(Order::getStatus,status);
-        }
         wrapper.eq(Order::getUserId,userId);
         orderService.page(orderPage, wrapper);
         BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
@@ -165,60 +188,12 @@ public class OrderController {
             BeanUtils.copyProperties(item, orderDto);
             Integer userId1 = item.getUserId();
             Users users = usersService.searchUser(userId1);
-            orderDto.setUsername(users.getUsername());
+            orderDto.setUsername(users.getName());
             Integer addressId = item.getAddressId();
             Address address = addressService.searchAddress(addressId);
             orderDto.setAddress(address);
             Integer id = item.getId();
-            LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(OrderCommodity::getOrderId, id);
-            List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
-            List<OrderCommodityDto> orderCommodityDtos = new ArrayList<>();
-            for (OrderCommodity orderCommodity : orderCommodities) {
-                OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
-                BeanUtils.copyProperties(orderCommodity, orderCommodityDto);
-                Integer commodityId = orderCommodity.getCommodityId();
-                Commodity commodity = commodityService.getById(commodityId);
-                orderCommodityDto.setCommodityName(commodity.getCommodityName());
-                orderCommodityDtos.add(orderCommodityDto);
-            }
-            orderDto.setOrderCommodityList(orderCommodityDtos);
-            return orderDto;
-        }).collect(Collectors.toList());
-        orderDtoPage.setRecords(orderDtos);
-
-        System.out.println(orderDtoPage);
-
-        //当删除到页数发生变化的时候
-        if (current > orderDtoPage.getPages()){
-            orderDtoPage.setCurrent(orderDtoPage.getPages());
-        }
-
-        return new Result(Code.SELECT_SUCCESS,orderDtoPage);
-
-    }
-
-    @GetMapping("/searchOrder/{current}/{pageSize}/{userId}/{orderId}")
-    public Result getSearchOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer orderId){
-        //先查询当前用户下的订单
-        Page<Order> orderPage = new Page<>(current,pageSize);
-        Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
-        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Order::getUserId,userId);
-        wrapper.eq(Order::getId,orderId);
-        orderService.page(orderPage, wrapper);
-        BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
-        List<Order> records = orderPage.getRecords();
-        List<OrderDto> orderDtos = records.stream().map((item) -> {
-            OrderDto orderDto = new OrderDto();
-            BeanUtils.copyProperties(item, orderDto);
-            Integer userId1 = item.getUserId();
-            Users users = usersService.searchUser(userId1);
-            orderDto.setUsername(users.getUsername());
-            Integer addressId = item.getAddressId();
-            Address address = addressService.searchAddress(addressId);
-            orderDto.setAddress(address);
-            Integer id = item.getId();
+            System.out.println("订单id= " + id);
             LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(OrderCommodity::getOrderId, id);
             List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
@@ -259,6 +234,5 @@ public class OrderController {
         }
         return new Result(null,Code.DELETE_FAIL,"删除订单信息失败");
     }
-
 
 }

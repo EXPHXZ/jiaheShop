@@ -20,7 +20,7 @@
                 </el-menu-item>
                 <el-menu-item index = "2">
                     <i class = "el-icon-shopping-cart-2"></i>
-                    <a href = "https://www.ele.me" target = "_blank">购物车</a>
+                    <a href = "./shoppingCart.html" target = "_blank">购物车</a>
                 </el-menu-item>
                 <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
                 <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
@@ -117,7 +117,7 @@
                             <div class="button">
                                 <el-row>
                                     <el-button size="medium" type="warning" @click="submit">购买</el-button>
-                                    <el-button size="medium" type="danger">加入购物车</el-button>
+                                    <el-button size="medium" type="danger" @click="addShoppingCart">加入购物车</el-button>
                                 </el-row>
                             </div>
                         </div>
@@ -208,6 +208,34 @@
                         this.commodity.afterPrice=(this.commodity.price*this.commodity.discount).toFixed(2)
                         console.log(this.commodity)
                     }
+                })
+            },
+            // 加入购物车
+            addShoppingCart () {
+                console.log('this.commodity.id', this.commodity.id)
+                console.log('this.user.id', this.user.id)
+                console.log('this.num', this.num)
+                axios({
+              url: '/order/addShoppingCart',
+              params: {
+                commodityId: this.commodity.id,
+                userId: this.user.id,
+                count: this.num,
+              },
+              method: 'post',
+            }).then((res) => {
+                console.log('res', res)
+                if (res.data.code === 20021) {
+                  this.$message({
+                    message: '加入购物车成功',
+                    type: 'success',
+                  })
+                } else {
+                  this.$message({
+                    message: '加入购物车失败',
+                    type: 'error',
+                  })
+                }
                 })
             },
 

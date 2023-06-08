@@ -8,12 +8,13 @@
     <script src = "../js/axios-0.18.0.js"></script>
     <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../css/usersAddress.css">
+    <link rel="stylesheet" href="../css/nav.css">
 </head>
 <body>
     <div id="PersonalAddress" class="PersonalAddress">
         <!--  地址添加表单  -->
         <el-dialog
-                title="新增地址6"
+                title="新增地址"
                 :visible.sync="addAddressVisible"
                 width="50%"
         >
@@ -41,9 +42,9 @@
                 </el-form-item>
                 <el-form-item label="标签">
                     <el-radio-group v-model="addAddressForm.tag" size="medium">
-                        <el-radio-button label="家" value="0"></el-radio-button>
-                        <el-radio-button label="学校" value="1"></el-radio-button>
-                        <el-radio-button label="公司" value="2"></el-radio-button>
+                        <el-radio-button label="家"></el-radio-button>
+                        <el-radio-button label="学校"></el-radio-button>
+                        <el-radio-button label="公司"></el-radio-button>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="默认地址">
@@ -91,9 +92,9 @@
                 </el-form-item>
                 <el-form-item label="标签">
                     <el-radio-group v-model="updateAddressForm.tag">
-                        <el-radio-button label="家" value="0"></el-radio-button>
-                        <el-radio-button label="学校" value="1"></el-radio-button>
-                        <el-radio-button label="公司" value="2"></el-radio-button>
+                        <el-radio-button label="家"></el-radio-button>
+                        <el-radio-button label="学校"></el-radio-button>
+                        <el-radio-button label="公司"></el-radio-button>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="默认地址">
@@ -114,34 +115,33 @@
         <!--  个人中心之地址管理界面  -->
         <el-container>
             <!--表头-->
-            <el-header
-                    style="text-align: center;
-                    background-color: rgb(252,239,230);
-                    margin-bottom: 5%;
-                    ">
-                <h1>收货地址</h1>
+            <el-header class="nav">
+                <el-menu class = "el-menu-demo" mode = "horizontal" :default-active = "activeIndex" background-color = "#202124"
+                         text-color = "#fff" active-text-color = "#ffd04b">
+                    <el-menu-item index = "1">
+                        <i class = "el-icon-s-goods"></i>
+                        <a href = "./homepage.html" target = "_blank">首页</a>
+                    </el-menu-item>
+                    <el-menu-item index = "2">
+                        <i class = "el-icon-shopping-cart-2"></i>
+                        <a href = "https://www.ele.me" target = "_blank">购物车</a>
+                    </el-menu-item>
+                    <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
+                    <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
+                    <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
+                </el-menu>
             </el-header>
-            <!--侧边导航栏+主要内容-->
+            <!--主要内容-->
             <el-container>
-                <!--侧边导航栏-->
-                <el-aside
-                        border
-                        style="width: 10%;height: 100vh;background-color: rgb(252,239,230);">
-                    <el-row>
-
-                    </el-row>
-                </el-aside>
+                <el-header>
+                    <h1></h1>
+                </el-header>
                 <!--对应内容-->
                 <el-main class="AddressTable">
                     <el-button
                             type="primary"
-                            round
-                            style="
-                                width: 10%;
-                                height: 10%;
-                                margin: 0 0 1% 90%"
                             @click="handleAdd">
-                        添加新地址
+                        新增收货地址
                     </el-button>
                     <el-table
                             :data="tableData"
@@ -164,8 +164,7 @@
                         <el-table-column
                                 prop="tag"
                                 label="标签"
-                                min-width="10%"
-                                :formatter="formatTag">
+                                min-width="10%">
                         </el-table-column>
                         <el-table-column
                                 prop="isDefault"
@@ -175,7 +174,7 @@
                         </el-table-column>
                         <el-table-column
                                 label="操作"
-                                min-width="20%">
+                                min-width="10%">
                             <template slot-scope="scope">
                                 <el-button
                                         type="primary"
@@ -209,7 +208,6 @@
         let locationFormat = /^.*?区$/
         new Vue({
             el:"#PersonalAddress",
-
 
             methods: {
                 //重置表单
@@ -246,13 +244,6 @@
                                 this.updateAddressForm.prefixAddress[i] = res.data.data.location.split("，").at(i)
                             this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(3)
                         }
-                        //tag 回显格式标准化
-                        if (resp.data.data.tag === 0)
-                            this.updateForm.tag = "0"
-                        else if (resp.data.data.tag === 1)
-                            this.updateForm.tag = "1"
-                        else if (resp.data.data.tag === 2)
-                            this.updateForm.tag = "2"
                         //是否为默认 回显格式标准化
                         if (resp.data.data.default=== 0)
                             this.updateForm.default = "0"
@@ -275,15 +266,6 @@
                     this.pagination.pageSize = val
                     this.selectByPage()
                 },
-                //tag列格式标准化
-                formatTag(row, column, cellValue) {
-                    if (cellValue == 0)
-                        return "家"
-                    else if (cellValue == 1)
-                        return "学校"
-                    else if (cellValue == 2)
-                        return "公司"
-                },
                 //default列格式标准化
                 formatDefault(row, column, cellValue) {
                     if (cellValue == 0)
@@ -298,26 +280,16 @@
                         this.pagination.total = res.data.data.total
                     })
                 },
-                //通用方法
-                generics() {
+                //添加地址
+                addAddress() {
                     this.addAddressForm.userId = this.user.id
-                    this.updateAddressForm.userId = this.user.id
                     //添加表单地址连串
                     if (this.addAddressForm.prefixAddress.at(1) == "市辖区")
                         this.addAddressForm.location = this.addAddressForm.prefixAddress.at(0) + "，" + this.addAddressForm.prefixAddress.at(2) + "，" + this.addAddressForm.detailAddress
                     else{
                         this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + this.addAddressForm.detailAddress
                     }
-                    //编辑表单地址连串
-                    if (this.updateAddressForm.prefixAddress.at(1) == "市辖区")
-                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
-                    else{
-                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
-                    }
-                },
-                //添加地址
-                addAddress() {
-                    this.generics()
+                    console.log(this.addAddressForm)
                     axios.post("/usersAddress/addPersonalAddress",this.addAddressForm).then((res) => {
                         if (res.data.code === 20011){
                             this.addAddressVisible = false;
@@ -333,7 +305,13 @@
                 },
                 //修改地址
                 upadteAddress() {
-                    this.generics()
+                    this.updateAddressForm.userId = this.user.id
+                    //编辑表单地址连串
+                    if (this.updateAddressForm.prefixAddress.at(1) == "市辖区")
+                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
+                    else{
+                        this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
+                    }
                     axios.put("/usersAddress/updatePersonalAddress",this.updateAddressForm).then((res) => {
                         if (res.data.code === 20041){
                             this.addAddressVisible = false;
@@ -361,6 +339,24 @@
                         }
                     )
                 },
+
+                login() {
+                    window.localStorage.setItem("prePage", window.location.href)
+                    window.location.href = "usersLogin.html"
+                },
+
+                logout() {
+                    axios.get("/usersManagement/logout").then((resp) => {
+                        if (resp.data.code === 20061) {
+                            this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                            window.location.href = "homepage.html"
+                        }
+                        else if (resp.data.code === 20062)
+                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                        else
+                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                    })
+                }
             },
 
             //钩子函数，进去页面就会执行查询所有
@@ -377,7 +373,8 @@
 
             data() {
                 return {
-
+                    activeIndex: '1',
+                    isLogin: false,
                     tableData: [],
 
                     user:{},
@@ -387,7 +384,6 @@
                     //省市区
                     codeToText: elementChinaAreaData.codeToText,
                     pcaTextArr: elementChinaAreaData.pcaTextArr,
-
 
                     //添加表单数据
                     addAddressForm: {

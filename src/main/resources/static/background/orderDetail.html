@@ -82,6 +82,14 @@
           <el-table-column
             align="center"
             header-align="center"
+            prop="originalPrice"
+            label="商品原价"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
             prop="price"
             label="单价"
             sortable
@@ -124,7 +132,8 @@
         <div class="order-com-item">创建时间：{{ orderInfo.submitTime}}</div>
         <div class="order-com-item">购买数量：{{ orderInfo.sum}}</div>
         <div class="order-com-item">购买种类：{{ orderInfo.count}}</div>
-        <div class="order-com-item">订单总价：{{ orderInfo.price}}</div>
+        <div class="order-com-item">订单原价：{{ orderInfo.originalPrice}}</div>
+        <div class="order-com-item">折后价：{{ orderInfo.price}}</div>
       </div>
 
       <div class="order-btn2">
@@ -153,6 +162,7 @@
               this.orderInfo = res.data.data
               this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
               this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
+              this.orderInfo.originalPrice = this.orderInfo.originalPrice.toFixed(2) + '元'
               this.orderInfo.sum = this.orderInfo.sum + '份'
               this.orderInfo.count = this.orderInfo.count + '种'
               this.orderInfo.orderCommodityList.forEach(item => {
@@ -164,6 +174,7 @@
                   item.statusText = '退货成功'
                 }
                 item.price = item.price.toFixed(2) + '元'
+                item.originalPrice = item.originalPrice.toFixed(2) + '元'
                 item.priceSum = item.priceSum.toFixed(2) + '元'
                 item.count = item.count + '份'
               })
@@ -236,12 +247,14 @@
             orderInfo: {
               submitTime: '2023-01-01 00:00:00',
               price: 0,
+              originalPrice: 0,
               sum: 0,
               count: 0,
               orderCommodityList: [
                 {
                   count: 0,
                   price: 0,
+                  originalPrice: 0,
                   priceSum: 0,
                   status: 0,
                   statusText: '',

@@ -1,0 +1,22 @@
+a {
+    text-decoration: none;
+}
+
+.nav {
+    background-color: #202124;
+    text-align: center;
+    line-height: 60px;
+}
+
+.users {
+    float: right;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.users-right {
+    float: right;
+    color: #ffffff;
+    cursor: pointer;
+    margin-left: 12px;
+}

@@ -38,7 +38,7 @@ public class AddressController {
         if(flag)
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
-            return new Result(null,Code.ADD_FAIL,"添加失败，已有设置为默认的地址");
+            return new Result(null,Code.ADD_FAIL,"添加失败");
     }
 //    搜索要修改的回显地址信息
     @GetMapping("/searchUpdateAddress/{id}")
@@ -52,7 +52,7 @@ public class AddressController {
         if(flag)
             return new Result(null,Code.UPDATE_SUCCESS,"修改成功");
         else
-            return new Result(null,Code.UPDATE_FAIL,"修改失败，已有设置为默认的地址");
+            return new Result(null,Code.UPDATE_FAIL,"修改失败");
     }
 //    删除地址
     @DeleteMapping("/deletePersonalAddress/{id}")
