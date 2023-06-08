@@ -120,22 +120,6 @@ public class OrderController {
     }
 
     /**
-     * 进行退货操作
-     * 使用Json的方式传递参数
-     * @param orderCommodity
-     */
-    @PostMapping("/updateOrderCommodity")
-    public Result updateOrderCommodity(@RequestParam Integer orderId, @RequestBody OrderCommodity orderCommodity){
-        Boolean flag = orderService.updateOrderCommodity(orderId, orderCommodity);
-        //往售后表添加一条信息
-        Aftermarket aftermarket = new Aftermarket();
-        aftermarket.setOrderId(orderId);
-        aftermarket.setCause("该订单有货物需要退货");
-        boolean flag1 = aftermarketService.save(aftermarket);
-        return new Result(null,flag&&flag1? Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
-    }
-
-    /**
      * 新增订单
      * 使用Json的方式传递参数，订单项对象数组
      * @param orderCommodities
