@@ -30,6 +30,7 @@
         <script src = "../js/vue.js"></script>
         <script src = "../element-ui/lib/index.js"></script>
         <script src = "../js/axios-0.18.0.js"></script>
+        <script src = "../js/jsencrypt.js"></script>
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
@@ -48,15 +49,21 @@
                         else if (this.loginForm.password === "")
                             this.$message({showClose: true, message: "请输入密码", type: "success"})
                         else {
-                            axios.post("/adminsManagement/login", this.loginForm).then((resp) => {
-                                if (resp.data.code === 20051) {
-                                    this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                    window.location.href = "personalInformation.html"
-                                }
-                                else if (resp.data.code === 20052)
-                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                                else
-                                    this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                            let encrypt = new JSEncrypt()
+                            axios.get("/common/getPublicKey").then((resp) => {
+                                encrypt.setPublicKey(resp.data)
+                                this.loginAdmin.account = encrypt.encrypt(this.loginForm.account)
+                                this.loginAdmin.password = encrypt.encrypt(this.loginForm.password)
+                                axios.post("/adminsManagement/login", this.loginAdmin).then((resp) => {
+                                    if (resp.data.code === 20051) {
+                                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                        window.location.href = "personalInformation.html"
+                                    }
+                                    else if (resp.data.code === 20052)
+                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                    else
+                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                })
                             })
                         }
                     },
@@ -67,7 +74,7 @@
                 },
 
                 mounted() {
-                  window.addEventListener("keydown", this.keyDown)
+                    window.addEventListener("keydown", this.keyDown)
                 },
 
                 destroyed() {
@@ -77,6 +84,11 @@
                 data() {
                     return {
                         loginForm: {
+                            account: "",
+                            password: ""
+                        },
+
+                        loginAdmin: {
                             account: "",
                             password: ""
                         },

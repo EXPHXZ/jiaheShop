@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.pojo.Users;
 import com.jiahe.service.UsersService;
 import com.jiahe.utils.Code;
+import com.jiahe.utils.RSAUtil;
 import com.jiahe.utils.Result;
 import com.jiahe.utils.ValidateCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,14 @@ public class UsersController {
     private UsersService usersService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody Users users, HttpServletRequest request) {
+    public Result login(@RequestBody Users users, HttpServletRequest request) throws Exception {
+        String usernameRSA = users.getUsername();
+        String passwordRSA = users.getPassword();
+        users.setUsername(RSAUtil.decryptWithPrivate(usernameRSA));
+        users.setPassword(RSAUtil.decryptWithPrivate(passwordRSA));
         Users checkUser = usersService.checkUsers(users);
         if (checkUser != null) {
+            checkUser.setPassword(passwordRSA);
             request.getSession().setAttribute("user", checkUser);
             return new Result(checkUser, Code.LOGIN_SUCCESS, "登录成功");
         }
@@ -49,6 +55,13 @@ public class UsersController {
 
     @GetMapping("/getValidateCode")
     public Result getValidateCode() {
+        String code = ValidateCodeUtils.generateValidateCode(6).toString();
+        System.out.println("验证码为：" + code);
+        return new Result(code, Code.SELECT_SUCCESS, "验证码发送成功");
+    }
+
+    @GetMapping("/checkValidateCode")
+    public Result checkValidateCode() {
         String code = ValidateCodeUtils.generateValidateCode(6).toString();
         System.out.println("验证码为：" + code);
         return new Result(code, Code.SELECT_SUCCESS, "验证码发送成功");
