@@ -4,7 +4,7 @@
     <title>订单详情</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="../css/query.css" />
-    <link rel = "stylesheet" href = "../fontawesome-6.4.0-web/css/all.min.css" />
+    <link rel="stylesheet" href="../fontawesome-6.4.0-web/css/all.min.css" />
     <link rel="stylesheet" href="../css/order.css" />
   </head>
   <body>
@@ -13,39 +13,109 @@
         <h1>嘉禾商城</h1>
       </div>
     </header>
-    <div id = "nav">
-      <nav v-if = "admin.identity === 0">
+    <div id="nav">
+      <nav v-if="admin.identity === 0">
         <ul>
-          <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
-          <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
-          <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
-          <li @click = "goToAdminsManagement"><a><i class = "fas fa-shield-alt"></i>管理员账号管理</a></li>
-          <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
-          <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+          <li @click="goToCommodity">
+            <a>
+              <i class="fas fa-shopping-bag"></i>
+              商品管理
+            </a>
+          </li>
+          <li @click="goToOrder">
+            <a>
+              <i class="fas fa-list-alt"></i>
+              订单管理
+            </a>
+          </li>
+          <li @click="goToAftermarket">
+            <a>
+              <i class="fas fa-exchange-alt"></i>
+              售后管理
+            </a>
+          </li>
+          <li @click="goToAdminsManagement">
+            <a>
+              <i class="fas fa-shield-alt"></i>
+              管理员账号管理
+            </a>
+          </li>
+          <li @click="goToUsersManagement">
+            <a>
+              <i class="fas fa-shield-alt"></i>
+              用户账号管理
+            </a>
+          </li>
+          <li @click="goToPersonalInformation">
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
         </ul>
       </nav>
-      <nav v-else-if = "admin.identity === 1">
+      <nav v-else-if="admin.identity === 1">
         <ul>
-          <li @click = "goToOrder"><a><i class = "fas fa-list-alt"></i>订单管理</a></li>
-          <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+          <li @click="goToOrder">
+            <a>
+              <i class="fas fa-list-alt"></i>
+              订单管理
+            </a>
+          </li>
+          <li @click="goToPersonalInformation">
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
         </ul>
       </nav>
-      <nav v-else-if = "admin.identity === 2">
+      <nav v-else-if="admin.identity === 2">
         <ul>
-          <li @click = "goToCommodity"><a><i class = "fas fa-shopping-bag"></i>商品管理</a></li>
-          <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+          <li @click="goToCommodity">
+            <a>
+              <i class="fas fa-shopping-bag"></i>
+              商品管理
+            </a>
+          </li>
+          <li @click="goToPersonalInformation">
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
         </ul>
       </nav>
-      <nav v-else-if = "admin.identity === 3">
+      <nav v-else-if="admin.identity === 3">
         <ul>
-          <li @click = "goToAftermarket"><a><i class = "fas fa-exchange-alt"></i>售后管理</a></li>
-          <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+          <li @click="goToAftermarket">
+            <a>
+              <i class="fas fa-exchange-alt"></i>
+              售后管理
+            </a>
+          </li>
+          <li @click="goToPersonalInformation">
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
         </ul>
       </nav>
-      <nav v-else-if = "admin.identity === 4">
+      <nav v-else-if="admin.identity === 4">
         <ul>
-          <li @click = "goToUsersManagement"><a><i class = "fas fa-shield-alt"></i>用户账号管理</a></li>
-          <li @click = "goToPersonalInformation"><a><i class = "fas fa-user"></i>个人中心</a></li>
+          <li @click="goToUsersManagement">
+            <a>
+              <i class="fas fa-shield-alt"></i>
+              用户账号管理
+            </a>
+          </li>
+          <li @click="goToPersonalInformation">
+            <a>
+              <i class="fas fa-user"></i>
+              个人中心
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -163,7 +233,7 @@
           getAddress(id) {
             axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
               console.log('res        ', res.data.data)
-                this.addressInfo = res.data.data
+              this.addressInfo = res.data.data
             })
           },
           selectOrderDetail(id) {
@@ -190,7 +260,7 @@
                   item.statusText = '已完成'
                 } else if (item.status === 4) {
                   item.statusText = '退货中'
-                }else if (item.status === 5) {
+                } else if (item.status === 5) {
                   item.statusText = '已受理'
                 }
                 item.price = item.price.toFixed(2) + '元'
@@ -198,7 +268,7 @@
                 item.priceSum = item.priceSum.toFixed(2) + '元'
                 item.count = item.count + '份'
               })
-          this.getAddress(this.orderInfo.addressId)
+              this.getAddress(this.orderInfo.addressId)
             })
           },
 
@@ -289,47 +359,45 @@
       })
 
       new Vue({
-        el: "#nav",
+        el: '#nav',
 
         data() {
           return {
-            admin: {
-            }
+            admin: {},
           }
         },
 
         mounted() {
-          axios.get("/adminsManagement/getLoginAdmin").then((resp) => {
-            if (resp.data.code === 20031)
-              this.admin = resp.data.data
+          axios.get('/adminsManagement/getLoginAdmin').then(resp => {
+            if (resp.data.code === 20031) this.admin = resp.data.data
           })
         },
 
         methods: {
-          goToCommodity(){
-            window.location.href = "commodity.html"
+          goToCommodity() {
+            window.location.href = 'commodity.html'
           },
 
-          goToAftermarket(){
-            window.location.href = "aftermarket.html"
+          goToAftermarket() {
+            window.location.href = 'aftermarket.html'
           },
 
-          goToOrder(){
-            window.location.href = "order.html"
+          goToOrder() {
+            window.location.href = 'order.html'
           },
 
-          goToAdminsManagement(){
-            window.location.href = "adminsManagement.html"
+          goToAdminsManagement() {
+            window.location.href = 'adminsManagement.html'
           },
 
-          goToUsersManagement(){
-            window.location.href = "usersManagement.html"
+          goToUsersManagement() {
+            window.location.href = 'usersManagement.html'
           },
 
           goToPersonalInformation() {
-            window.location.href = "personalInformation.html"
-          }
-        }
+            window.location.href = 'personalInformation.html'
+          },
+        },
       })
     </script>
   </body>

@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <div id="app" >
+    <div id="app">
       <el-container>
         <el-header>
           <el-menu
@@ -50,15 +50,16 @@
               </div>
               <div>
                 <el-button style="margin-right: 20px" type="success" round @click="onSubmitOrder">提交订单</el-button>
-                <el-button style="margin-right: 100px" type="danger" round @click="onDelShopCarts()">删除选中商品</el-button>
+                <el-button style="margin-right: 100px" type="danger" round @click="onDelShopCarts()">
+                  删除选中商品
+                </el-button>
               </div>
             </div>
             <div v-for="item of shopCartList" :key="item.id" class="card_item" v-cloak>
               <el-checkbox style="padding-right: 30px" v-model="item.checked"></el-checkbox>
               <div style="padding-top: 15px; padding-right: 70px">
                 <div>
-                  <img :src = "getImage(item.image)"
-                       style="width: 170px; height: 170px">
+                  <img :src="getImage(item.image)" style="width: 170px; height: 170px" />
                 </div>
               </div>
               <div class="shop-text" @click="onViewCommodity(item.commodityId)">
@@ -152,7 +153,7 @@
               .then(() => {
                 let user = localStorage.getItem('user')
                 user = JSON.parse(user)
-                console.log("user", user)
+                console.log('user', user)
                 axios({
                   url: '/order/insertOrderCommodity',
                   params: {
@@ -186,7 +187,7 @@
                       console.log(res)
                       if (res.data.code === 20021) {
                         // 跳转到购买页面
-                        window.location.href ="payment.html?id="+this.orderId
+                        window.location.href = 'payment.html?id=' + this.orderId
                       }
                     })
                     this.orderList = []
@@ -240,7 +241,7 @@
           onDelShopCart(id) {
             let ids = []
             ids.push(id)
-            console.log("ids      ", ids)
+            console.log('ids      ', ids)
             // 询问是否删除
             this.$confirm('是否删除？', '提示', {
               confirmButtonText: '确定',
@@ -251,15 +252,15 @@
                 axios({
                   url: '/order/deleteShoppingCart',
                   data: {
-                        shoppingCartIds: ids,
-                      },
+                    shoppingCartIds: ids,
+                  },
                   method: 'post',
                 }).then(res => {
                   console.log(res)
                   if (res.data.code === 20021) {
-            let user = localStorage.getItem('user')
-            user = JSON.parse(user)
-                        this.selectAllShoppingCart(user.id)
+                    let user = localStorage.getItem('user')
+                    user = JSON.parse(user)
+                    this.selectAllShoppingCart(user.id)
                     this.$message({
                       type: 'success',
                       message: '删除成功',
@@ -286,7 +287,7 @@
                 ids.push(this.shopCartList[i].id)
               }
             }
-            console.log("ids      ", ids)
+            console.log('ids      ', ids)
             // 询问是否删除
             this.$confirm('是否删除？', '提示', {
               confirmButtonText: '确定',
@@ -297,8 +298,8 @@
                 axios({
                   url: '/order/deleteShoppingCart',
                   data: {
-                        shoppingCartIds: ids,
-                      },
+                    shoppingCartIds: ids,
+                  },
                   method: 'post',
                 }).then(res => {
                   console.log(res)
@@ -307,9 +308,9 @@
                       type: 'success',
                       message: '删除成功',
                     })
-            let user = localStorage.getItem('user')
-            user = JSON.parse(user)
-                        this.selectAllShoppingCart(user.id)
+                    let user = localStorage.getItem('user')
+                    user = JSON.parse(user)
+                    this.selectAllShoppingCart(user.id)
                   } else {
                     this.$message({
                       type: 'error',
@@ -326,28 +327,27 @@
               })
           },
           onViewCommodity(commodityId) {
-            window.location.href="commodityDetail.html?id="+commodityId
+            window.location.href = 'commodityDetail.html?id=' + commodityId
           },
-          getImage(image){
+          getImage(image) {
             return `/common/download?name=${image}`
           },
         },
 
         mounted() {
           //获取用户信息
-          axios.get("/usersManagement/getLoginUser").then((resp) => {
-              if (resp.data.code === 20031) {
-                  this.user = resp.data.data
-                this.selectAllShoppingCart(user.id)
-              }
-              if (this.user !== null)
-                  this.isLogin = true
+          axios.get('/usersManagement/getLoginUser').then(resp => {
+            if (resp.data.code === 20031) {
+              this.user = resp.data.data
+              this.selectAllShoppingCart(user.id)
+            }
+            if (this.user !== null) this.isLogin = true
           })
           //获取用户信息
-            let user = localStorage.getItem('user')
-            user = JSON.parse(user)
-            console.log("this.user2", user)
-            console.log("this.user3", user.id)
+          let user = localStorage.getItem('user')
+          user = JSON.parse(user)
+          console.log('this.user2', user)
+          console.log('this.user3', user.id)
 
           this.getAddress(user.id)
           console.log('this.options', this.options)

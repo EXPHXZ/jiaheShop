@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <div id="app" >
+    <div id="app">
       <el-container>
         <el-header>
           <el-menu
@@ -21,14 +21,14 @@
             text-color="#fff"
             active-text-color="#ffd04b"
           >
-                        <el-menu-item index = "1">
-                            <i class = "el-icon-s-goods"></i>
-                            <a href = "./homepage.html" target = "_blank">首页</a>
-                        </el-menu-item>
-                        <el-menu-item index = "2">
-                            <i class = "el-icon-s-goods"></i>
-                            <a href = "#">当前页面</a>
-                        </el-menu-item>
+            <el-menu-item index="1">
+              <i class="el-icon-s-goods"></i>
+              <a href="./homepage.html" target="_blank">首页</a>
+            </el-menu-item>
+            <el-menu-item index="2">
+              <i class="el-icon-s-goods"></i>
+              <a href="#">当前页面</a>
+            </el-menu-item>
             <a v-if="!isLogin" class="users">登录</a>
             <a v-if="isLogin" class="users-right">退出登录</a>
             <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
@@ -37,14 +37,11 @@
         <el-main>
           <div class="payment">
             <div class="payment-head">
-              <div>
-                待付款
-              </div>
+              <div>待付款</div>
             </div>
             <div v-for="item of orderInfo.orderCommodityList" :key="item.id" class="payment-item">
               <div style="padding-top: 15px">
-                <img :src = "getImage(item.image)"
-                     style="width: 170px; height: 170px">
+                <img :src="getImage(item.image)" style="width: 170px; height: 170px" />
               </div>
               <div class="payment-text">
                 <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.commodityName }}</div>
@@ -57,18 +54,12 @@
               </div>
             </div>
             <div class="payment-foot">
+              <div>创建时间：{{ orderInfo.submitTime }}</div>
+              <div style="color: red">原价：{{ orderInfo.originalPrice }}</div>
+              <div style="color: red">折后价：{{ orderInfo.price }}</div>
               <div>
-                创建时间：{{ orderInfo.submitTime }}
-              </div>
-              <div style="color: red">
-                原价：{{ orderInfo.originalPrice }}
-              </div>
-              <div style="color: red">
-                折后价：{{ orderInfo.price }}
-              </div>
-            <div>
                 <el-button style="margin-right: 20px" type="success" round @click="onPayment">付款</el-button>
-            </div>
+              </div>
             </div>
             <div class="address">
               <div>收货人：{{addressInfo.contacts}}</div>
@@ -94,7 +85,7 @@
           getAddress(id) {
             axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
               console.log('res        ', res.data.data)
-                this.addressInfo = res.data.data
+              this.addressInfo = res.data.data
             })
           },
           selectOrderDetail(id) {
@@ -123,14 +114,14 @@
                   item.statusText = '已完成'
                 } else if (item.status === 4) {
                   item.statusText = '退货中'
-                }else if (item.status === 5) {
+                } else if (item.status === 5) {
                   item.statusText = '已受理'
                 }
                 item.price = item.price.toFixed(2) + '元'
                 item.originalPrice = item.originalPrice.toFixed(2) + '元'
                 item.priceSum = item.priceSum.toFixed(2) + '元'
                 item.count = item.count + '份'
-          this.getAddress(this.orderInfo.addressId)
+                this.getAddress(this.orderInfo.addressId)
               })
             })
           },
@@ -144,13 +135,13 @@
             })
               .then(() => {
                 // 确认付款
-                axios.put("/order/"+this.orderInfo.id+"/"+1).then((res) => {
-                  if(res.data.code == 20041){
-                    window.location.href = "personalOrder.html?id=-1"
+                axios.put('/order/' + this.orderInfo.id + '/' + 1).then(res => {
+                  if (res.data.code == 20041) {
+                    window.location.href = 'personalOrder.html?id=-1'
                     this.$message.success(res.data.msg)
-                  }else if (res.data.code == 20042){
+                  } else if (res.data.code == 20042) {
                     this.$message.error(res.data.msg)
-                  }else {
+                  } else {
                     this.$message.error(res.data.msg)
                   }
                 })
@@ -164,22 +155,22 @@
               })
           },
 
-          getImage(image){
+          getImage(image) {
             return `/common/download?name=${image}`
           },
         },
 
         created() {
-            const params = window.location.search
-            const id = params.split("=")[1]
-            console.log("id", id)
-            this.selectOrderDetail(id)
+          const params = window.location.search
+          const id = params.split('=')[1]
+          console.log('id', id)
+          this.selectOrderDetail(id)
         },
 
         data() {
           return {
-                        activeIndex: '2',
-              addressInfo: {},
+            activeIndex: '2',
+            addressInfo: {},
             orderInfo: {
               submitTime: '2023-01-01 00:00:00',
               price: 0,
@@ -201,14 +192,13 @@
         },
 
         mounted() {
-                    //获取用户信息
-                    axios.get("/usersManagement/getLoginUser").then((resp) => {
-                        if (resp.data.code === 20031) {
-                            this.user = resp.data.data
-                        }
-                        if (this.user !== null)
-                            this.isLogin = true
-                    })
+          //获取用户信息
+          axios.get('/usersManagement/getLoginUser').then(resp => {
+            if (resp.data.code === 20031) {
+              this.user = resp.data.data
+            }
+            if (this.user !== null) this.isLogin = true
+          })
         },
       })
     </script>
