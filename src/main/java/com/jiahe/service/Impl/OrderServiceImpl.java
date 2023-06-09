@@ -309,26 +309,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         return order;
     }
 
-    //处理售后订单对应的状态，将订单状态为3(退货中)的订单改4(已经处理)
+    //处理售后订单对应的状态，将订单状态为4(退货中)的订单改5(已经处理)
     @Override
-    public Boolean updateOrderForAftermarket(Integer orderId) {
+    public Boolean updateOrderForAftermarket(Integer orderId,Integer status) {
         Order order = orderDao.selectById(orderId);
-        order.setStatus(4);
+        order.setStatus(status);
         return orderDao.updateById(order) > 0;
     }
 
     //将订单对应的订单项的状态也处理一下，改为2,1为退款中
     @Override
-    public Boolean updateOrderDetailForAftermarket(Integer orderCommodityId) {
+    public Boolean updateOrderDetailForAftermarket(Integer orderCommodityId,Integer status) {
         LambdaQueryWrapper<OrderCommodity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(OrderCommodity::getId,orderCommodityId);
-        wrapper.eq(OrderCommodity::getStatus,1);
         OrderCommodity orderCommodity = orderCommodityDao.selectOne(wrapper);
         if (orderCommodity == null){
             return false;
         }
-        orderCommodity.setStatus(2);
-        return true;
+        orderCommodity.setStatus(status);
+        return orderCommodityDao.updateById(orderCommodity) > 0;
     }
 
 }

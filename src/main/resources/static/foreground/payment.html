@@ -70,8 +70,7 @@
         methods: {
           getAddress(id) {
             axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
-              console.log('res        ', res)
-              res.data.data.forEach(item => {
+              res.data.data.forEach((item) => {
                 if (item.isDefault == 0) {
                   this.order.addressId = item.id
                 }

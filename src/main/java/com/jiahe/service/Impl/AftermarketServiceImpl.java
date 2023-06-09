@@ -16,11 +16,5 @@ import org.springframework.stereotype.Service;
 @Service
 public class AftermarketServiceImpl extends ServiceImpl<AftermarketDao, Aftermarket> implements AftermarketService {
 
-    private AftermarketDao aftermarketDao;
-    @Override
-    public Boolean addAftermarket (Aftermarket aftermarket){
-        LambdaQueryWrapper<Aftermarket> lqw = new LambdaQueryWrapper<>();
-        return aftermarketDao.insert(aftermarket) > 0;
-    }
 }
 

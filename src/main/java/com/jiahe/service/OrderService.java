@@ -90,8 +90,8 @@ public interface OrderService extends IService<Order> {
 
     public Order searchOrder(Integer orderId);
 
-    public Boolean updateOrderForAftermarket(Integer orderId);
+    public Boolean updateOrderForAftermarket(Integer orderId,Integer status);
 
-    public Boolean updateOrderDetailForAftermarket(Integer orderId);
+    public Boolean updateOrderDetailForAftermarket(Integer orderId,Integer status);
 
 }

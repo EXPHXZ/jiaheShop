@@ -205,11 +205,11 @@ public class OrderController {
         Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getUserId,userId);
-        if (status > 3){
+        if (status > 4){
             return new Result(null,Code.SELECT_FAIL,"查询失败");
-        } else if (status == 3){
-            wrapper.eq(Order::getStatus,3).or().eq(Order::getStatus,4);
-        }else if (status >= 0 && status < 3){
+        } else if (status == 4){
+            wrapper.eq(Order::getStatus,4).or().eq(Order::getStatus,5);
+        }else if (status >= 0 && status < 4){
             wrapper.eq(Order::getStatus,status);
         }
         orderService.page(orderPage, wrapper);
@@ -280,6 +280,7 @@ public class OrderController {
         return new Result(Code.SELECT_SUCCESS,collect);
     }
 
+    //查询订单
     @GetMapping("/aftermarket/{orderCommodityId}")
     public Result getAftermarketOrderCommodities(@PathVariable Integer orderCommodityId){
         LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();

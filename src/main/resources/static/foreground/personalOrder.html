@@ -64,7 +64,10 @@
                                             <a @click="getAllOrders(2)">待收货</a>
                                         </li>
                                         <li>
-                                            <a @click="getAllOrders(3)">退款/售后</a>
+                                            <a @click="getAllOrders(3)">已完成</a>
+                                        </li>
+                                        <li>
+                                            <a @click="getAllOrders(4)">退款/售后</a>
                                         </li>
                                     </ul>
 
@@ -250,8 +253,10 @@
                                 }else if (item.status == 2){
                                     item.statusText = "已发货"
                                 }else if (item.status == 3){
-                                    item.statusText = "订单退货中"
+                                    item.statusText = "已完成"
                                 }else if (item.status == 4){
+                                    item.statusText = "订单退货中"
+                                }else if (item.status == 5){
                                     item.statusText = "订单已受理"
                                 }
                                 item.orderCommodityList.forEach((value) => {
@@ -267,7 +272,7 @@
                     },
 
                     getSearchOrder(){
-                        axios.get("/order/searchOrder/" + this.pagination.current + "/"+this.pagination.pageSize+"/1/"+this.searchId).then((res) => {
+                        axios.get("/order/searchOrder/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+this.user.id +"/"+this.searchId).then((res) => {
                             this.orders = res.data.data.records;
                             this.orders.forEach((item) => {
                                 item.detail = ""
@@ -278,15 +283,16 @@
                                 }else if (item.status == 2){
                                     item.statusText = "已发货"
                                 }else if (item.status == 3){
-                                    item.statusText = "订单退货中"
+                                    item.statusText = "已完成"
                                 }else if (item.status == 4){
+                                    item.statusText = "订单退货中"
+                                }else if (item.status == 5){
                                     item.statusText = "订单已受理"
                                 }
                                 item.orderCommodityList.forEach((value) => {
                                     item.detail = item.detail+"\t"+(value.commodityName)+"*"+(value.count)+"\n";
                                 });
                             })
-
                             this.pagination.total = res.data.data.total;
                             this.pagination.pageSize = res.data.data.size;
                             this.pagination.current = res.data.data.current;

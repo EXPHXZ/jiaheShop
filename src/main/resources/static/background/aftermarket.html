@@ -70,21 +70,6 @@
         </el-form>
     </el-dialog>-->
 
-    <!--   修改表单-->
-    <el-dialog
-            title="修改售后信息"
-            :visible.sync="dialogVisible1"
-            width="50%">
-        <el-form>
-            <el-form-item label="原因">
-                <el-input v-model="aftermarket.cause"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="update">确定修改</el-button>
-                <el-button @click="dialogVisible1 = false">取消</el-button>
-            </el-form-item>
-        </el-form>
-    </el-dialog>
 
 
     <!--    表格-->
@@ -157,7 +142,7 @@
                 <template slot-scope="scope">
                     <el-row>
                         <el-button type="warning" @click="handleReturn(scope.row)">处理退货</el-button>
-                        <el-button type="danger" @click="searchUpdate(scope.row)" round>删除信息</el-button>
+                        <el-button type="danger" @click="remove(scope.row)" round>删除信息</el-button>
                     </el-row>
                 </template>
             </el-table-column>
@@ -220,6 +205,23 @@
             },*/
 
             //删除单条数据
+            remove(row){
+                this.returnList = row
+                axios.delete("/aftermarket/"+row.id).then((res) => {
+                    if(res.data.code == 20021){//成功
+                        this.$message.success(res.data.msg)
+                    }else if (res.data.code == 20021){//失败
+                        this.$message.error(res.data.msg)
+                    }else {//未知异常
+                        this.$message.error(res.data.msg)
+                    }
+                }).finally(
+                    ()=>{
+                        this.selectAll();
+                    }
+                )
+            },
+
             handleReturn(row) {
                 this.returnList = row
                 axios.post("/aftermarket/return",this.returnList).then((res) => {
@@ -237,29 +239,6 @@
                 )
             },
 
-            //回显数据修改
-            searchUpdate(row){
-                this.aftermarket = row;
-                this.dialogVisible1=true;
-            },
-
-            //更新数据
-            update(){
-                axios.put("/aftermarket/update",this.aftermarket).then((res) => {
-                    if(res.data.code == 20041){
-                        this.$message.success(res.data.msg)
-                    }else if (res.data.code == 20042){
-                        this.$message.error(res.data.msg)
-                    }else {
-                        this.$message.error(res.data.msg)
-                    }
-                }).finally(
-                    ()=>{
-                        this.selectAll();
-                    }
-                )
-                this.dialogVisible1 = false;
-            },
             getImage (image) {
                 return `/common/download?name=${image}`
             },

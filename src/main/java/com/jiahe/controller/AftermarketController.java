@@ -110,8 +110,14 @@ public Result update(@RequestBody Aftermarket aftermarket)
     * */
     @PostMapping("/add")
     public Result add(@RequestBody Aftermarket aftermarket){
-        Boolean flag = aftermarketService.addAftermarket(aftermarket);
-        if(flag)
+        Boolean flag = aftermarketService.save(aftermarket);
+        Integer orderId = aftermarket.getOrderId();
+        Integer orderCommodityId = aftermarket.getOrderCommodityId();
+        //把订单下面需要退货的订单项的状态改成1退货中
+        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId,1);
+        //把订单状态改成4-退货中
+        Boolean flag1 = orderService.updateOrderForAftermarket(orderId,4);
+        if(flag&&flag1&&flag2)
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
             return new Result(null,Code.ADD_FAIL,"添加失败");
@@ -123,6 +129,7 @@ public Result update(@RequestBody Aftermarket aftermarket)
 
     @PostMapping("/return")
     public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket){
+        System.out.println(aftermarket);
         //获取售后id
         Integer id = aftermarket.getId();
         //获取订单id
@@ -130,21 +137,25 @@ public Result update(@RequestBody Aftermarket aftermarket)
         //获取订单项id
         Integer orderCommodityId = aftermarket.getOrderCommodityId();
         //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
-        //把订单下面需要退货的订单的状态改成2已退货
-        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId);
+
+        //把订单下面需要退货的订单项的状态改成2已受理
+        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId,2);
+
         //把订单状态改成5-已经处理
-        Boolean flag1 = orderService.updateOrderForAftermarket(orderId);
+        Boolean flag1 = orderService.updateOrderForAftermarket(orderId,5);
+
         //把售后信息的状态也改一下
         aftermarket.setStatus(1);
+
         Boolean flag = aftermarketService.updateById(aftermarket);
         return new Result(null,flag&&flag1&&flag2? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
     }
 
-    @PostMapping()
+/*    @PostMapping()
     public Result addAfterMarket(@RequestBody Aftermarket aftermarket){
         boolean flag = aftermarketService.save(aftermarket);
         return new Result(null,flag?Code.ADD_SUCCESS:Code.ADD_FAIL,"添加成功");
-    }
+    }*/
 
     @DeleteMapping("/{id}")
     public Result deleteAfterMarket(@PathVariable Integer id){
