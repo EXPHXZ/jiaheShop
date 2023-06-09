@@ -143,9 +143,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(Users::getId,order.getUserId());
             Users user = usersDao.selectOne(wrapper);
-            orderDto.setUsername(user.getUsername());
-            orderDto.setUsername("begonia");
-
+            orderDto.setUsername(user.getName());
             orderDtos.add(orderDto);
         }
         // 将长度放入dto中

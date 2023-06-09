@@ -138,6 +138,11 @@
         <div class="order-com-item">订单原价：{{ orderInfo.originalPrice}}</div>
         <div class="order-com-item">折后价：{{ orderInfo.price}}</div>
       </div>
+      <div class="address">
+        <div>收货人：{{addressInfo.contacts}}</div>
+        <div>收货人联系方式：{{addressInfo.contactsPhone}}</div>
+        <div>地址：{{addressInfo.location}}</div>
+      </div>
 
       <div class="order-btn2">
         <el-button type="primary" round @click="goBack()">返回</el-button>
@@ -155,6 +160,12 @@
         el: '#content',
 
         methods: {
+          getAddress(id) {
+            axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
+              console.log('res        ', res.data.data)
+                this.addressInfo = res.data.data
+            })
+          },
           selectOrderDetail(id) {
             axios({
               url: '/order/selectOrderDetailById',
@@ -187,6 +198,7 @@
                 item.priceSum = item.priceSum.toFixed(2) + '元'
                 item.count = item.count + '份'
               })
+          this.getAddress(this.orderInfo.addressId)
             })
           },
 
@@ -253,6 +265,7 @@
 
         data() {
           return {
+            addressInfo: {},
             orderInfo: {
               submitTime: '2023-01-01 00:00:00',
               price: 0,

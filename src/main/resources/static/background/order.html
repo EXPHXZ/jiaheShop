@@ -146,11 +146,16 @@
                 @click="handleClick(scope.row)"
                 size="small"
               >查看</el-button>
-              <el-button
-                type="danger"
-                round @click="deleteOrder(scope.row)"
+              <el-button v-if="scope.row.status === 1"
+                type="success"
+                round @click="onDeliverGoods(scope.row)"
                 size="small"
-              >删除</el-button>
+              >发货</el-button>
+              <el-button v-if="scope.row.status === 2"
+                type="success"
+                round @click="onArrive(scope.row)"
+                size="small"
+              >到货</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -192,11 +197,17 @@
               res.data.data.records.forEach(item => {
                 item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
                 if (item.status === 0) {
-                  item.statusText = '正常交易'
+                  item.statusText = '未支付'
                 } else if (item.status === 1) {
-                  item.statusText = '退货中'
+                  item.statusText = '未发货'
                 } else if (item.status === 2) {
-                  item.statusText = '有商品已退货'
+                  item.statusText = '已发货'
+                } else if (item.status === 3) {
+                  item.statusText = '已完成'
+                } else if (item.status === 4) {
+                  item.statusText = '退货中'
+                }else if (item.status === 5) {
+                  item.statusText = '已受理'
                 }
                 item.price = item.price.toFixed(2) + '元'
                 item.sum = item.sum + '份'
@@ -233,11 +244,17 @@
               res.data.data.records.forEach(item => {
                 item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
                 if (item.status === 0) {
-                  item.statusText = '正常交易'
+                  item.statusText = '未支付'
                 } else if (item.status === 1) {
-                  item.statusText = '有商品退货中'
+                  item.statusText = '未发货'
                 } else if (item.status === 2) {
-                  item.statusText = '有商品已退货'
+                  item.statusText = '已发货'
+                } else if (item.status === 3) {
+                  item.statusText = '已完成'
+                } else if (item.status === 4) {
+                  item.statusText = '退货中'
+                }else if (item.status === 5) {
+                  item.statusText = '已受理'
                 }
                 item.price = item.price.toFixed(2) + '元'
                 item.originalPrice = item.originalPrice.toFixed(2) + '元'
@@ -256,44 +273,13 @@
           handleClick(row) {
             window.location.href = 'orderDetail.html?id=' + row.id
           },
-
-          deleteOrder(row) {
-            // 询问是否删除
-            this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
-            })
-              .then(() => {
-                // 删除订单
-                axios({
-                  url: '/order/deleteOrder',
-                  params: {
-                    id: +row.id,
-                  },
-                  method: 'post',
-                }).then(res => {
-                  if (res.data.code === 20021) {
-                    this.$message({
-                      type: 'success',
-                      message: '删除成功!',
-                    })
-                    // 刷新页面
-                    this.selectAllOrder()
-                  } else {
-                    this.$message({
-                      type: 'error',
-                      message: '删除失败!',
-                    })
-                  }
-                })
-              })
-              .catch(() => {
-                this.$message({
-                  type: 'info',
-                  message: '已取消删除',
-                })
-              })
+          onDeliverGoods(row) {
+            // 接入发货接口
+            console.log("id", row.id)
+          },
+          onArrive(row) {
+            // 接入到货接口
+            console.log("id", row.id)
           },
         },
 
