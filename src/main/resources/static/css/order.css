@@ -69,3 +69,9 @@ background-color: #fff;
     font-size: 16px;
     font-weight: bold;
 }
+.address {
+    padding: 15px 40px;
+    margin: 20px 300px;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+}

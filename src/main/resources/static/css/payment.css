@@ -16,9 +16,8 @@
 .payment-foot {
     display: flex;
     justify-content: space-between;
-    line-height: 35px;
-    padding-left: 40px;
-    padding-bottom: 10px;
+    line-height: 40px;
+    padding: 10px 40px;
     border-top: #ccc 1px solid;
 }
 .payment-item {
@@ -35,7 +34,6 @@
 .payment-text {
     display: flex;
     flex-direction: column;
-    cursor: pointer;
 }
 .payment-price {
     display: flex;
@@ -43,4 +41,10 @@
     line-height: 30px;
     font-size: 19px;
     padding-right: 200px;
+}
+.address {
+    text-align: left;
+    padding-left: 40px;
+    border-top: #ccc 1px solid;
+    padding-top: 10px;
 }
