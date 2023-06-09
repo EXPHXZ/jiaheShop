@@ -253,6 +253,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         Order order = new Order();
         order.setUserId(userId);
         order.setAddressId(addressId);
+        System.out.println("order              " + order);
         orderDao.insert(order);
         Integer orderId = order.getId();
 
