@@ -4,80 +4,52 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>购物车</title>
+    <title>付款页面</title>
     <link rel="stylesheet" href="../css/homepage.css" />
-    <link rel="stylesheet" href="../css/shoppingCart.css" />
+    <link rel="stylesheet" href="../css/payment.css" />
   </head>
 
   <body>
     <div id="app" >
       <el-container>
-        <el-header>
-          <el-menu
-            class="el-menu-demo"
-            mode="horizontal"
-            :default-active="activeIndex"
-            background-color="#202124"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-          >
-            <el-menu-item index="1">
-              <i class="el-icon-s-goods"></i>
-              <a href="./homepage.html" target="_blank">首页</a>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-shopping-cart-2"></i>
-              <a href="./shoppingCart.html" target="_blank">购物车</a>
-            </el-menu-item>
-            <a v-if="!isLogin" class="users">登录</a>
-            <a v-if="isLogin" class="users-right">退出登录</a>
-            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
-          </el-menu>
-        </el-header>
+<!--        <el-header>-->
+<!--          <el-menu-->
+<!--            class="el-menu-demo"-->
+<!--            mode="horizontal"-->
+<!--            :default-active="activeIndex"-->
+<!--            background-color="#202124"-->
+<!--            text-color="#fff"-->
+<!--            active-text-color="#ffd04b"-->
+<!--          >-->
+<!--            <a v-if="!isLogin" class="users">登录</a>-->
+<!--            <a v-if="isLogin" class="users-right">退出登录</a>-->
+<!--            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>-->
+<!--          </el-menu>-->
+<!--        </el-header>-->
         <el-main>
-          <div class="shop_card">
-            <div class="card_head">
-              <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+          <div class="payment">
+            <div class="payment-head">
               <div>
-                选择地址：
-                <el-select v-model="order.addressId" placeholder="请选择" style="width: 450px">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </div>
-              <div>
-                <el-button style="margin-right: 20px" type="success" round @click="onSubmitOrder">提交订单</el-button>
-                <el-button style="margin-right: 100px" type="danger" round @click="onDelShopCarts()">删除选中商品</el-button>
+                待付款
               </div>
             </div>
-            <div v-for="item of shopCartList" :key="item.id" class="card_item" v-cloak>
-              <el-checkbox style="padding-right: 30px" v-model="item.checked"></el-checkbox>
-              <div style="padding-top: 15px; padding-right: 70px">
+            <div v-for="item of orderInfo.orderCommodityList" :key="item.id" class="payment-item">
+              <div style="padding-top: 15px">
                 <el-image style="width: 170px; height: 170px" :src="item.image" fit="fill"></el-image>
               </div>
-              <div class="shop-text" @click="onViewCommodity(item.commodityId)">
+              <div class="payment-text" @click="onViewCommodity(item.commodityId)">
                 <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.commodityName }}</div>
                 <div style="line-height: 30px">品牌：{{ item.brandName }}</div>
                 <div style="line-height: 30px">规格：{{ item.size }}</div>
               </div>
-              <div class="shop-price">
-                <div style="padding-top: 100px">原价：{{ (item.price * item.count).toFixed(2) }} 元</div>
-                <div>折后价：{{ (item.price * item.discount * item.count).toFixed(2) }} 元</div>
+              <div class="payment-price">
+                <div style="padding-top: 80px">数量：{{ item.count }}</div>
+                <div style="padding-top: 30px; color: red">价格：{{ item.priceSum }}</div>
               </div>
-              <div class="shop-num">
-                <el-input-number
-                  v-model="item.count"
-                  @change="handleCountChange(item)"
-                  :min="1"
-                  label="描述文字"
-                ></el-input-number>
-              </div>
-              <div class="shop-del">
-                <el-button type="danger" plain @click="onDelShopCart(item.id)">删除</el-button>
+            </div>
+            <div class="payment-foot">
+              <div>
+                订单信息
               </div>
             </div>
           </div>
@@ -87,6 +59,7 @@
 
     <script src="../js/vue.js"></script>
     <script src="../element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <script src="../js/axios-0.18.0.js"></script>
     <link rel="stylesheet" href="../element-ui/lib/theme-chalk/index.css" />
 
@@ -94,137 +67,10 @@
       new Vue({
         el: '#app',
 
-        data() {
-          return {
-            checkAll: false,
-            activeIndex: '2',
-            isLogin: false,
-            user: 1,
-            shopCartList: [],
-            orderList: [],
-            order: {
-              addressId: null,
-            },
-            options: [],
-            orderId: null,
-          }
-        },
-
         methods: {
-          selectAllShoppingCart(userId) {
-            axios({
-              url: '/order/selectShoppingCart',
-              params: {
-                userId: userId,
-              },
-              method: 'get',
-            }).then(res => {
-              console.log(res.data.data)
-              this.shopCartList = res.data.data
-              this.shopCartList.forEach(item => {
-                this.$set(item, 'checked', false)
-              })
-            })
-          },
-          onSubmitOrder() {
-            console.log(this.shopCartList)
-            // 如果this.shopCartList[i].checked为true，则将其加入到orderList中,并且删除checked属性
-            for (let i = 0; i < this.shopCartList.length; i++) {
-              if (this.shopCartList[i].checked === true) {
-                let orderItem = {
-                  commodityId: this.shopCartList[i].commodityId,
-                  price: this.shopCartList[i].price * this.shopCartList[i].discount,
-                  originalPrice: this.shopCartList[i].price,
-                  count: this.shopCartList[i].count,
-                }
-                this.orderList.push(orderItem)
-              }
-            }
-            console.log(this.orderList)
-            // 询问是否提交
-            this.$confirm('是否提交？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
-            })
-              .then(() => {
-                axios({
-                  url: '/order/insertOrderCommodity',
-                  params: {
-                    userId: this.user.id,
-                    addressId: this.order.addressId,
-                  },
-                  data: this.orderList,
-                  method: 'post',
-                }).then(res => {
-                  console.log(res)
-                  if (res.data.code === 20011) {
-                    this.orderId = res.data.data
-                    this.$message({
-                      type: 'success',
-                      message: '提交成功',
-                    })
-                    // 将shopCartList中的checked为true的id取出来
-                    let ids = []
-                    for (let i = 0; i < this.shopCartList.length; i++) {
-                      if (this.shopCartList[i].checked === true) {
-                        ids.push(this.shopCartList[i].id)
-                      }
-                    }
-                    axios({
-                      url: '/order/deleteShoppingCart',
-                      data: {
-                        shoppingCartIds: ids,
-                      },
-                      method: 'post',
-                    }).then(res => {
-                      console.log(res)
-                      if (res.data.code === 20021) {
-                        // 跳转到购买页面
-                        window.location.href ="payment.html?id="+this.orderId
-                      }
-                    })
-                    this.orderList = []
-                  } else {
-                    this.orderList = []
-                    this.$message({
-                      type: 'error',
-                      message: '提交失败',
-                    })
-                  }
-                })
-              })
-              .catch(() => {
-                this.orderList = []
-                this.$message({
-                  type: 'info',
-                  message: '已取消提交',
-                })
-              })
-          },
-          handleCountChange(item) {
-            // TODO: 发送请求更新购物车数量
-            console.log(item)
-            console.log(item.count)
-            console.log(item.id)
-            axios({
-              url: '/order/updateShoppingCart',
-              params: {
-                id: item.id,
-                count: item.count,
-              },
-              method: 'post',
-            })
-          },
-          handleCheckAllChange(val) {
-            console.log(val)
-            this.shopCartList.forEach(item => {
-              item.checked = val
-            })
-          },
           getAddress(id) {
-            axios.get('/usersAddress/searchPersonalAll/' + id).then(res => {
-              console.log('res.data.data        ', res.data.data)
+            axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
+              console.log('res        ', res)
               res.data.data.forEach(item => {
                 if (item.isDefault == 0) {
                   this.order.addressId = item.id
@@ -236,112 +82,71 @@
               })
             })
           },
-          onDelShopCart(id) {
-            let ids = []
-            ids.push(id)
-            console.log("ids      ", ids)
-            // 询问是否删除
-            this.$confirm('是否删除？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
+          selectOrderDetail(id) {
+            axios({
+              url: '/order/selectOrderDetailById',
+              params: {
+                id: id,
+              },
+            }).then(res => {
+              this.orderInfo = res.data.data
+              this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
+              this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
+              this.orderInfo.originalPrice = this.orderInfo.originalPrice.toFixed(2) + '元'
+              this.orderInfo.sum = this.orderInfo.sum + '份'
+              this.orderInfo.count = this.orderInfo.count + '种'
+              this.orderInfo.orderCommodityList.forEach(item => {
+                if (item.status === 0) {
+                  item.statusText = '未支付'
+                } else if (item.status === 1) {
+                  item.statusText = '未发货'
+                } else if (item.status === 2) {
+                  item.statusText = '已发货'
+                } else if (item.status === 3) {
+                  item.statusText = '已完成'
+                } else if (item.status === 4) {
+                  item.statusText = '退货中'
+                }else if (item.status === 5) {
+                  item.statusText = '已受理'
+                }
+                item.price = item.price.toFixed(2) + '元'
+                item.originalPrice = item.originalPrice.toFixed(2) + '元'
+                item.priceSum = item.priceSum.toFixed(2) + '元'
+                item.count = item.count + '份'
+          this.getAddress(this.orderInfo.addressId)
+              })
             })
-              .then(() => {
-                axios({
-                  url: '/order/deleteShoppingCart',
-                  data: {
-                        shoppingCartIds: ids,
-                      },
-                  method: 'post',
-                }).then(res => {
-                  console.log(res)
-                  if (res.data.code === 20021) {
-                        let user = sessionStorage.getItem('userId')
-                        console.log("user     ", user)
-                        this.selectAllShoppingCart(+user)
-                    this.$message({
-                      type: 'success',
-                      message: '删除成功',
-                    })
-                  } else {
-                    this.$message({
-                      type: 'error',
-                      message: '删除失败',
-                    })
-                  }
-                })
-              })
-              .catch(() => {
-                this.$message({
-                  type: 'info',
-                  message: '已取消删除',
-                })
-              })
-          },
-          onDelShopCarts() {
-            let ids = []
-            for (let i = 0; i < this.shopCartList.length; i++) {
-              if (this.shopCartList[i].checked === true) {
-                ids.push(this.shopCartList[i].id)
-              }
-            }
-            console.log("ids      ", ids)
-            // 询问是否删除
-            this.$confirm('是否删除？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
-            })
-              .then(() => {
-                axios({
-                  url: '/order/deleteShoppingCart',
-                  data: {
-                        shoppingCartIds: ids,
-                      },
-                  method: 'post',
-                }).then(res => {
-                  console.log(res)
-                  if (res.data.code === 20021) {
-                    this.$message({
-                      type: 'success',
-                      message: '删除成功',
-                    })
-                        let user = sessionStorage.getItem('userId')
-                        console.log(user)
-                        this.selectAllShoppingCart(+user)
-                  } else {
-                    this.$message({
-                      type: 'error',
-                      message: '删除失败',
-                    })
-                  }
-                })
-              })
-              .catch(() => {
-                this.$message({
-                  type: 'info',
-                  message: '已取消删除',
-                })
-              })
-          },
-          onViewCommodity(commodityId) {
-            window.location.href="commodityDetail.html?id="+commodityId
           },
         },
 
-        mounted() {
-          //获取用户信息
-          axios.get('/usersManagement/getLoginUser').then(resp => {
-            if (resp.data.code === 20031) this.user = resp.data.data
-            if (this.user !== null) this.isLogin = true
-            else this.isLogin = false
-          })
-            sessionStorage.setItem('userId', JSON.stringify(this.user))
-          this.selectAllShoppingCart(this.user)
-          this.getAddress(this.user)
-          console.log('this.user', this.user)
-          console.log('this.options', this.options)
-          console.log('this.order', this.order)
+        created() {
+            const params = window.location.search
+            const id = params.split("=")[1]
+            console.log("id", id)
+            this.selectOrderDetail(id)
+        },
+
+        data() {
+          return {
+            orderInfo: {
+              submitTime: '2023-01-01 00:00:00',
+              price: 0,
+              originalPrice: 0,
+              sum: 0,
+              count: 0,
+              orderCommodityList: [
+                {
+                  count: 0,
+                  price: 0,
+                  originalPrice: 0,
+                  priceSum: 0,
+                  status: 0,
+                  statusText: '',
+                },
+              ],
+            },
+            orderId: 0,
+          }
         },
       })
     </script>

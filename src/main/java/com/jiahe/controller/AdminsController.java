@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jiahe.pojo.Admins;
 import com.jiahe.service.AdminsService;
 import com.jiahe.utils.Code;
+import com.jiahe.utils.RSAUtil;
 import com.jiahe.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,15 @@ public class AdminsController {
     private AdminsService adminsService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody Admins admins, HttpServletRequest request) {
+    public Result login(@RequestBody Admins admins, HttpServletRequest request) throws Exception {
+        String accountRSA = admins.getAccount();
+        String passwordRSA = admins.getPassword();
+        admins.setAccount(RSAUtil.decryptWithPrivate(accountRSA));
+        admins.setPassword(RSAUtil.decryptWithPrivate(passwordRSA));
         Admins checkAdmin = adminsService.checkAdmins(admins);
         if (checkAdmin != null) {
+            checkAdmin.setAccount(accountRSA);
+            checkAdmin.setPassword(passwordRSA);
             request.getSession().setAttribute("admin", checkAdmin);
             return new Result(1, Code.LOGIN_SUCCESS, "登录成功");
         }

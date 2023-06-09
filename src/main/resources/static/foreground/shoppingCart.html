@@ -99,7 +99,7 @@
             checkAll: false,
             activeIndex: '2',
             isLogin: false,
-            user: 1,
+            user: null,
             shopCartList: [],
             orderList: [],
             order: {
@@ -148,10 +148,13 @@
               type: 'warning',
             })
               .then(() => {
+            let user = localStorage.getItem('user')
+            user = JSON.parse(user)
+                console.log("user", user)
                 axios({
                   url: '/order/insertOrderCommodity',
                   params: {
-                    userId: this.user.id,
+                    userId: user.id,
                     addressId: this.order.addressId,
                   },
                   data: this.orderList,
@@ -256,9 +259,9 @@
                 }).then(res => {
                   console.log(res)
                   if (res.data.code === 20021) {
-                        let user = sessionStorage.getItem('userId')
-                        console.log("user     ", user)
-                        this.selectAllShoppingCart(+user)
+            let user = localStorage.getItem('user')
+            user = JSON.parse(user)
+                        this.selectAllShoppingCart(user.id)
                     this.$message({
                       type: 'success',
                       message: '删除成功',
@@ -306,9 +309,9 @@
                       type: 'success',
                       message: '删除成功',
                     })
-                        let user = sessionStorage.getItem('userId')
-                        console.log(user)
-                        this.selectAllShoppingCart(+user)
+            let user = localStorage.getItem('user')
+            user = JSON.parse(user)
+                        this.selectAllShoppingCart(user.id)
                   } else {
                     this.$message({
                       type: 'error',
@@ -331,15 +334,13 @@
 
         mounted() {
           //获取用户信息
-          axios.get('/usersManagement/getLoginUser').then(resp => {
-            if (resp.data.code === 20031) this.user = resp.data.data
-            if (this.user !== null) this.isLogin = true
-            else this.isLogin = false
-          })
-            sessionStorage.setItem('userId', JSON.stringify(this.user))
-          this.selectAllShoppingCart(this.user)
-          this.getAddress(this.user)
-          console.log('this.user', this.user)
+            let user = localStorage.getItem('user')
+            user = JSON.parse(user)
+
+            console.log("this.user2", user)
+            console.log("this.user3", user.id)
+          this.selectAllShoppingCart(user.id)
+          this.getAddress(user.id)
           console.log('this.options', this.options)
           console.log('this.order', this.order)
         },

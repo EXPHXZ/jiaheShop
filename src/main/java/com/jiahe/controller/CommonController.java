@@ -1,5 +1,6 @@
 package com.jiahe.controller;
 
+import com.jiahe.utils.RSAUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RequestMapping("/common")
 /**
  * 文件的上传和下载
+ * 加密
  */
 public class CommonController {
 
@@ -75,6 +77,11 @@ public class CommonController {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @GetMapping("/getPublicKey")
+    public String getPublicKey() {
+        return RSAUtil.getPublicKey();
     }
 
 }

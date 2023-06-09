@@ -98,6 +98,7 @@
         <script src = "../js/vue.js"></script>
         <script src = "../element-ui/lib/index.js"></script>
         <script src = "../js/axios-0.18.0.js"></script>
+        <script src = "../js/jsencrypt.js"></script>
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
@@ -145,21 +146,25 @@
                         }
                         else {
                             if (this.loginForm.username === "")
-                                this.$message({showClose: true, message: "用户名不能为空", type: "warning"})
+                                this.$message({showClose: true, message: "用户名/手机号不能为空", type: "warning"})
                             else if (this.loginForm.password === "")
                                 this.$message({showClose: true, message: "密码不能为空", type: "warning"})
                             else {
-                                this.loginForm.phone = ""
-                                this.loginForm.validateCode = ""
-                                axios.post("/usersManagement/login", this.loginForm).then((resp) => {
-                                    if (resp.data.code === 20051) {
-                                        this.$message({showClose: true, message: resp.data.msg, type: "success"})
-                                        this.backwardPage()
-                                    }
-                                    else if (resp.data.code === 20052)
-                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
-                                    else
-                                        this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                let encrypt = new JSEncrypt();
+                                axios.get("/common/getPublicKey").then((resp) => {
+                                    encrypt.setPublicKey(resp.data)
+                                    this.loginUser.username = encrypt.encrypt(this.loginForm.username);
+                                    this.loginUser.password = encrypt.encrypt(this.loginForm.password);
+                                    axios.post("/usersManagement/login", this.loginUser).then((resp) => {
+                                        if (resp.data.code === 20051) {
+                                            this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                                            this.backwardPage()
+                                        }
+                                        else if (resp.data.code === 20052)
+                                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                        else
+                                            this.$message({showClose: true, message: resp.data.msg, type: "error"})
+                                    })
                                 })
                             }
                         }
@@ -427,6 +432,13 @@
                         },
 
                         loginForm: {
+                            username: "",
+                            password: "",
+                            phone: "",
+                            validateCode: ""
+                        },
+
+                        loginUser: {
                             username: "",
                             password: "",
                             phone: "",
