@@ -11,7 +11,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100px;
+    height: 50px;
 }
 
 nav {
@@ -19,7 +19,7 @@ nav {
     padding: 10px;
     float: left;
     width: 200px;
-    height: 100vh;
+    height: calc(100vh - 112px);
 }
 
 nav ul {
@@ -73,4 +73,7 @@ nav a {
     margin: 10px;
     display: flex;
     align-items: center;
+}
+i {
+    margin-right: 7px;
 }

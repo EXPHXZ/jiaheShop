@@ -150,7 +150,7 @@ public class OrderController {
      */
     @PostMapping("/insertOrderCommodity")
     public Result insertOrderCommodity(@RequestBody OrderCommodity[] orderCommodities, @RequestParam Integer userId, @RequestParam Integer addressId){
-        Integer flag = orderService.insertOrderCommodities(addressId, userId, orderCommodities);
+        Integer flag = orderService.insertOrderCommodities(userId, addressId, orderCommodities);
         return new Result(flag,flag != null? Code.ADD_SUCCESS:Code.ADD_FAIL,flag != null?"添加成功":"添加失败");
     }
 

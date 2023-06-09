@@ -290,7 +290,7 @@
                     prop="id"
                     label="商品id"
                     align="center"
-                    width="50"
+                    width="80"
                     fixed
             >
             </el-table-column>
@@ -298,10 +298,10 @@
                     prop="commodityName"
                     label="商品名"
                     align="center"
-                    width="100">
+                    width="80">
             </el-table-column>
 
-            <el-table-column prop="image" label="图片" align="center" width="300">
+            <el-table-column prop="image" label="图片" align="center" width="200">
                 <template slot-scope="{ row }">
                     <el-image style="width: 100px; height: 100px; border:none;cursor: pointer;"
                               :src="getImage(row.image)">
@@ -313,73 +313,73 @@
                     prop="brandName"
                     label="品牌名"
                     align="center"
-                    width="190">
+                    width="150">
             </el-table-column>
 
             <el-table-column
                     prop="simpleDescription"
                     label="商品简述"
                     align="center"
-                    width="190">
+                    width="170">
             </el-table-column>
 
             <el-table-column
                     prop="detailedDescription"
                     label="详细描述"
                     align="center"
-                    width="190">
+                    width="210">
             </el-table-column>
 
             <el-table-column
                     prop="size"
                     label="规格"
                     align="center"
-                    width="100">
+                    width="90">
             </el-table-column>
 
             <el-table-column
                     prop="categoryName"
                     label="类别"
                     align="center"
-                    width="100">
+                    width="90">
             </el-table-column>
 
             <el-table-column
                     prop="price"
                     label="价格"
                     align="center"
-                    width="100">
+                    width="80">
             </el-table-column>
 
             <el-table-column
                     prop="discount"
                     label="折扣"
                     align="center"
-                    width="100">
+                    width="80">
             </el-table-column>
 
             <el-table-column
                     prop="statusText"
                     label="状态"
                     align="center"
-                    width="100"
+                    width="80"
             >
             </el-table-column>
             <el-table-column
                     prop="remnant"
                     label="余量"
                     align="center"
-                    width="100">
+                    width="80">
             </el-table-column>
             <el-table-column
                     label="操作"
                     align="center"
-                    width="200"
+                    width="180"
                     fixed="right">
                 <template slot-scope="scope">
                     <el-row>
-                        <el-button type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
-                        <el-button type="danger" @click="deleteCommodity(scope.row)">删除</el-button>
+                        <el-button size="small" type="primary" @click="searchUpdate(scope.row)" round>修改</el-button>
+                        <el-button size="small" type="danger" @click="deleteCommodity(scope.row)">删除</el-button>
                     </el-row>
                 </template>
             </el-table-column>
