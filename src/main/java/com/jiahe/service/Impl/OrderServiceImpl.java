@@ -190,6 +190,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             wrapper3.eq(Commodity::getId,orderCommodity.getCommodityId());
             Commodity commodity = commodityDao.selectOne(wrapper3);
             orderCommodityDto.setCommodityName(commodity.getCommodityName());
+            orderCommodityDto.setBrandName(commodity.getBrandName());
+            orderCommodityDto.setImage(commodity.getImage());
+            orderCommodityDto.setSize(commodity.getSize());
             orderCommodityDtos.add(orderCommodityDto);
         }
         orderDto.setOrderCommodityList(orderCommodityDtos);

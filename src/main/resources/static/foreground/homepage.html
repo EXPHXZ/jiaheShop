@@ -267,8 +267,10 @@
                 mounted(){
                     //获取用户信息
                     axios.get("/usersManagement/getLoginUser").then((resp) => {
-                        if (resp.data.code === 20031)
+                        if (resp.data.code === 20031) {
                             this.user = resp.data.data
+                            localStorage.setItem("user", JSON.stringify(this.user))
+                        }
                         if (this.user !== null)
                             this.isLogin = true
                     })

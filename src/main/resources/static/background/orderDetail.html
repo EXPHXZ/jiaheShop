@@ -66,8 +66,24 @@
           <el-table-column
             align="center"
             header-align="center"
+            prop="brandName"
+            label="品牌名"
+            sortable
+            min-width="130"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
             prop="commodityName"
             label="商品名称"
+            sortable
+            min-width="130"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
+            prop="size"
+            label="规格"
             sortable
             min-width="130"
           ></el-table-column>
@@ -83,14 +99,6 @@
             align="center"
             header-align="center"
             prop="originalPrice"
-            label="商品原价"
-            sortable
-            min-width="100"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            header-align="center"
-            prop="price"
             label="单价"
             sortable
             min-width="100"
@@ -98,8 +106,16 @@
           <el-table-column
             align="center"
             header-align="center"
+            prop="price"
+            label="折后单价"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
             prop="priceSum"
-            label="总价"
+            label="折后总价"
             sortable
             min-width="100"
           ></el-table-column>
@@ -111,19 +127,6 @@
             sortable
             min-width="150"
           ></el-table-column>
-          <el-table-column align="center" header-align="center" label="操作" min-width="150">
-            <template slot-scope="scope">
-              <el-button
-                type="danger"
-                round
-                size="small"
-                :disabled="scope.row.status !== 0"
-                @click="returnGoods(scope.row.id)"
-              >
-                退货
-              </el-button>
-            </template>
-          </el-table-column>
         </el-table>
       </div>
 
@@ -167,11 +170,17 @@
               this.orderInfo.count = this.orderInfo.count + '种'
               this.orderInfo.orderCommodityList.forEach(item => {
                 if (item.status === 0) {
-                  item.statusText = '正常交易'
+                  item.statusText = '未支付'
                 } else if (item.status === 1) {
-                  item.statusText = '正在退货'
+                  item.statusText = '未发货'
                 } else if (item.status === 2) {
-                  item.statusText = '退货成功'
+                  item.statusText = '已发货'
+                } else if (item.status === 3) {
+                  item.statusText = '已完成'
+                } else if (item.status === 4) {
+                  item.statusText = '退货中'
+                }else if (item.status === 5) {
+                  item.statusText = '已受理'
                 }
                 item.price = item.price.toFixed(2) + '元'
                 item.originalPrice = item.originalPrice.toFixed(2) + '元'

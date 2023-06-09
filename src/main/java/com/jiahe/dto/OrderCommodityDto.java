@@ -9,6 +9,9 @@ import java.util.List;
 public class OrderCommodityDto extends OrderCommodity {
 
     private String commodityName;
+    private String brandName;
+    private String size;
+    private String image;
 
     @Override
     public String toString() {
