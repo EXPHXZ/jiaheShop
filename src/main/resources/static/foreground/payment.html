@@ -104,7 +104,9 @@
                 id: id,
               },
             }).then(res => {
+              console.log('res.data.data        ', res.data.data)
               this.orderInfo = res.data.data
+              this.orderInfo.id = id
               this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
               this.orderInfo.price = this.orderInfo.price.toFixed(2) + '元'
               this.orderInfo.originalPrice = this.orderInfo.originalPrice.toFixed(2) + '元'
@@ -142,11 +144,10 @@
             })
               .then(() => {
                 // 确认付款
-                // 付款接口
-                axios.put("/order/"+this.orderId+"/"+2).then((res) => {
+                axios.put("/order/"+this.orderInfo.id+"/"+1).then((res) => {
                   if(res.data.code == 20041){
-                    this.$message.success(res.data.msg)
                     window.location.href = "personalOrder.html?id=-1"
+                    this.$message.success(res.data.msg)
                   }else if (res.data.code == 20042){
                     this.$message.error(res.data.msg)
                   }else {
@@ -196,7 +197,6 @@
                 },
               ],
             },
-            orderId: 0,
           }
         },
 

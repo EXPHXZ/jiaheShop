@@ -30,11 +30,10 @@
               <a href="./shoppingCart.html" target="_blank">购物车</a>
             </el-menu-item>
             <a v-if="!isLogin" class="users">登录</a>
-            <a v-if="isLogin" class="users-right">退出登录</a>
             <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
           </el-menu>
         </el-header>
-        <el-main>
+        <el-main style="overflow: hidden; text-align: left">
           <div class="shop_card">
             <div class="card_head">
               <el-checkbox v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
@@ -57,7 +56,7 @@
             <div v-for="item of shopCartList" :key="item.id" class="card_item" v-cloak>
               <el-checkbox style="padding-right: 30px" v-model="item.checked"></el-checkbox>
               <div style="padding-top: 15px; padding-right: 70px">
-                <div style="padding-top: 15px; padding-right: 70px">
+                <div>
                   <img :src = "getImage(item.image)"
                        style="width: 170px; height: 170px">
                 </div>
@@ -151,8 +150,8 @@
               type: 'warning',
             })
               .then(() => {
-            let user = localStorage.getItem('user')
-            user = JSON.parse(user)
+                let user = localStorage.getItem('user')
+                user = JSON.parse(user)
                 console.log("user", user)
                 axios({
                   url: '/order/insertOrderCommodity',
@@ -209,10 +208,6 @@
               })
           },
           handleCountChange(item) {
-            // TODO: 发送请求更新购物车数量
-            console.log(item)
-            console.log(item.count)
-            console.log(item.id)
             axios({
               url: '/order/updateShoppingCart',
               params: {

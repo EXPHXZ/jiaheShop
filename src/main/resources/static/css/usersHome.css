@@ -29,11 +29,9 @@ a {
 }
 
 .info {
-    margin-top: 10px;
-    margin-left: 100px;
     width: 600px;
-    height: 300px;
-    float: left;
+    margin: 50px auto;
+    height: 230px;
 }
 
 .changePhone {
@@ -80,10 +78,9 @@ a {
 }
 
 .orderDiv {
-    width: 100%;
-    float: left;
+    width: 70%;
     display: flex;
-    padding-left: 100px;
+    margin: auto;
 }
 
 .innerDiv {

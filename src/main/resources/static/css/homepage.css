@@ -106,9 +106,9 @@ ul>li {
 }
 
 .discount-h {
-    padding-top: 20px;
-    height: 20px;
-    line-height: 20px;
+    padding: 20px 0;
+    font-size: 30px;
+    font-weight: bold;
 }
 .discount-w {
     height: 50px;
@@ -199,7 +199,8 @@ float: right;
 }
 
 .orderSearch {
-    height: 100px;
+    display: flex;
+    justify-content: space-around;
 }
 
 .orderSearch .demo-form-inline {
