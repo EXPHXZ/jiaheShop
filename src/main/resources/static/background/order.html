@@ -109,8 +109,16 @@
           <el-table-column
             align="center"
             header-align="center"
+            prop="originalPrice"
+            label="订单原价"
+            sortable
+            min-width="100"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            header-align="center"
             prop="price"
-            label="订单总价"
+            label="折后价"
             sortable
             min-width="100"
           ></el-table-column>
@@ -232,6 +240,7 @@
                   item.statusText = '有商品已退货'
                 }
                 item.price = item.price.toFixed(2) + '元'
+                item.originalPrice = item.originalPrice.toFixed(2) + '元'
                 item.sum = item.sum + '份'
                 item.count = item.count + '种'
               })

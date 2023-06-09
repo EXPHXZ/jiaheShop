@@ -132,7 +132,7 @@ public Result update(@RequestBody Aftermarket aftermarket)
         //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
         //把订单下面需要退货的订单的状态改成2已退货
         Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId);
-        //把订单状态改成0-正常订单
+        //把订单状态改成5-已经处理
         Boolean flag1 = orderService.updateOrderForAftermarket(orderId);
         //把售后信息的状态也改一下
         aftermarket.setStatus(1);
@@ -149,7 +149,7 @@ public Result update(@RequestBody Aftermarket aftermarket)
     @DeleteMapping("/{id}")
     public Result deleteAfterMarket(@PathVariable Integer id){
         boolean flag = aftermarketService.removeById(id);
-        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,"删除成功");
+        return new Result(null,flag?Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"删除成功":"删除失败");
     }
 
 }

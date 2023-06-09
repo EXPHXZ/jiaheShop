@@ -2,14 +2,50 @@ package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jiahe.dto.DelShopCartDto;
 import com.jiahe.dto.OrderDto;
+import com.jiahe.dto.ShoppingCartDto;
 import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.Order;
 import com.jiahe.pojo.OrderCommodity;
+import com.jiahe.pojo.ShoppingCart;
 import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 public interface OrderService extends IService<Order> {
+
+    /**
+     * 将商品加入购物车
+     * @param commodityId
+     * @param userId
+     * @param count
+     * @return
+     */
+    public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count);
+
+    /**
+     * 更新购物车商品数量
+     * @param id
+     * @param count
+     * @return
+     */
+    public Boolean updateShoppingCart(Integer id, Integer count);
+
+    /**
+     * 删除购物车商品，传入购物车id数组
+     * @param shoppingCartIds
+     * @return
+     */
+    public Boolean deleteShoppingCart(DelShopCartDto shoppingCartIds);
+
+    /**
+     * 查询购物车
+     * @param userId
+     * @return
+     */
+    public List<ShoppingCartDto> selectShoppingCart(Integer userId);
 
     /**
      * 查询所有订单
@@ -35,7 +71,7 @@ public interface OrderService extends IService<Order> {
      * @param orderCommodities
      * @return
      */
-    public Boolean insertOrderCommodities(Integer userId, OrderCommodity[] orderCommodities);
+    public Integer insertOrderCommodities(Integer userId, Integer addressId, OrderCommodity[] orderCommodities);
 
     /**
      * 删除订单

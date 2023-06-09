@@ -9,7 +9,7 @@ public class Address {
     private String contacts;
     private String contactsPhone;
     private String location;
-    private Integer tag;
+    private String tag;
     private Integer isDefault;
     private Integer isDeleted;
 }

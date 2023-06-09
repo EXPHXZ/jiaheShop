@@ -4,7 +4,7 @@
         <meta charset = "UTF-8">
         <meta http-equiv = "X-UA-Compatible" content = "IE=edge">
         <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-        <title>嘉禾商城首页</title>
+        <title>个人订单</title>
         <link rel = "stylesheet" href = "../css/homepage.css">
     </head>
 
@@ -20,7 +20,7 @@
                         </el-menu-item>
                         <el-menu-item index = "2">
                             <i class = "el-icon-shopping-cart-2"></i>
-                            <a href = "https://www.ele.me" target = "_blank">购物车</a>
+                            <a href = "./shoppingCart.html" target = "_blank">购物车</a>
                         </el-menu-item>
                         <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
                         <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
@@ -52,38 +52,35 @@
                                 <div class="orderSearch">
                                     <ul>
                                         <li>
-                                            <a href="" class="status">全部订单</a>
+                                            <a @click="getAllOrders(-1)">全部订单</a>
                                         </li>
                                         <li>
-                                            <a href="">未付款</a>
+                                            <a @click="getAllOrders(0)">未付款</a>
                                         </li>
                                         <li>
-                                            <a href="">待发货</a>
+                                            <a @click="getAllOrders(1)">待发货</a>
                                         </li>
                                         <li>
-                                            <a href="">待收货</a>
+                                            <a @click="getAllOrders(2)">待收货</a>
+                                        </li>
+                                        <li>
+                                            <a @click="getAllOrders(3)">退款/售后</a>
                                         </li>
                                     </ul>
 
                                     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
                                         <el-form-item>
-                                            <el-input v-model="searchText" placeholder="订单id/商品名"></el-input>
+                                            <el-input v-model="searchId" placeholder="订单id"></el-input>
                                         </el-form-item>
                                         <el-form-item>
-                                            <el-button icon="el-icon-search" @click="searchOrder">搜索</el-button>
+                                            <el-button icon="el-icon-search" @click="getSearchOrder">搜索</el-button>
                                         </el-form-item>
                                     </el-form>
                                 </div>
                                 <el-table
-                                        ref="multipleTable"
                                         :data="orders"
                                         tooltip-effect="dark"
-                                        style="width: 100%"
-                                        @selection-change="handleSelectionChange">
-                                    <el-table-column
-                                            type="selection"
-                                            width="55">
-                                    </el-table-column>
+                                        style="width: 100%">
                                     <el-table-column
                                             prop="id"
                                             label="订单ID"
@@ -118,6 +115,13 @@
                                     <el-table-column
                                             prop="price"
                                             label="金额"
+                                            width="100"
+                                    >
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="submitTime"
+                                            label="提交时间"
+                                            width="200"
                                     >
                                     </el-table-column>
                                     <el-table-column
@@ -130,8 +134,8 @@
                                     >
                                     <template slot-scope="scope">
                                         <el-row>
-                                            <el-button type="primary" @click="searchUpdate(scope.row)" round>查看详情</el-button>
-                                            <el-button type="danger" @click="deleteCommodity(scope.row)">删除记录</el-button>
+                                            <el-button type="primary" @click="goToOrderDetail(scope.row)" round>查看详情</el-button>
+                                            <el-button type="danger" @click="deleteOrder(scope.row)">删除记录</el-button>
                                         </el-row>
                                     </template>
                                     </el-table-column>
@@ -153,6 +157,7 @@
         <script src = "../js/vue.js"></script>
         <script src = "../element-ui/lib/index.js"></script>
         <script src = "../js/axios-0.18.0.js"></script>
+        <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
         <link rel = "stylesheet" href = "../element-ui/lib/theme-chalk/index.css">
 
         <script>
@@ -163,8 +168,6 @@
                     return {
 
                         orders:[],
-
-                        multipleSelection: [],
 
                         activeIndex: '1',
 
@@ -184,25 +187,24 @@
 
                         isLogin: false,
 
-                        description:""
+                        description:"",
+
+                        searchId:"",
+
+                        status:"",
 
                     }
                 },
 
                 methods: {
-                    searchOrder(){
-
-                    },
                     handleSelectionChange(val) {
                         this.multipleSelection = val;
                     },
 
-                    gotoDetail(id){
-                        window.location.href="commodityDetail.html?id="+id
-                    },
                     search() {
                         this.getCommodities()
                     },
+
                     //分页换页
                     handleCurrentChange(val) {
                         console.log(`当前页: ${val}`);
@@ -211,14 +213,65 @@
                         this.getCommodities()
                     },
 
+                    goToOrderDetail(val){
+                        window.location.href="orderDetail.html?id="+val.id
+                    },
 
-                    //查询搜索到的商品
-                    getAllOrders(){
-                        axios.get("/order/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/1").then((res) => {
+                    deleteOrder(val){
+                        let id = val.id;
+                        console.log(id)
+                        axios.delete("/order/"+id).then((res) => {
+                            if(res.data.code == 20021){//成功
+                                this.$message.success(res.data.msg)
+                            }else if (res.data.code == 20022){//失败
+                                this.$message.error(res.data.msg)
+                            }else {//未知异常
+                                this.$message.error(res.data.msg)
+                            }
+                        }).finally(
+                            ()=>{
+                                this.getAllOrders(this.status);
+                            }
+                        )
+                    },
+
+                    //查询所有订单
+                    getAllOrders(status){
+                        this.status = status;
+                        axios.get("/order/search/" + this.pagination.current + "/"+this.pagination.pageSize+"/"+this.user.id+"/"+status).then((res) => {
                             this.orders = res.data.data.records;
                             this.orders.forEach((item) => {
                                 item.detail = ""
-                                if (item.status == 0){
+                                item.submitTime = dayjs(item.submitTime).format('YYYY-MM-DD HH:mm:ss')
+                                if (item.status === 0){
+                                    item.statusText = "未支付"
+                                }else if (item.status == 1){
+                                    item.statusText = "已支付未发货"
+                                }else if (item.status == 2){
+                                    item.statusText = "已发货"
+                                }else if (item.status == 3){
+                                    item.statusText = "订单退货中"
+                                }else if (item.status == 4){
+                                    item.statusText = "订单已受理"
+                                }
+                                item.orderCommodityList.forEach((value) => {
+                                    item.detail = item.detail+"\t"+(value.commodityName)+"*"+(value.count)+"\n";
+                                });
+                            })
+
+                            this.pagination.total = res.data.data.total;
+                            this.pagination.pageSize = res.data.data.size;
+                            this.pagination.current = res.data.data.current;
+                            console.log(this.orders)
+                        })
+                    },
+
+                    getSearchOrder(){
+                        axios.get("/order/searchOrder/" + this.pagination.current + "/"+this.pagination.pageSize+"/1/"+this.searchId).then((res) => {
+                            this.orders = res.data.data.records;
+                            this.orders.forEach((item) => {
+                                item.detail = ""
+                                if (item.status === 0){
                                     item.statusText = "未支付"
                                 }else if (item.status == 1){
                                     item.statusText = "已支付未发货"
@@ -269,11 +322,12 @@
                     axios.get("/usersManagement/getLoginUser").then((resp) => {
                         if (resp.data.code === 20031)
                             this.user = resp.data.data
+                            const params = window.location.search
+                            this.status = params.split("=")[1]
+                            this.getAllOrders(this.status)
                         if (this.user !== null)
                             this.isLogin = true
                     })
-                    this.getAllOrders()
-
                 }
             })
         </script>

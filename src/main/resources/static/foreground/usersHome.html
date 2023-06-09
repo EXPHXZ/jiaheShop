@@ -46,7 +46,86 @@
                         </el-descriptions-item>
                     </el-descriptions>
                 </template>
+
             </div>
+            <div class="orderDiv">
+                <div class="innerDiv">
+                    <div class="innerDiv-head">
+                        地址管理
+                    </div>
+                    <a href="usersAddress.html">
+                    <div class="innerDiv-body">
+                        <div class="innerDiv-icon">
+                            <i class="el-icon-location-information"></i>
+                        </div>
+                        <span class="text">收货地址</span>
+                    </div>
+                    </a>
+                </div>
+                <div class="innerDiv">
+                    <div class="innerDiv-head">
+                        个人订单
+                    </div>
+                    <a @click="goToOrder(0)">
+                    <div class="innerDiv-body">
+                        <div class="innerDiv-icon">
+                            <i class="el-icon-s-finance"></i>
+                        </div>
+                        <span class="text">未支付</span>
+                    </div>
+                    </a>
+                </div>
+                <div class="innerDiv">
+                    <a @click="goToOrder(1)">
+                        <div class="innerDiv-head">
+                        </div>
+                        <div class="innerDiv-body">
+                            <div class="innerDiv-icon">
+                                <i class="el-icon-s-cooperation"></i>
+                            </div>
+                            <span class="text">未收货</span>
+                        </div>
+                    </a>
+
+                </div>
+                <div class="innerDiv">
+                    <a @click="goToOrder(2)">
+                    <div class="innerDiv-head">
+                    </div>
+                    <div class="innerDiv-body">
+                        <div class="innerDiv-icon">
+                            <i class="el-icon-s-order"></i>
+                        </div>
+                        <span class="text">已发货</span>
+                    </div>
+                    </a>
+                </div>
+                <div class="innerDiv">
+                    <a @click="goToOrder(3)">
+                    <div class="innerDiv-head">
+                    </div>
+                    <div class="innerDiv-body">
+                        <div class="innerDiv-icon">
+                            <i class="el-icon-s-release"></i>
+                        </div>
+                        <span class="text">退换/售后</span>
+                    </div>
+                    </a>
+                </div>
+                <div class="innerDiv">
+                    <a @click="goToOrder(-1)">
+                    <div class="innerDiv-head">
+                    </div>
+                    <div class="innerDiv-body">
+                        <div class="innerDiv-icon">
+                            <i class="el-icon-more"></i>
+                        </div>
+                        <span class="text">全部订单</span>
+                    </div>
+                    </a>
+                </div>
+            </div>
+
 
             <el-dialog title = "修改个人信息" :visible.sync = "updateVisible" width = "50%">
                 <el-form ref = "updateForm" :model = "updateForm" label-width = "80px">
@@ -106,7 +185,11 @@
             new Vue({
                 el: "#app",
 
+
                 methods: {
+                    goToOrder(status){
+                        window.location.href="personalOrder.html?status="+status
+                    },
                     showInfo() {
                         axios.get("/usersManagement/getLoginUser").then((resp) => {
                             if (resp.data.code === 20031)
