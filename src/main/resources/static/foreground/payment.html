@@ -12,20 +12,28 @@
   <body>
     <div id="app" >
       <el-container>
-<!--        <el-header>-->
-<!--          <el-menu-->
-<!--            class="el-menu-demo"-->
-<!--            mode="horizontal"-->
-<!--            :default-active="activeIndex"-->
-<!--            background-color="#202124"-->
-<!--            text-color="#fff"-->
-<!--            active-text-color="#ffd04b"-->
-<!--          >-->
-<!--            <a v-if="!isLogin" class="users">登录</a>-->
-<!--            <a v-if="isLogin" class="users-right">退出登录</a>-->
-<!--            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>-->
-<!--          </el-menu>-->
-<!--        </el-header>-->
+        <el-header>
+          <el-menu
+            class="el-menu-demo"
+            mode="horizontal"
+            :default-active="activeIndex"
+            background-color="#202124"
+            text-color="#fff"
+            active-text-color="#ffd04b"
+          >
+                        <el-menu-item index = "1">
+                            <i class = "el-icon-s-goods"></i>
+                            <a href = "./homepage.html" target = "_blank">首页</a>
+                        </el-menu-item>
+                        <el-menu-item index = "2">
+                            <i class = "el-icon-s-goods"></i>
+                            <a href = "#">当前页面</a>
+                        </el-menu-item>
+            <a v-if="!isLogin" class="users">登录</a>
+            <a v-if="isLogin" class="users-right">退出登录</a>
+            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
+          </el-menu>
+        </el-header>
         <el-main>
           <div class="payment">
             <div class="payment-head">
@@ -37,7 +45,7 @@
               <div style="padding-top: 15px">
                 <el-image style="width: 170px; height: 170px" :src="item.image" fit="fill"></el-image>
               </div>
-              <div class="payment-text" @click="onViewCommodity(item.commodityId)">
+              <div class="payment-text">
                 <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.commodityName }}</div>
                 <div style="line-height: 30px">品牌：{{ item.brandName }}</div>
                 <div style="line-height: 30px">规格：{{ item.size }}</div>
@@ -49,8 +57,22 @@
             </div>
             <div class="payment-foot">
               <div>
-                订单信息
+                创建时间：{{ orderInfo.submitTime }}
               </div>
+              <div style="color: red">
+                原价：{{ orderInfo.originalPrice }}
+              </div>
+              <div style="color: red">
+                折后价：{{ orderInfo.price }}
+              </div>
+            <div>
+                <el-button style="margin-right: 20px" type="success" round @click="onPayment">付款</el-button>
+            </div>
+            </div>
+            <div class="address">
+              <div>收货人：{{addressInfo.contacts}}</div>
+              <div>收货人联系方式：{{addressInfo.contactsPhone}}</div>
+              <div>地址：{{addressInfo.location}}</div>
             </div>
           </div>
         </el-main>
@@ -70,16 +92,8 @@
         methods: {
           getAddress(id) {
             axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
-              console.log('res        ', res)
-              res.data.data.forEach(item => {
-                if (item.isDefault == 0) {
-                  this.order.addressId = item.id
-                }
-                this.options.push({
-                  label: item.contacts + '\t' + item.location,
-                  value: item.id,
-                })
-              })
+              console.log('res        ', res.data.data)
+                this.addressInfo = res.data.data
             })
           },
           selectOrderDetail(id) {
@@ -117,6 +131,26 @@
               })
             })
           },
+
+          onPayment() {
+            // 在发送请求前询问
+            this.$confirm('是否付款？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            })
+              .then(() => {
+                // 确认付款
+                // 付款接口
+              })
+              .catch(() => {
+                // 取消付款
+                this.$message({
+                  type: 'info',
+                  message: '已取消付款',
+                })
+              })
+          },
         },
 
         created() {
@@ -128,6 +162,8 @@
 
         data() {
           return {
+                        activeIndex: '2',
+              addressInfo: {},
             orderInfo: {
               submitTime: '2023-01-01 00:00:00',
               price: 0,
@@ -147,6 +183,17 @@
             },
             orderId: 0,
           }
+        },
+
+        mounted() {
+                    //获取用户信息
+                    axios.get("/usersManagement/getLoginUser").then((resp) => {
+                        if (resp.data.code === 20031) {
+                            this.user = resp.data.data
+                        }
+                        if (this.user !== null)
+                            this.isLogin = true
+                    })
         },
       })
     </script>
