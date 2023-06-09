@@ -1,5 +1,6 @@
 package com.jiahe.dto;
 
+import com.jiahe.pojo.Commodity;
 import com.jiahe.pojo.OrderCommodity;
 import lombok.Data;
 
@@ -9,6 +10,8 @@ import java.util.List;
 public class OrderCommodityDto extends OrderCommodity {
 
     private String commodityName;
+
+    private Commodity commodity;
 
     @Override
     public String toString() {

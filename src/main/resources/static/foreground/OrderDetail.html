@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>购物车</title>
     <link rel="stylesheet" href="../css/homepage.css" />
-    <link rel="stylesheet" href="../css/shoppingCart.css" />
+    <link rel="stylesheet" href="../css/orderDetail.css" />
   </head>
 
   <body>
@@ -38,21 +38,21 @@
           <div class="shop_card">
             <div v-for="item in orderCommodities" class="card_item">
               <div style="padding-top: 15px; padding-right: 70px">
-                <img :src = "getImage(item.image)"
+                <img :src = "getImage(item.commodity.image)"
                      style="width: 170px; height: 170px">
               </div>
               <div class="shop-text">
-                <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.simpledDescription }}</div>
-                <div style="line-height: 30px">品牌：{{ item.brandName }}</div>
-                <div style="line-height: 30px">规格：{{ item.size }}</div>
+                <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.commodity.simpledDescription }}</div>
+                <div style="line-height: 30px">品牌：{{ item.commodity.brandName }}</div>
+                <div style="line-height: 30px">规格：{{ item.commodity.size }}</div>
                 <div style="line-height: 30px">数量：x{{ item.count }}</div>
               </div>
               <div class="shop-price">
-                <div style="padding-top: 100px">原价：{{item.originalPrice }} 元</div>
-                <div>折后价：{{item.price}} 元</div>
+                <div style="padding-top: 60px">原价：￥{{(item.priceSum/item.commodity.discount).toFixed(2) }} 元</div>
+                <div>折后价：￥{{item.priceSum}} 元</div>
               </div>
               <div class="shop-del">
-                <el-button type="danger" plain>申请售后</el-button>
+                <el-button type="danger" @click="goToAfterMarket(item.id)" plain>申请售后</el-button>
               </div>
             </div>
           </div>
@@ -80,44 +80,43 @@
               addressId: null,
             },
             commodity:{},
-
+            //分页所需数据
+            pagination: {
+              current: 1,
+              pageSize: 16,
+            },
           }
         },
 
         methods: {
             getOrderCommodities(orderId){
-              axios.get("/order/"+orderId).then((res) => {
-                this.orderCommodities = res.data.data
-                  this.orderCommodities.forEach((item) => {
-                    console.log(item)
-                    axios.get("/commodity/"+item.commodityId).then((resp) => {
-                      item.image = resp.data.data.image
-                      item.simpleDescription = resp.data.data.simpleDescription
-                      item.size = resp.data.data.size
-                      item.brandName=resp.data.data.brandName
-                    })
-                  });
-                console.log(this.orderCommodities)
-              })
-
+                axios.get("/order/"+orderId).then((res) => {
+                    this.orderCommodities = res.data.data
+                })
+              },
+            getImage(image){
+                return `/common/download?name=${image}`
             },
-          getImage(image){
-              return `/common/download?name=${image}`
+            goToAfterMarket(id){
+                window.location.href = "aftermarket.html?id="+id
+            }
           },
-        },
 
-        mounted() {
-          //获取用户信息
-          axios.get('/usersManagement/getLoginUser').then(resp => {
-            if (resp.data.code === 20031) this.user = resp.data.data
-            if (this.user !== null) this.isLogin = true
-            else this.isLogin = false
-          })
-          const params = window.location.search
-          const orderId = params.split("=")[1]
-          this.getOrderCommodities(orderId)
-          console.log(this.orderCommodities)
-        },
+        mounted(){
+            //获取用户信息
+            axios.get('/usersManagement/getLoginUser').then((resp) => {
+              if (resp.data.code === 20031) {
+                this.user = resp.data.data
+              }
+              if (this.user !== null)
+                this.isLogin = true
+              else
+                this.isLogin = false
+            })
+            const params = window.location.search
+            const orderId = params.split("=")[1]
+            this.getOrderCommodities(orderId)
+          }
       })
     </script>
   </body>

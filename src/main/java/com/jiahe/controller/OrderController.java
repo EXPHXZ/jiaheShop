@@ -269,7 +269,76 @@ public class OrderController {
         LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderCommodity::getOrderId,orderId);
         List<OrderCommodity> list = orderCommodityService.list(queryWrapper);
-        return new Result(Code.SELECT_SUCCESS,list);
+        List<OrderCommodityDto> collect = list.stream().map((item) -> {
+            OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
+            BeanUtils.copyProperties(item, orderCommodityDto);
+            Integer commodityId = item.getCommodityId();
+            Commodity commodity = commodityService.getById(commodityId);
+            orderCommodityDto.setCommodity(commodity);
+            return orderCommodityDto;
+        }).collect(Collectors.toList());
+        return new Result(Code.SELECT_SUCCESS,collect);
+    }
+
+    @GetMapping("/aftermarket/{orderCommodityId}")
+    public Result getAftermarketOrderCommodities(@PathVariable Integer orderCommodityId){
+        LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderCommodity::getId,orderCommodityId);
+        List<OrderCommodity> list = orderCommodityService.list(queryWrapper);
+        List<OrderCommodityDto> collect = list.stream().map((item) -> {
+            OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
+            BeanUtils.copyProperties(item, orderCommodityDto);
+            Integer commodityId = item.getCommodityId();
+            Commodity commodity = commodityService.getById(commodityId);
+            orderCommodityDto.setCommodity(commodity);
+            return orderCommodityDto;
+        }).collect(Collectors.toList());
+        return new Result(Code.SELECT_SUCCESS,collect);
+    }
+
+    @GetMapping("/searchOrder/{current}/{pageSize}/{userId}/{orderId}")
+    public Result getOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer orderId){
+        //先查询当前用户下的订单
+        Page<Order> orderPage = new Page<>(current,pageSize);
+        Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getId,orderId);
+        wrapper.eq(Order::getUserId,userId);
+        orderService.page(orderPage, wrapper);
+        BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
+        List<Order> records = orderPage.getRecords();
+        List<OrderDto> orderDtos = records.stream().map((item) -> {
+            OrderDto orderDto = new OrderDto();
+            BeanUtils.copyProperties(item, orderDto);
+            Integer userId1 = item.getUserId();
+            Users users = usersService.searchUser(userId1);
+            orderDto.setUsername(users.getName());
+            Integer addressId = item.getAddressId();
+            Address address = addressService.searchAddress(addressId);
+            orderDto.setAddress(address);
+            Integer id = item.getId();
+            LambdaQueryWrapper<OrderCommodity> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(OrderCommodity::getOrderId, id);
+            List<OrderCommodity> orderCommodities = orderCommodityService.list(queryWrapper);
+            List<OrderCommodityDto> orderCommodityDtos = new ArrayList<>();
+            for (OrderCommodity orderCommodity : orderCommodities) {
+                OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
+                BeanUtils.copyProperties(orderCommodity, orderCommodityDto);
+                Integer commodityId = orderCommodity.getCommodityId();
+                Commodity commodity = commodityService.getById(commodityId);
+                orderCommodityDto.setCommodityName(commodity.getCommodityName());
+                orderCommodityDtos.add(orderCommodityDto);
+            }
+            orderDto.setOrderCommodityList(orderCommodityDtos);
+            return orderDto;
+        }).collect(Collectors.toList());
+        orderDtoPage.setRecords(orderDtos);
+        System.out.println(orderDtoPage);
+        //当删除到页数发生变化的时候
+        if (current > orderDtoPage.getPages()){
+            orderDtoPage.setCurrent(orderDtoPage.getPages());
+        }
+        return new Result(Code.SELECT_SUCCESS,orderDtoPage);
     }
 
 }

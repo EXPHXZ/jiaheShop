@@ -29,7 +29,7 @@
             <el-main>
                 <div class = "main-top">
                     <img src = "../images/logo.png">
-                    <el-form :inline = "true" :model = "searchForm" class = "demo-form-inline">
+                    <el-form :inline = "true" :model = "formInline" class = "demo-form-inline">
                         <el-form-item class = "input-search">
                             <el-col :span = "8">
                                 <el-input v-model = "description" placeholder = "搜索"></el-input>
@@ -155,10 +155,6 @@
                 dialogImageUrl: '',
 
                 orderCommodity:{
-                    id:1,
-                    commodityId:16,
-                    count:1,
-                    orderId:2
                 },
             }
         },
@@ -207,25 +203,27 @@
                 })
             },
 
-            getCommodity(id) {
-                axios.get("/commodity/aftermarket/" + id).then((res) => {
-                    res.data.data.forEach((item) => {
-                        item.count = this.orderCommodity.count
-                    });
-                    this.commodities = res.data.data
+
+            getOrderCommodity(id) {
+                axios.get("/order/aftermarket/" + id).then((res) => {
+                    this.orderCommodities = res.data.data
+                    this.orderCommodities.forEach((item) => {
+                        this.commodities=item.commodity
+                        this.commodities.count = item.count
+                    })
                 })
             },
+
             getImage (image) {
                 return `/common/download?name=${image}`
             },
             addAftermarket(){
                 this.aftermarket.orderId = this.orderCommodity.orderId
                 this.aftermarket.orderCommodityId = this.orderCommodity.id
-                this.aftermarket.status = 0
+                this.aftermarket.status = 4
                 this.aftermarket.type = this.form.type
                 this.aftermarket.cause = this.form.cause
                 this.aftermarket.description = this.form.description
-
                 axios.post("/aftermarket/",this.aftermarket).then((res) => {
                     if (res.data.code == 20011){
                         this.$message.success(res.data.msg)
@@ -238,11 +236,15 @@
         },
         mounted(){
             //获取用户信息
-            this.user = JSON.parse(window.localStorage.getItem("userInfo"))
-            if (this.user !== null)
-                this.isLogin = true
-            console.log(this.orderCommodity.commodityId)
-            this.getCommodity(this.orderCommodity.commodityId)
+            axios.get("/usersManagement/getLoginUser").then((resp) => {
+                if (resp.data.code === 20031)
+                    this.user = resp.data.data
+                if (this.user !== null)
+                    this.isLogin = true
+            })
+            const params = window.location.search
+            const id = params.split("=")[1]
+            this.getOrderCommodity(id)
         }
     })
 </script>
