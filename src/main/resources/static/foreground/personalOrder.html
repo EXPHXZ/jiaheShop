@@ -205,15 +205,18 @@
                     },
 
                     search() {
-                        this.getCommodities()
+                        //加码
+                        this.description = escape(this.description)
+                        window.location.href="searchPage.html?description="+this.description
                     },
+
 
                     //分页换页
                     handleCurrentChange(val) {
                         console.log(`当前页: ${val}`);
                         this.pagination.current = val;
                         // 查询下一页上架的商品
-                        this.getCommodities()
+                        this.getCommodities(this.status)
                     },
 
                     goToOrderDetail(val){

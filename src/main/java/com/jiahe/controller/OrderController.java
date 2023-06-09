@@ -207,6 +207,7 @@ public class OrderController {
         Page<OrderDto> orderDtoPage = new Page<>(current,pageSize);
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getUserId,userId);
+        wrapper.orderByDesc(Order::getSubmitTime);
         if (status > 4){
             return new Result(null,Code.SELECT_FAIL,"查询失败");
         } else if (status == 4){
@@ -307,6 +308,7 @@ public class OrderController {
         LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Order::getId,orderId);
         wrapper.eq(Order::getUserId,userId);
+        wrapper.orderByDesc(Order::getSubmitTime);
         orderService.page(orderPage, wrapper);
         BeanUtils.copyProperties(orderPage,orderDtoPage,"records");
         List<Order> records = orderPage.getRecords();
@@ -335,13 +337,34 @@ public class OrderController {
             orderDto.setOrderCommodityList(orderCommodityDtos);
             return orderDto;
         }).collect(Collectors.toList());
+
         orderDtoPage.setRecords(orderDtos);
+
         System.out.println(orderDtoPage);
         //当删除到页数发生变化的时候
         if (current > orderDtoPage.getPages()){
             orderDtoPage.setCurrent(orderDtoPage.getPages());
         }
         return new Result(Code.SELECT_SUCCESS,orderDtoPage);
+    }
+
+    @PutMapping("/{orderId}/{status}")
+    public Result setOrderStatus(@PathVariable Integer orderId,@PathVariable Integer status){
+        String msg = "";
+        if (status == 2){
+            msg = "发货成功";
+        }else if (status == 3){
+            msg = "客户收货成功";
+        }
+        Order order = orderService.getById(orderId);
+        order.setStatus(status);
+        boolean flag = orderService.updateById(order);
+        if (flag){
+            return new Result(null,Code.UPDATE_SUCCESS,msg);
+        }else {
+            return new Result(null,Code.UPDATE_FAIL,msg);
+        }
+
     }
 
 }

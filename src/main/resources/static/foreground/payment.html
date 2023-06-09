@@ -43,7 +43,8 @@
             </div>
             <div v-for="item of orderInfo.orderCommodityList" :key="item.id" class="payment-item">
               <div style="padding-top: 15px">
-                <el-image style="width: 170px; height: 170px" :src="item.image" fit="fill"></el-image>
+                <img :src = "getImage(item.image)"
+                     style="width: 170px; height: 170px">
               </div>
               <div class="payment-text">
                 <div style="line-height: 120px; font-weight: bold; font-size: 22px">{{ item.commodityName }}</div>
@@ -142,6 +143,16 @@
               .then(() => {
                 // 确认付款
                 // 付款接口
+                axios.put("/order/"+this.orderId+"/"+2).then((res) => {
+                  if(res.data.code == 20041){
+                    this.$message.success(res.data.msg)
+                    window.location.href = "personalOrder.html?id=-1"
+                  }else if (res.data.code == 20042){
+                    this.$message.error(res.data.msg)
+                  }else {
+                    this.$message.error(res.data.msg)
+                  }
+                })
               })
               .catch(() => {
                 // 取消付款
@@ -150,6 +161,10 @@
                   message: '已取消付款',
                 })
               })
+          },
+
+          getImage(image){
+            return `/common/download?name=${image}`
           },
         },
 
