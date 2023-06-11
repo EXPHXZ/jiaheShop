@@ -34,7 +34,6 @@ public class AddressController {
 //    用户增加个人地址
     @PostMapping("/addPersonalAddress")
     public Result addPersonalAddress(@RequestBody Address address){
-        System.out.println(address);
         Boolean flag = addressService.addPersonalAddress(address);
         if(flag)
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
