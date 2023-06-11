@@ -122,7 +122,6 @@
               },
               method: 'get',
             }).then(res => {
-              console.log(res.data.data)
               this.shopCartList = res.data.data
               this.shopCartList.forEach(item => {
                 this.$set(item, 'checked', false)
@@ -130,7 +129,6 @@
             })
           },
           onSubmitOrder() {
-            console.log(this.shopCartList)
             // 如果this.shopCartList[i].checked为true，则将其加入到orderList中,并且删除checked属性
             for (let i = 0; i < this.shopCartList.length; i++) {
               if (this.shopCartList[i].checked === true) {
@@ -143,10 +141,6 @@
                 this.orderList.push(orderItem)
               }
             }
-            console.log('this.orderList', this.orderList)
-            console.log('this.orderList.length', this.orderList.length)
-            console.log(this.order.addressId)
-            console.log('this.orderList[0]', this.orderList[0])
             if (this.orderList.length === 0 || this.orderList[0] === undefined) {
               this.$message({
                 type: 'warning',
@@ -169,7 +163,6 @@
               .then(() => {
                 let user = localStorage.getItem('user')
                 user = JSON.parse(user)
-                console.log('user', user)
                 axios({
                   url: '/order/insertOrderCommodity',
                   params: {
@@ -179,7 +172,6 @@
                   data: this.orderList,
                   method: 'post',
                 }).then(res => {
-                  console.log(res)
                   if (res.data.code === 20011) {
                     this.orderId = res.data.data
                     this.$message({
@@ -200,7 +192,6 @@
                       },
                       method: 'post',
                     }).then(res => {
-                      console.log(res)
                       if (res.data.code === 20021) {
                         // 跳转到购买页面
                         window.location.href = 'payment.html?id=' + this.orderId
@@ -235,14 +226,12 @@
             })
           },
           handleCheckAllChange(val) {
-            console.log(val)
             this.shopCartList.forEach(item => {
               item.checked = val
             })
           },
           getAddress(id) {
             axios.get('/usersAddress/searchPersonalAll/' + id).then(res => {
-              console.log('res.data.data        ', res.data.data)
               res.data.data.forEach(item => {
                 if (item.isDefault == 0) {
                   this.order.addressId = item.id
@@ -257,9 +246,6 @@
           onDelShopCart(id) {
             let ids = []
             ids.push(id)
-            console.log('ids      ', ids)
-            console.log('ids.length      ', ids.length)
-            console.log('ids[0]      ', ids[0])
             if (ids.length === 0 || ids[0] === undefined) {
               this.$message({
                 type: 'warning',
@@ -281,7 +267,6 @@
                   },
                   method: 'post',
                 }).then(res => {
-                  console.log(res)
                   if (res.data.code === 20021) {
                     let user = localStorage.getItem('user')
                     user = JSON.parse(user)
@@ -312,7 +297,6 @@
                 ids.push(this.shopCartList[i].id)
               }
             }
-            console.log('ids      ', ids)
             if (ids.length === 0 || ids[0] === undefined) {
               this.$message({
                 type: 'warning',
@@ -334,7 +318,6 @@
                   },
                   method: 'post',
                 }).then(res => {
-                  console.log(res)
                   if (res.data.code === 20021) {
                     this.$message({
                       type: 'success',
@@ -378,12 +361,8 @@
           //获取用户信息
           let user = localStorage.getItem('user')
           user = JSON.parse(user)
-          console.log('this.user2', user)
-          console.log('this.user3', user.id)
 
           this.getAddress(user.id)
-          console.log('this.options', this.options)
-          console.log('this.order', this.order)
         },
       })
     </script>

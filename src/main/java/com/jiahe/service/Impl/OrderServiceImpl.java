@@ -60,17 +60,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
 
     @Override
     public Boolean updateShoppingCart(Integer id, Integer count) {
-        System.out.println("id = " + id);
-        System.out.println("count = " + count);
         ShoppingCart shoppingCart = shoppingCartDao.selectById(id);
-        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(1));
-        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(2));
-        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(3));
-        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(4));
-        System.out.println("shoppingCartDao.selectById(id)" + shoppingCartDao.selectById(5));
-        System.out.println("shoppingCart = " + shoppingCart);
         shoppingCart.setCount(count);
-        System.out.println("shoppingCart = " + shoppingCart);
         shoppingCartDao.updateById(shoppingCart);
         return true;
     }
@@ -85,21 +76,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
 
     @Override
     public List<ShoppingCartDto> selectShoppingCart(Integer userId) {
-        System.out.println("userId =         " + userId);
         // 根据用户id查询购物车列表，再根据商品id查询商品信息
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(ShoppingCart::getUserId,userId);
         List<ShoppingCart> shoppingCarts = shoppingCartDao.selectList(wrapper);
-        System.out.println("shoppingCarts =   " + shoppingCarts);
         // 遍历购物车列表，查询商品信息
         List<ShoppingCartDto> shoppingCartDtos = new ArrayList<>();
         for (ShoppingCart shoppingCart : shoppingCarts) {
             LambdaQueryWrapper<Commodity> wrapper1 = new LambdaQueryWrapper<>();
             wrapper1.eq(Commodity::getId,shoppingCart.getCommodityId());
             Commodity commodity1 = commodityDao.selectOne(wrapper1);
-            System.out.println("shoppingCart =            " + shoppingCart);
-            System.out.println("commodity1 =            " + commodity1);
-            System.out.println();
             // 将商品信息复制到购物车中
             ShoppingCartDto shoppingCartDto = new ShoppingCartDto();
             shoppingCartDto.setBrandName(commodity1.getBrandName());
@@ -112,7 +98,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             shoppingCartDto.setCount(shoppingCart.getCount());
             shoppingCartDto.setUserId(shoppingCart.getUserId());
             shoppingCartDto.setId(shoppingCart.getId());
-            System.out.println("shoppingCartDto =                   " + shoppingCartDto);
             shoppingCartDtos.add(shoppingCartDto);
         }
         System.out.println("最终结果 = " + shoppingCartDtos);
@@ -253,14 +238,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         Order order = new Order();
         order.setUserId(userId);
         order.setAddressId(addressId);
-        System.out.println("order              " + order);
         orderDao.insert(order);
         Integer orderId = order.getId();
 
         for (OrderCommodity orderCommodity : orderCommodities) {
             orderCommodity.setOrderId(orderId);
             orderCommodity.setPriceSum(orderCommodity.getPrice().multiply(new BigDecimal(orderCommodity.getCount())));
-            System.out.println("orderCommodity              " + orderCommodity);
             orderCommodityDao.insert(orderCommodity);
         }
 
