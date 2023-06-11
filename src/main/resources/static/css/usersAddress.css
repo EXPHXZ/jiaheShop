@@ -9,6 +9,11 @@ body {
     width: 100%;
 }
 
+.head {
+    margin: 0 auto;
+    color: black;
+}
+
 .AddressTable {
     width: 70%;
     height: 50%;
