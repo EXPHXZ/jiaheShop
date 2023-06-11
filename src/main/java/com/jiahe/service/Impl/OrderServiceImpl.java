@@ -343,12 +343,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
             Commodity commodity = commodityService.getById(orderCommodityDto.getCommodityId());
             //判断商品的存库够不够这次购买数
             Integer remnant = commodity.getRemnant();
-            System.out.println("------------------------------");
-            System.out.println(remnant);
             Integer num = orderCommodityDto.getCount();
-            System.out.println(num);
             if(remnant >= num){
                 //可以购买，库存足够，需要减去库存
+                /*if(remnant - num == 0){
+                    commodity.setStatus(1);
+                }*/
                 commodity.setRemnant(remnant - num);
                 //更新库存，进行购买
                 commodityService.updateById(commodity);

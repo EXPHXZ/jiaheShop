@@ -18,7 +18,7 @@
                         </el-menu-item>
                         <el-menu-item index = "2">
                             <i class = "el-icon-shopping-cart-2"></i>
-                            <a href = "https://www.ele.me" target = "_blank">购物车</a>
+                            <a href = "./shoppingCart.html" target = "_blank">购物车</a>
                         </el-menu-item>
                         <a class = "users-right" @click = "logout">退出登录</a>
                         <a class = "users" href = "usersHome.html">个人中心</a>
@@ -199,6 +199,15 @@
 
 
                 methods: {
+
+                    goToShoppingCart(){
+                        if(this.isLogin){
+                            window.location.href="shoppingCart.html"
+                        }else {
+                            window.location.href="usersLogin.html"
+                        }
+                    },
+
                     goToOrder(status){
                         window.location.href="personalOrder.html?status="+status
                     },

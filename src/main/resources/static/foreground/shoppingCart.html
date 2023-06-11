@@ -30,7 +30,8 @@
               <a href="./shoppingCart.html" target="_blank">购物车</a>
             </el-menu-item>
             <a v-if="!isLogin" class="users">登录</a>
-            <a v-if="isLogin" class="users" href="usersHome.html">个人中心</a>
+            <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
+            <a v-if = "isLogin" class = "users" href = "usersHome.html">个人中心</a>
           </el-menu>
         </el-header>
         <el-main style="overflow: hidden; text-align: left">
@@ -347,6 +348,19 @@
           getImage(image) {
             return `/common/download?name=${image}`
           },
+
+          logout() {
+            axios.get("/usersManagement/logout").then((resp) => {
+              if (resp.data.code === 20061) {
+                this.$message({showClose: true, message: resp.data.msg, type: "success"})
+                window.location.href = "homepage.html"
+              }
+              else if (resp.data.code === 20062)
+                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+              else
+                this.$message({showClose: true, message: resp.data.msg, type: "error"})
+            })
+          }
         },
 
         mounted() {

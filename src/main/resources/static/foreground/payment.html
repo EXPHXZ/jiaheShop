@@ -156,6 +156,14 @@
           getImage(image) {
             return `/common/download?name=${image}`
           },
+
+          goToShoppingCart(){
+            if(this.isLogin){
+              window.location.href="shoppingCart.html"
+            }else {
+              window.location.href="usersLogin.html"
+            }
+          },
         },
 
         created() {
@@ -167,6 +175,7 @@
         data() {
           return {
             activeIndex: '2',
+            isLogin: false,
             addressInfo: {},
             orderInfo: {
               submitTime: '2023-01-01 00:00:00',

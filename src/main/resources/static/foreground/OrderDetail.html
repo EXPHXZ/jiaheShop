@@ -27,7 +27,7 @@
             </el-menu-item>
             <el-menu-item index="2">
               <i class="el-icon-shopping-cart-2"></i>
-              <a href="./shoppingCart.html" target="_blank">购物车</a>
+              <a href = "./shoppingCart.html" target = "_blank">购物车</a>
             </el-menu-item>
             <a v-if="!isLogin" class="users">登录</a>
             <a v-if="isLogin" class="users-right">退出登录</a>
@@ -89,6 +89,14 @@
         },
 
         methods: {
+
+            goToShoppingCart(){
+              if(this.isLogin){
+                window.location.href="shoppingCart.html"
+              }else {
+                window.location.href="usersLogin.html"
+              }
+            },
             getOrderCommodities(orderId){
                 axios.get("/order/"+orderId).then((res) => {
                     this.orderCommodities = res.data.data

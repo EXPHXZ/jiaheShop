@@ -20,7 +20,7 @@
                         </el-menu-item>
                         <el-menu-item index = "2">
                             <i class = "el-icon-shopping-cart-2"></i>
-                            <a href = "./shoppingCart.html" target = "_blank">购物车</a>
+                            <a @click="goToShoppingCart" target = "_blank">购物车</a>
                         </el-menu-item>
                         <a v-if = "!isLogin" class = "users" @click = "login">登录</a>
                         <a v-if = "isLogin" class = "users-right" @click = "logout">退出登录</a>
@@ -43,14 +43,14 @@
                                     </el-form-item>
                                 </el-form>
                             </div>
-                            <div class = "discount">
+                            <div class = "discount-t">
                                 <h3 class = "discount-h">
                                     <i class = "el-icon-sell"></i>
                                     分类专区
                                 </h3>
                                 <el-row style="height: 800px">
                                     <el-col :span = "4" v-for = "item in commodities" :offset = "index > 0 ? 1 : 0">
-                                        <el-card :body-style = "{ padding: '5px' }">
+                                        <el-card :body-style = "{ padding: '5px' }" class="box-card">
                                             <a @click="gotoDetail(item.id)">
                                                 <img :src = "getImage(item.image)"
                                                      class = "image">
@@ -97,7 +97,7 @@
                         //分页所需数据
                         pagination: {
                             current: 1,
-                            pageSize: 16,
+                            pageSize: 17,
                         },
 
                         user:{
@@ -109,24 +109,42 @@
 
                         description:"",
 
+                        categoryId : "",
+
                     }
                 },
 
                 methods: {
-                    gotoDetail(id){
-                        window.location.href="commodityDetail.html?id="+id
+
+                    goToShoppingCart(){
+                        if(this.isLogin){
+                            window.location.href="shoppingCart.html"
+                        }else {
+                            window.location.href="usersLogin.html"
+                        }
                     },
+
+                    gotoDetail(id){
+                        if(this.isLogin){
+                            window.location.href="commodityDetail.html?id="+id
+                        }else {
+                            window.location.href="usersLogin.html"
+                        }
+
+                    },
+
                     search() {
                         //加码
                         this.description = escape(this.description)
                         window.location.href="searchPage.html?description="+this.description
                     },
+
                     //分页换页
                     handleCurrentChange(val) {
                         console.log(`当前页: ${val}`);
                         this.pagination.current = val;
                         // 查询下一页上架的商品
-                        this.getCommodities()
+                        this.getCommodities(this.categoryId)
                     },
 
 
@@ -172,9 +190,9 @@
                             this.isLogin = true
                     })
                     const params = window.location.search
-                    const id = params.split("=")[1]
-                    console.log(id)
-                    this.getCommodities(id)
+                    this.categoryId = params.split("=")[1]
+                    console.log(this.categoryId)
+                    this.getCommodities(this.categoryId)
                 }
             })
         </script>
