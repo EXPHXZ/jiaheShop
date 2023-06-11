@@ -206,7 +206,7 @@
 </div>
 <script src="https://unpkg.com/element-china-area-data@6.0.0/dist/element-china-area-data.iife.js"></script>
 <script>
-    let contactsFormat =  /^([a-zA-Z0-9\u4e00-\u9fa5]{1,10})$/
+    let contactsFormat = /^([a-zA-Z0-9\u4e00-\u9fa5]{1,10})$/
     let contactsPhoneFormat = /^[0-9]{11}$/
     new Vue({
         el: "#PersonalAddress",
@@ -281,6 +281,7 @@
                 this.addAddressForm.userId = this.user.id
                 //添加表单地址连串
                 this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + "，" + this.addAddressForm.detailAddress
+                //判断数据格式
                 if (!contactsFormat.test(this.addAddressForm.contacts))
                     this.$message.error("请输入正确的姓名")
                 else if (!contactsPhoneFormat.test(this.addAddressForm.contactsPhone))
@@ -307,17 +308,23 @@
                 else {
                     this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
                 }
-                axios.put("/usersAddress/updatePersonalAddress", this.updateAddressForm).then((res) => {
-                    if (res.data.code == 20041) {
-                        this.searchAddressVisible = false
-                        this.$message.success(res.data.msg)
-                    } else if (res.data.code == 20042)
-                        this.$message.error(res.data.msg)
-                }).finally(
-                    () => {
-                        this.selectByPage()
-                    }
-                )
+                //判断数据格式
+                if (!contactsFormat.test(this.updateAddressForm.contacts))
+                    this.$message.error("请输入正确的姓名")
+                else if (!contactsPhoneFormat.test(this.updateAddressForm.contactsPhone))
+                    this.$message.error("请输入正确的手机号码")
+                else
+                    axios.put("/usersAddress/updatePersonalAddress", this.updateAddressForm).then((res) => {
+                        if (res.data.code == 20041) {
+                            this.searchAddressVisible = false
+                            this.$message.success(res.data.msg)
+                        } else if (res.data.code == 20042)
+                            this.$message.error(res.data.msg)
+                    }).finally(
+                        () => {
+                            this.selectByPage()
+                        }
+                    )
             },
             //删除地址
             deleteAddress(row) {
@@ -361,7 +368,8 @@
                 if (this.user !== null)
                     this.isLogin = true
             })
-        },
+        }
+        ,
 
         data() {
             return {
@@ -407,7 +415,8 @@
                     total: 0,
                 },
             }
-        },
+        }
+        ,
     })
 </script>
 </body>
