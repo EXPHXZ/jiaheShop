@@ -16,6 +16,7 @@ import com.jiahe.utils.Result;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -168,37 +169,15 @@ public class OrderController {
 
     @PostMapping("/submitOrder")
     public Result submitOrder(@RequestBody OrderDto order){
-        System.out.println(order);
-        Users users = usersService.searchUser(order.getUserId());
-        order.setUsername(users.getName());
-        List<OrderCommodityDto> orderCommodityList = order.getOrderCommodityList();
-        BigDecimal originalPrice = new BigDecimal(0); //计算订单原价
-        BigDecimal price = new BigDecimal(0); //计算订单的优惠价
-        for(OrderCommodityDto orderCommodityDto:orderCommodityList){
-            orderCommodityDto.setStatus(0);
-            Commodity commodity = commodityService.getById(orderCommodityDto.getCommodityId());
-            orderCommodityDto.setCommodityName(commodity.getCommodityName());
-            price=price.add(orderCommodityDto.getPriceSum());
-            originalPrice=originalPrice.add(orderCommodityDto.getOriginalPrice().multiply(new BigDecimal(orderCommodityDto.getCount())));
-            Integer count = order.getCount();
-            order.setCount(count+1);
-            Integer sum = order.getSum();
-            order.setSum(sum+orderCommodityDto.getCount());
-        }
-        order.setOriginalPrice(originalPrice);
-        order.setPrice(price);
-        boolean flag = orderService.save(order);
-        if (flag){
-            for(OrderCommodityDto orderCommodityDto:orderCommodityList){
-                orderCommodityDto.setOrderId(order.getId());
-                boolean flag1 = orderCommodityService.save(orderCommodityDto);
-                if (flag1 != true) {
-                    return new Result(null,Code.ADD_FAIL,"购买失败");
-                }
-            }
+        Integer submitOrder = orderService.submitOrder(order);
+        if (submitOrder == 1){
+            return new Result(null,Code.ADD_FAIL,"购买失败");
+        }else if (submitOrder == 2){
+            return new Result(null,Code.ADD_FAIL,"库存不足");
         }
         return new Result(order.getId(),Code.ADD_SUCCESS,"购买成功");
     }
+
 
     @GetMapping("/search/{current}/{pageSize}/{userId}/{status}")
     public Result getAllOrder(@PathVariable Integer current,@PathVariable Integer pageSize,@PathVariable Integer userId,@PathVariable Integer status){
@@ -236,7 +215,9 @@ public class OrderController {
                 OrderCommodityDto orderCommodityDto = new OrderCommodityDto();
                 BeanUtils.copyProperties(orderCommodity, orderCommodityDto);
                 Integer commodityId = orderCommodity.getCommodityId();
+                System.out.println(commodityId);
                 Commodity commodity = commodityService.getById(commodityId);
+                System.out.println(commodity);
                 orderCommodityDto.setCommodityName(commodity.getCommodityName());
                 orderCommodityDtos.add(orderCommodityDto);
             }
@@ -266,6 +247,7 @@ public class OrderController {
         }
         return new Result(null,Code.DELETE_FAIL,"删除订单信息失败");
     }
+
 
     @GetMapping("/{orderId}")
     public Result getOrderCommodities(@PathVariable Integer orderId){
@@ -347,6 +329,7 @@ public class OrderController {
         }
         return new Result(Code.SELECT_SUCCESS,orderDtoPage);
     }
+
 
     @PutMapping("/{orderId}/{status}")
     public Result setOrderStatus(@PathVariable Integer orderId,@PathVariable Integer status){

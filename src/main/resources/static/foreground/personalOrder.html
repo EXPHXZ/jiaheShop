@@ -96,6 +96,9 @@
                   <el-table-column label="操作" align="center" width="210">
                     <template slot-scope="scope">
                       <el-row>
+                        <el-button v-if="judge(scope.row)" size="small" type="primary" @click="goToPayment(scope.row)" round>
+                          支付
+                        </el-button>
                         <el-button size="small" type="primary" @click="goToOrderDetail(scope.row)" round>
                           查看详情
                         </el-button>
@@ -164,6 +167,11 @@
             this.multipleSelection = val
           },
 
+          judge(scope){
+            console.log(scope)
+            return scope.status == 0
+          },
+
           search() {
             //加码
             this.description = escape(this.description)
@@ -180,6 +188,10 @@
 
           goToOrderDetail(val) {
             window.location.href = 'orderDetail.html?id=' + val.id
+          },
+
+          goToPayment(val) {
+            window.location.href = 'payment.html?id=' + val.id
           },
 
           deleteOrder(val) {

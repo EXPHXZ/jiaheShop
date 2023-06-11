@@ -251,17 +251,11 @@
               this.orderInfo.count = this.orderInfo.count + '种'
               this.orderInfo.orderCommodityList.forEach(item => {
                 if (item.status === 0) {
-                  item.statusText = '未支付'
+                  item.statusText = '正常'
                 } else if (item.status === 1) {
-                  item.statusText = '未发货'
-                } else if (item.status === 2) {
-                  item.statusText = '已发货'
-                } else if (item.status === 3) {
-                  item.statusText = '已完成'
-                } else if (item.status === 4) {
                   item.statusText = '退货中'
-                } else if (item.status === 5) {
-                  item.statusText = '已受理'
+                } else if (item.status === 2) {
+                  item.statusText = '已退货'
                 }
                 item.price = item.price.toFixed(2) + '元'
                 item.originalPrice = item.originalPrice.toFixed(2) + '元'

@@ -94,4 +94,6 @@ public interface OrderService extends IService<Order> {
 
     public Boolean updateOrderDetailForAftermarket(Integer orderId,Integer status);
 
+    public Integer submitOrder(OrderDto orderDto);
+
 }

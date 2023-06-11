@@ -9,6 +9,7 @@ import com.jiahe.service.OrderService;
 import com.jiahe.utils.Code;
 import com.jiahe.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,8 +30,6 @@ public class AftermarketController {
     @Autowired
     AftermarketService aftermarketService;
 
-    @Autowired
-    OrderService orderService;
 /*
 * 这段代码定义了一个名为 AftermarketController 的 RestController 类，
 * 其包含一个名为 "aftermarket" 的请求处理函数。
@@ -110,14 +109,8 @@ public Result update(@RequestBody Aftermarket aftermarket)
     * */
     @PostMapping("/add")
     public Result add(@RequestBody Aftermarket aftermarket){
-        Boolean flag = aftermarketService.save(aftermarket);
-        Integer orderId = aftermarket.getOrderId();
-        Integer orderCommodityId = aftermarket.getOrderCommodityId();
-        //把订单下面需要退货的订单项的状态改成1退货中
-        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId,1);
-        //把订单状态改成4-退货中
-        Boolean flag1 = orderService.updateOrderForAftermarket(orderId,4);
-        if(flag&&flag1&&flag2)
+        Boolean flag = aftermarketService.add(aftermarket);
+        if(flag)
             return new Result(null,Code.ADD_SUCCESS,"添加成功");
         else
             return new Result(null,Code.ADD_FAIL,"添加失败");
@@ -125,30 +118,10 @@ public Result update(@RequestBody Aftermarket aftermarket)
 
 
 
-
-
     @PostMapping("/return")
     public Result handleReturnCommodity(@RequestBody Aftermarket aftermarket){
-        System.out.println(aftermarket);
-        //获取售后id
-        Integer id = aftermarket.getId();
-        //获取订单id
-        Integer orderId = aftermarket.getOrderId();
-        //获取订单项id
-        Integer orderCommodityId = aftermarket.getOrderCommodityId();
-        //处理退货时，先修改订单项的订单状态，然后再修改订单的状态
-
-        //把订单下面需要退货的订单项的状态改成2已受理
-        Boolean flag2 = orderService.updateOrderDetailForAftermarket(orderCommodityId,2);
-
-        //把订单状态改成5-已经处理
-        Boolean flag1 = orderService.updateOrderForAftermarket(orderId,5);
-
-        //把售后信息的状态也改一下
-        aftermarket.setStatus(1);
-
-        Boolean flag = aftermarketService.updateById(aftermarket);
-        return new Result(null,flag&&flag1&&flag2? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
+        Boolean flag = aftermarketService.returnAftermarket(aftermarket);
+        return new Result(null,flag? Code.DELETE_SUCCESS:Code.DELETE_FAIL,flag?"处理退货成功":"处理退货失败");
     }
 
 /*    @PostMapping()

@@ -10,10 +10,16 @@ import com.jiahe.dto.OrderDto;
 import com.jiahe.dto.OrderCommodityDto;
 import com.jiahe.dto.ShoppingCartDto;
 import com.jiahe.pojo.*;
+import com.jiahe.service.CommodityService;
+import com.jiahe.service.OrderCommodityService;
 import com.jiahe.service.OrderService;
+import com.jiahe.service.UsersService;
+import com.jiahe.utils.Code;
+import com.jiahe.utils.Result;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
@@ -35,6 +41,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
 
     @Autowired
     private ShoppingCartDao shoppingCartDao;
+
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private CommodityService commodityService;
+
+    @Autowired
+    private OrderCommodityService orderCommodityService;
 
     @Override
     public Boolean addShoppingCart(Integer commodityId, Integer userId, Integer count) {
@@ -310,6 +328,57 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao,Order> implements Ord
         }
         orderCommodity.setStatus(status);
         return orderCommodityDao.updateById(orderCommodity) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Integer submitOrder(OrderDto order) {
+        Users users = usersService.searchUser(order.getUserId());
+        order.setUsername(users.getName());
+        List<OrderCommodityDto> orderCommodityList = order.getOrderCommodityList();
+        BigDecimal originalPrice = new BigDecimal(0); //计算订单原价
+        BigDecimal price = new BigDecimal(0); //计算订单的优惠价
+        for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+            orderCommodityDto.setStatus(0);
+            Commodity commodity = commodityService.getById(orderCommodityDto.getCommodityId());
+            //判断商品的存库够不够这次购买数
+            Integer remnant = commodity.getRemnant();
+            System.out.println("------------------------------");
+            System.out.println(remnant);
+            Integer num = orderCommodityDto.getCount();
+            System.out.println(num);
+            if(remnant >= num){
+                //可以购买，库存足够，需要减去库存
+                commodity.setRemnant(remnant - num);
+                //更新库存，进行购买
+                commodityService.updateById(commodity);
+            }else {
+                //只要有一个库存不足就返回
+                //直接发回错误码
+                System.out.println("hello");
+                return 2;
+            }
+            orderCommodityDto.setCommodityName(commodity.getCommodityName());
+            price=price.add(orderCommodityDto.getPriceSum());
+            originalPrice=originalPrice.add(orderCommodityDto.getOriginalPrice().multiply(new BigDecimal(orderCommodityDto.getCount())));
+            Integer count = order.getCount();
+            order.setCount(count+1);
+            Integer sum = order.getSum();
+            order.setSum(sum+orderCommodityDto.getCount());
+        }
+        order.setOriginalPrice(originalPrice);
+        order.setPrice(price);
+        boolean flag = orderService.save(order);
+        if (flag){
+            for(OrderCommodityDto orderCommodityDto:orderCommodityList){
+                orderCommodityDto.setOrderId(order.getId());
+                boolean flag1 = orderCommodityService.save(orderCommodityDto);
+                if (flag1 != true) {
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 
 }

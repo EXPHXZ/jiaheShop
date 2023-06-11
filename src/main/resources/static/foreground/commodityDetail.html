@@ -75,10 +75,10 @@
                             <div>
                                 <div class="inner">配送至 </div>
                                 <div class="inner-left">
-                                    <el-select v-model="order.addressId" placeholder="请选择" style="width: 450px">
+                                    <el-select v-model="order.addressId" placeholder="请选择" style="width: 450px" @change="$forceUpdate()">
                                         <el-option
                                                 v-for="item in options"
-                                                :key="item.value"
+                                                :key="item.id"
                                                 :label="item.label"
                                                 :value="item.value">
                                         </el-option>
@@ -190,18 +190,21 @@
                 this.order.count=0
                 this.order.sum=0
                 console.log(this.order)
+
                 axios.post("/order/submitOrder",this.order).then((res) => {
                     if (res.data.data == null){
                         this.$message({
                           type: 'error',
-                          message: '提交失败',
+                          message: res.data.msg,
                         })
+                    }else {
+                        this.$message({
+                            type: 'success',
+                            message: '提交成功',
+                        })
+                        window.location.href ="payment.html?id="+res.data.data
                     }
-                    this.$message({
-                      type: 'success',
-                      message: '提交成功',
-                    })
-                    window.location.href ="payment.html?id="+res.data.data
+
                 })
             },
 

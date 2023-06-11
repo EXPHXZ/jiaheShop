@@ -2,7 +2,9 @@ package com.jiahe.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jiahe.dto.OrderDto;
 import com.jiahe.pojo.Commodity;
+import com.jiahe.pojo.Order;
 
 import java.util.List;
 
@@ -56,4 +58,5 @@ public interface CommodityService extends IService<Commodity> {
     public List<Commodity> doSelect(List<Commodity> commodities);
 
     public Boolean checkUpdate(Commodity commodity);
+
 }

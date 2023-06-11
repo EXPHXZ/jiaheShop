@@ -52,7 +52,7 @@
                 <div>折后价：￥{{item.priceSum}} 元</div>
               </div>
               <div class="shop-del">
-                <el-button type="danger" @click="goToAfterMarket(item.id)" plain>申请售后</el-button>
+                <el-button v-if="item.status == 0" type="danger" @click="goToAfterMarket(item.id)" plain>申请售后</el-button>
               </div>
             </div>
           </div>
