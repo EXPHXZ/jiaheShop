@@ -40,11 +40,13 @@ public class AddressServiceImpl implements AddressService {
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Address::getIsDefault,0);
         Address address1 = addressDao.selectOne(lqw);
-        if(address1 != null){
+        if(address1 == null || address.getIsDefault() == 1)
+            return addressDao.insert(address) > 0;
+        else{
             address1.setIsDefault(1);
             addressDao.updateById(address1);
+            return  addressDao.insert(address) > 0;
         }
-        return addressDao.insert(address) > 0;
     }
 //  搜索要修改的回显地址信息
     @Override
