@@ -71,7 +71,7 @@
                                 </h3>
                                 <el-row style="height: 400px">
                                     <el-col :span = "4" v-for = "item in discountCommodity" :offset = "index > 0 ? 1 : 0">
-                                        <el-card :body-style = "{ padding: '5px' }">
+                                        <el-card :body-style = "{ padding: '5px' }" class="box-card">
                                             <a @click="gotoDetail(item.id)">
                                                 <img :src = "getImage(item.image)"
                                                      class = "image">
@@ -100,7 +100,7 @@
                                 </h3>
                                 <el-row style="height: 400px">
                                     <el-col :span = "4" v-for = "item in commodities">
-                                        <el-card :body-style = "{ padding: '10px' }">
+                                        <el-card :body-style = "{ padding: '10px' }" class="box-card">
                                             <a @click="gotoDetail(item.id)">
                                                 <img :src = "getImage(item.image)"
                                                      class = "image">
@@ -141,6 +141,11 @@
                     return {
                         activeIndex: '1',
                         RotatedCommodity:[
+                            {"image":"r1.png"},
+                            {"image":"r2.png"},
+                            {"image":"r3.png"},
+                            {"image":"r4.png"},
+                            {"image":"r5.png"},
                         ],
                         //分页所需数据
                         pagination: {
@@ -213,6 +218,7 @@
                     getCommodities(){
                         axios.get("/commodity/grounding/" + this.pagination.current + "/"+this.pagination.pageSize).then((res) => {
                             this.commodities = res.data.data.records;
+                            console.log(res.data.data)
                             this.pagination.total = res.data.data.total;
                             this.pagination.pageSize = res.data.data.size;
                             this.pagination.current = res.data.data.current;
@@ -221,6 +227,7 @@
                     //查询所有上架而且有折扣了的商品
                     getDiscountCommodities(){
                         axios.get("/commodity/discount/" + this.pagination1.current + "/"+this.pagination1.pageSize).then((res) => {
+                            console.log(res.data.data)
                             this.discountCommodity = res.data.data.records;
                             this.pagination1.total = res.data.data.total;
                             this.pagination1.pageSize = res.data.data.size;
@@ -232,19 +239,21 @@
                             this.categoryList=res.data.data;
                         })
                     },
-                    getRotatedCommodity(){
+
+                    /*getRotatedCommodity(){
                         axios.get("/commodity/rotated").then((res) => {
                             this.RotatedCommodity=res.data.data;
                         })
-                    },
+                    },*/
+
                     getImage(image){
                         return `/common/download?name=${image}`
                     },
-                    getRotatedCommodity(){
+                    /*getRotatedCommodity(){
                         axios.get("/commodity/rotated").then((res) => {
                             this.RotatedCommodity=res.data.data;
                         })
-                    },
+                    },*/
                     login() {
                         window.localStorage.setItem("prePage", window.location.href)
                         window.location.href = "usersLogin.html"
@@ -275,7 +284,7 @@
                             this.isLogin = true
                     })
                     this.getAllCategory();
-                    this.getRotatedCommodity();
+/*                    this.getRotatedCommodity();*/
                     this.getDiscountCommodities();
                     this.getCommodities();
                 }

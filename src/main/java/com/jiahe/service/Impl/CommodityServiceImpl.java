@@ -75,6 +75,18 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityDao,Commodity> im
         return commodity1 != null;
     }
 
+    @Override
+    //更新时需要判断数据库里面是否存在其他一模一样的商品信息
+    public Boolean checkUpdate(Commodity commodity) {
+        LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.ne(Commodity::getId,commodity.getId());
+        wrapper.eq(Commodity::getCommodityName,commodity.getCommodityName());
+        wrapper.eq(Commodity::getBrandName,commodity.getBrandName());
+        wrapper.eq(Commodity::getSize,commodity.getSize());
+        Commodity commodity1 = commodityDao.selectOne(wrapper);
+        return commodity1 != null;
+    }
+
 
     public List<Commodity> doSelect(List<Commodity> list){
         ArrayList<Commodity> list1 = list.stream().collect(

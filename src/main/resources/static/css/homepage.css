@@ -6,7 +6,7 @@ body {
 
 a {
     text-decoration: none; /* 移除链接下划线 */
-    /*color: #666666;*/
+
 }
 
 .el-header, .el-footer {
@@ -171,17 +171,21 @@ float: right;
 }
 
 .el-card {
-    height: 380px;
+    height: 420px;
 }
 
 .el-image__inner{
-    width: 800px;
+    width: 840px;
 }
 
 .discount-w a{
     color: #666666;
     font-size: 15px;
     cursor: pointer;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 .discount-w a:hover{
     color: #6b9eff;
@@ -221,4 +225,9 @@ float: right;
     color: #b81919 !important;
     font-weight: bold;
     text-decoration: underline;
+}
+
+/*卡片高度*/
+.box-card {
+    height: 380px;
 }

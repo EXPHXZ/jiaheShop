@@ -355,6 +355,8 @@ public class OrderController {
             msg = "发货成功";
         }else if (status == 3){
             msg = "客户收货成功";
+        }else if (status == 1){
+            msg = "付款成功";
         }
         Order order = orderService.getById(orderId);
         order.setStatus(status);

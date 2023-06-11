@@ -179,11 +179,16 @@ public class CommodityController {
         queryWrapper.eq(Commodity::getStatus,0);
         queryWrapper.lt(Commodity::getDiscount,1);
 
-        //去重
         commodityService.page(commodityPage, queryWrapper);
+
+        //去重
         List<Commodity> records1 = commodityPage.getRecords();
+
         List<Commodity> commodities = commodityService.doSelect(records1);
+
         commodityPage.setRecords(commodities);
+
+//        commodityPage.setTotal(commodities.size());
 
         BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
 
@@ -283,9 +288,9 @@ public class CommodityController {
 
     @PutMapping
     public Result updateCommodity(@RequestBody Commodity commodity){
-        Boolean addFlag = commodityService.checkAdd(commodity);
-        if (addFlag == true){
-            return new Result(null,Code.ADD_FAIL,"商品表中已经有同品牌的商品");
+        Boolean updateFlag = commodityService.checkUpdate(commodity);
+        if (updateFlag == true){
+            return new Result(null,Code.ADD_FAIL,"商品表中已经有相同的商品了");
         }
         Boolean flag = commodityService.updateCommodity(commodity);
         return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"修改成功":"修改失败");
@@ -335,13 +340,13 @@ public class CommodityController {
         return new Result(null,flag?Code.UPDATE_SUCCESS:Code.UPDATE_FAIL,flag?"更新成功":"更新失败");
     }
 
-    @GetMapping("/rotated")
+/*    @GetMapping("/rotated")
     public Result getRotated(){
         LambdaQueryWrapper<Commodity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Commodity::getStatus,2);
         List<Commodity> commodities = commodityService.list(queryWrapper);
         return new Result(Code.SELECT_SUCCESS,commodities);
-    }
+    }*/
 
     @GetMapping("/search/{current}/{pageSize}/{description}")
     public Result searchCommodities(@PathVariable int current, @PathVariable int pageSize,@PathVariable String description){
@@ -355,7 +360,7 @@ public class CommodityController {
         List<Commodity> records1 = commodityPage.getRecords();
         List<Commodity> commodities = commodityService.doSelect(records1);
         commodityPage.setRecords(commodities);
-
+//        commodityPage.setTotal(commodities.size());
         BeanUtils.copyProperties(commodityPage,commodityDtoPage,"records");
 
         List<Commodity> records = commodityPage.getRecords();
