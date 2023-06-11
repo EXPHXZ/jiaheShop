@@ -10,8 +10,8 @@ body {
 }
 
 .head {
-    margin: 0 auto;
-    color: black;
+    margin: 60px auto;
+    font-size: 50px;
 }
 
 .AddressTable {
