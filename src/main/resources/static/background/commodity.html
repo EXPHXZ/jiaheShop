@@ -120,7 +120,6 @@
                 <el-select v-model="addCommodity.status" placeholder="请选择商品状态">
                     <el-option label="上架" value="0"></el-option>
                     <el-option label="下架" value="1"></el-option>
-                    <el-option label="轮播图片" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="余量">
@@ -200,7 +199,6 @@
                 <el-select v-model="updateCommodity.status" placeholder="请选择商品状态">
                     <el-option label="上架" value="0"></el-option>
                     <el-option label="下架" value="1"></el-option>
-                    <el-option label="轮播图片" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="余量">
@@ -265,7 +263,6 @@
             <el-select v-model="searchCommodity.status" placeholder="商品状态" :formatter="status">
                 <el-option label="上架" value="0"></el-option>
                 <el-option label="下架" value="1"></el-option>
-                <el-option label="轮播图片" value="2"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item>
@@ -427,9 +424,8 @@
                             item.statusText = "上架"
                         }else if (item.status === 1){
                             item.statusText = "下架"
-                        }else if (item.status === 2){
-                            item.statusText = "轮播图片"
                         }
+
                     })
                     this.tableData = res.data.data;
                     this.$message.success(res.data.msg)
@@ -445,9 +441,8 @@
                             item.statusText = "上架"
                         }else if (item.status === 1){
                             item.statusText = "下架"
-                        }else if (item.status === 2){
-                            item.statusText = "轮播图片"
                         }
+
                         if(item.discount === 1){
                             item.discount = "暂无折扣"
                         }else if (item.discount < 1){
