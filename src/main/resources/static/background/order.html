@@ -343,6 +343,7 @@
             axios.put('/order/' + row.id + '/2').then(res => {
               if (res.data.code == 20041) {
                 this.$message.success(res.data.msg)
+                this.selectAllOrder()
               } else if (res.data.code == 20042) {
                 this.$message.error(res.data.msg)
               } else {
@@ -355,6 +356,7 @@
             axios.put('/order/' + row.id + '/3').then(res => {
               if (res.data.code == 20041) {
                 this.$message.success(res.data.msg)
+                this.selectAllOrder()
               } else if (res.data.code == 20042) {
                 this.$message.error(res.data.msg)
               } else {
