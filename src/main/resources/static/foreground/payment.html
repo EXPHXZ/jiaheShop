@@ -84,7 +84,6 @@
         methods: {
           getAddress(id) {
             axios.get('/usersAddress/searchUpdateAddress/' + id).then(res => {
-              console.log('res        ', res.data.data)
               this.addressInfo = res.data.data
             })
           },
@@ -95,7 +94,6 @@
                 id: id,
               },
             }).then(res => {
-              console.log('res.data.data        ', res.data.data)
               this.orderInfo = res.data.data
               this.orderInfo.id = id
               this.orderInfo.submitTime = dayjs(this.orderInfo.submitTime).format('YYYY-MM-DD HH:mm:ss')
@@ -163,7 +161,6 @@
         created() {
           const params = window.location.search
           const id = params.split('=')[1]
-          console.log('id', id)
           this.selectOrderDetail(id)
         },
 
