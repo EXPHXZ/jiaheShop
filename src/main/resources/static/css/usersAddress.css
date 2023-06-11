@@ -9,12 +9,8 @@ body {
     width: 100%;
 }
 
-.head {
-    margin: 60px auto;
-    font-size: 50px;
-}
 
-.AddressTable {
+.AddressTable{
     width: 70%;
     height: 50%;
     margin: 0 auto;
