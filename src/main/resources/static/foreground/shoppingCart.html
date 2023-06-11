@@ -143,7 +143,23 @@
                 this.orderList.push(orderItem)
               }
             }
-            console.log(this.orderList)
+            console.log('this.orderList', this.orderList)
+            console.log('this.orderList.length', this.orderList.length)
+            console.log(this.order.addressId)
+            console.log('this.orderList[0]', this.orderList[0])
+            if (this.orderList.length === 0 || this.orderList[0] === undefined) {
+              this.$message({
+                type: 'warning',
+                message: '请选择商品',
+              })
+              return
+            } else if (this.order.addressId === null) {
+              this.$message({
+                type: 'warning',
+                message: '请选择地址',
+              })
+              return
+            }
             // 询问是否提交
             this.$confirm('是否提交？', '提示', {
               confirmButtonText: '确定',
@@ -242,6 +258,15 @@
             let ids = []
             ids.push(id)
             console.log('ids      ', ids)
+            console.log('ids.length      ', ids.length)
+            console.log('ids[0]      ', ids[0])
+            if (ids.length === 0 || ids[0] === undefined) {
+              this.$message({
+                type: 'warning',
+                message: '请选择需要删除的商品',
+              })
+              return
+            }
             // 询问是否删除
             this.$confirm('是否删除？', '提示', {
               confirmButtonText: '确定',
@@ -288,6 +313,13 @@
               }
             }
             console.log('ids      ', ids)
+            if (ids.length === 0 || ids[0] === undefined) {
+              this.$message({
+                type: 'warning',
+                message: '请选择需要删除的商品',
+              })
+              return
+            }
             // 询问是否删除
             this.$confirm('是否删除？', '提示', {
               confirmButtonText: '确定',
