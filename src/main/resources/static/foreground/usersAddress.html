@@ -30,14 +30,12 @@
                         v-model="addAddressForm.prefixAddress"
                         :options="pcaTextArr"
                         :props="{ expandTrigger: 'hover' }"
-                        style="width: 40%"
-                        @change="prefixAddressChange">
+                        style="width: 40%">
                 </el-cascader>
                 <el-input
                         v-model="addAddressForm.detailAddress"
                         placeholder="请输入详细地址"
-                        style="width: 50%"
-                        @change="detailAddressChange">
+                        style="width: 50%">
                 </el-input>
             </el-form-item>
             <el-form-item label="标签">
@@ -80,14 +78,12 @@
                         v-model="updateAddressForm.prefixAddress"
                         :options="pcaTextArr"
                         :props="{ expandTrigger: 'hover' , checkStrictly: true}"
-                        style="width: 40%"
-                        @change="prefixAddressChange">
+                        style="width: 40%">
                 </el-cascader>
                 <el-input
                         v-model="updateAddressForm.detailAddress"
                         placeholder="请输入详细地址"
-                        style="width: 50%"
-                        @change="detailAddressChange">
+                        style="width: 50%">
                 </el-input>
             </el-form-item>
             <el-form-item label="标签">
@@ -221,7 +217,6 @@
                 this.addAddressForm = {
                     isDefault: '1'
                 }
-                this.updateAddressForm = {}
             },
             //管理添加按钮
             handleAdd() {
@@ -230,21 +225,25 @@
             },
             //管理编辑按钮
             handleUpdate(row) {
+                this.searchAddressVisible = true
+                var arr = new Array(3)
+                var detail
                 axios.get("/usersAddress/searchUpdateAddress/" + row.id).then((res) => {
                     this.updateAddressForm = res.data.data
-                    let arr = new Array(3)
+                    detail = res.data.data.location.split("，").at(3)
                     //地址拆分为详细地址和详细地址
                     for (var i = 0; i < 3; i++)
                         arr[i] = res.data.data.location.split("，").at(i)
                     this.updateAddressForm.prefixAddress = arr
-                    this.updateAddressForm.detailAddress = res.data.data.location.split("，").at(3)
+                    this.$set(this.updateAddressForm,"detailAddress",detail)
                     //是否为默认 回显格式标准化
                     if (res.data.data.isDefault == 0)
                         this.updateAddressForm.isDefault = "0"
                     else if (res.data.data.isDefault == 1)
                         this.updateAddressForm.isDefault = "1"
+                    console.log(detail)
                 })
-                this.searchAddressVisible = true
+
             },
             //管理表单中的取消按钮
             handleCancel() {
