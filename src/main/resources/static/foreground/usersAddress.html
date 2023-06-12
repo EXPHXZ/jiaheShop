@@ -218,7 +218,16 @@
         methods: {
             //重置表单
             resetForm() {
-                this.addAddressForm = {}
+                this.addAddressForm = {
+                    userId: '',
+                    contacts: '',
+                    contactsPhone: '',
+                    prefixAddress: [],
+                    detailAddress: '',
+                    location: '',
+                    tag: '',
+                    isDefault: '1'
+                }
                 this.updateAddressForm = {}
             },
             //省市区信息发生变化 触发
@@ -286,9 +295,9 @@
                 //添加表单地址连串
                 this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + "，" + this.addAddressForm.detailAddress
                 //判断数据格式
-                if (!contactsFormat.test(this.addAddressForm.contacts) || this.addAddressForm.contacts == null)
+                if (this.addAddressForm.contacts == null || !contactsFormat.test(this.addAddressForm.contacts))
                     this.$message.error("请输入正确的姓名")
-                else if (!contactsPhoneFormat.test(this.addAddressForm.contactsPhone) || this.addAddressForm.contactsPhone == null)
+                else if (this.addAddressForm.contactsPhone == null || !contactsPhoneFormat.test(this.addAddressForm.contactsPhone))
                     this.$message.error("请输入正确的手机号码")
                 else
                     axios.post("/usersAddress/addPersonalAddress", this.addAddressForm).then((res) => {
@@ -313,9 +322,9 @@
                     this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
                 }
                 //判断数据格式
-                if (!contactsFormat.test(this.updateAddressForm.contacts) || this.updateAddressForm.contacts == null)
+                if (this.addAddressForm.contacts == null || !contactsFormat.test(this.addAddressForm.contacts))
                     this.$message.error("请输入正确的姓名")
-                else if (!contactsPhoneFormat.test(this.updateAddressForm.contactsPhone) || this.updateAddressForm.contactsPhone == null)
+                else if (this.addAddressForm.contactsPhone == null || !contactsPhoneFormat.test(this.addAddressForm.contactsPhone))
                     this.$message.error("请输入正确的手机号码")
                 else
                     axios.put("/usersAddress/updatePersonalAddress", this.updateAddressForm).then((res) => {
@@ -398,7 +407,7 @@
                     detailAddress: '',
                     location: '',
                     tag: '',
-                    isDefault: ''
+                    isDefault: '1'
                 },
                 //修改表单数据
                 updateAddressForm: {

@@ -40,6 +40,8 @@ public class AddressServiceImpl implements AddressService {
         LambdaQueryWrapper<Address> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Address::getIsDefault,0);
         Address address1 = addressDao.selectOne(lqw);
+        if(address == null)
+            System.out.println(123);
         if(address1 == null || address.getIsDefault() == 1)
             return addressDao.insert(address) > 0;
         else{
