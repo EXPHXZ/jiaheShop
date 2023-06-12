@@ -280,9 +280,9 @@
                 //添加表单地址连串
                 this.addAddressForm.location = this.addAddressForm.prefixAddress.join("，") + "，" + this.addAddressForm.detailAddress
                 //判断数据格式
-                if (this.addAddressForm.contacts == null || !contactsFormat.test(this.addAddressForm.contacts))
+                if (!contactsFormat.test(this.addAddressForm.contacts) || this.addAddressForm.contacts == null )
                     this.$message.error("请输入正确的姓名")
-                else if (this.addAddressForm.contactsPhone == null || !contactsPhoneFormat.test(this.addAddressForm.contactsPhone))
+                else if (!contactsPhoneFormat.test(this.addAddressForm.contactsPhone) || this.addAddressForm.contactsPhone == null)
                     this.$message.error("请输入正确的手机号码")
                 else
                     axios.post("/usersAddress/addPersonalAddress", this.addAddressForm).then((res) => {
@@ -301,11 +301,7 @@
             updateAddress() {
                 this.updateAddressForm.userId = this.user.id
                 //编辑表单地址连串
-                if (this.updateAddressForm.prefixAddress.at(1) == "市辖区")
-                    this.updateAddressForm.location = this.updateAddressForm.prefixAddress.at(0) + "，" + this.updateAddressForm.prefixAddress.at(2) + "，" + this.updateAddressForm.detailAddress
-                else {
-                    this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + this.updateAddressForm.detailAddress
-                }
+                this.updateAddressForm.location = this.updateAddressForm.prefixAddress.join("，") + "，" + this.updateAddressForm.detailAddress
                 //判断数据格式
                 if (!contactsFormat.test(this.updateAddressForm.contacts) || this.updateAddressForm.contacts == null )
                     this.$message.error("请输入正确的姓名")
